@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../../store/slices';
-import api from '../../../../../config/axiosConfig';
-import { fetchRoutes } from '../../../../../store/slices/route/routeSlice';
+import { AppDispatch, RootState } from '@/store/slices';
+import api from '@/config/axiosConfig';
+import { fetchRoutes } from '@/store/slices/route/routeSlice';
 import { AddImageModal } from './AddImageModal';
 import { ConfirmDialog } from './ConfirmModal';
 import { Notification } from './NotificationModal';
@@ -17,9 +17,10 @@ import {
   FormControlLabel,
   Switch,
 } from '@mui/material';
-import { ImagePageData, SectionData } from '../../../../../store/slices/image/imageSlice';
+import { ImagePageData } from '@/store/slices/image/imageSlice';
 import ImageSection from './ImageSection';
 import { MediaItem, MediaPlatform, MediaType, MediaUploadType } from 'store/slices/types';
+import { SectionData } from '@/store/slices/image-section/imageSectionSlice';
 
 interface ImageProps {
   fromTemplatePage?: boolean;
@@ -57,7 +58,7 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
 
   useEffect(() => {
     if (!imageData && !fromTemplatePage) {
-      navigate('/feed-orfanato');
+      navigate('/feed-clubinho');
       return;
     }
 

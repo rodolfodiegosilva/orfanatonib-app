@@ -8,7 +8,7 @@ const NavBar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: '#e3ce1d', zIndex: 1300 }}>
+    <AppBar position="fixed" sx={{ backgroundColor: '#81d742', zIndex: 1300 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography
           variant="h6"
@@ -16,7 +16,7 @@ const NavBar: React.FC = () => {
           href="/"
           sx={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
         >
-          Orfanato NIB
+          Clubinho NIB
         </Typography>
         <Box>{isMobile ? <MobileNavigation /> : <DesktopNavigation />}</Box>
       </Toolbar>

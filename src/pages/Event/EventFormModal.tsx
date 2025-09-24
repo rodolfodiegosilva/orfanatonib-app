@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,7 +13,7 @@ import {
   Alert,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import api from '../../config/axiosConfig';
+import api from '@/config/axiosConfig';
 
 interface EventFormModalProps {
   open: boolean;
@@ -144,7 +144,7 @@ const EventFormModal: React.FC<EventFormModalProps> = ({
   };
 
   return (
-    <>
+    <Fragment>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle sx={{ fontFamily: 'Roboto, sans-serif' }}>
           {mode === 'add' ? 'Adicionar Evento' : 'Editar Evento'}
@@ -227,7 +227,7 @@ const EventFormModal: React.FC<EventFormModalProps> = ({
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </Fragment>
   );
 };
 

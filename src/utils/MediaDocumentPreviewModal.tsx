@@ -5,8 +5,11 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
+  Box,
+  Button,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useEffect } from 'react';
 import { MediaItem } from 'store/slices/types';
 import { getMediaPreviewUrl } from './getMediaPreviewUrl';
 
@@ -19,9 +22,17 @@ interface Props {
 
 export default function MediaDocumentPreviewModal({ open, onClose, media, title }: Props) {
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  if (!media) return null;
+  useEffect(() => {
+    if (open && media && isMobile) {
+      const url = getMediaPreviewUrl(media);
+      window.open(url, '_blank');
+      onClose();
+    }
+  }, [open, media, isMobile, onClose]);
+
+  if (!media || (isMobile && open)) return null;
 
   const previewUrl = getMediaPreviewUrl(media);
 
@@ -29,7 +40,7 @@ export default function MediaDocumentPreviewModal({ open, onClose, media, title 
     <Dialog
       open={open}
       onClose={onClose}
-      fullScreen={fullScreen}
+      fullScreen={false}
       maxWidth={false}
       PaperProps={{
         sx: {
@@ -37,6 +48,8 @@ export default function MediaDocumentPreviewModal({ open, onClose, media, title 
           height: '85vh',
           maxWidth: '90vw',
           borderRadius: 3,
+          display: 'flex',
+          flexDirection: 'column',
         },
       }}
     >
@@ -45,7 +58,7 @@ export default function MediaDocumentPreviewModal({ open, onClose, media, title 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          bgcolor: theme.palette.primary.main,
+          bgcolor: '#81d742',
           color: 'white',
           borderTopLeftRadius: 12,
           borderTopRightRadius: 12,
@@ -57,7 +70,8 @@ export default function MediaDocumentPreviewModal({ open, onClose, media, title 
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+
+      <DialogContent sx={{ p: 0, flexGrow: 1 }}>
         <iframe
           src={previewUrl}
           title={media.title}
@@ -65,11 +79,22 @@ export default function MediaDocumentPreviewModal({ open, onClose, media, title 
             width: '100%',
             height: '100%',
             border: 'none',
-            borderBottomLeftRadius: 12,
-            borderBottomRightRadius: 12,
           }}
         />
       </DialogContent>
+
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          borderTop: '1px solid #ccc',
+        }}
+      >
+        <Button variant="contained" color="primary" onClick={onClose}>
+          Fechar
+        </Button>
+      </Box>
     </Dialog>
   );
 }

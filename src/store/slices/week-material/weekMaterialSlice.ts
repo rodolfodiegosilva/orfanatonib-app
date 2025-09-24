@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RouteData } from '../route/routeSlice';
-import { MediaItem } from '../types';
+import { RouteData } from '@/store/slices/route/routeSlice';
+import { MediaItem } from '@/store/slices/types';
 
 export interface WeekMaterialPageData {
   id: string;
   title: string;
   subtitle: string;
-  currentWeek?: boolean;
+  currentWeek: boolean;
   description: string;
   createdAt: string;
   updatedAt: string;
@@ -23,14 +23,12 @@ interface WeekMaterialState {
   error: string | null;
 }
 
-// Estado inicial
 const initialState: WeekMaterialState = {
   weekMaterialSData: null,
   loading: false,
   error: null,
 };
 
-// Slice
 const studyMaterialSlice = createSlice({
   name: 'studyMaterial',
   initialState,
