@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RouteData } from '../route/routeSlice';
-import { MediaItem } from '../types';
+import { RouteData } from '@/store/slices/route/routeSlice';
+import { MediaItem } from '@/store/slices/types';
 
 export interface SectionData {
   id?: string;
@@ -9,7 +9,7 @@ export interface SectionData {
   description: string;
   mediaItems: MediaItem[];
   createdAt?: Date | string;
-  updatedAt?: Date | string;
+  updatedAt?: Date ;
 }
 
 export interface ImagePageData {

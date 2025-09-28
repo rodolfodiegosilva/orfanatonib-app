@@ -7,7 +7,7 @@ const DesktopNavigation: React.FC = () => {
     <Box
       sx={{
         display: { xs: 'none', md: 'flex' },
-        bgcolor: '#e3ce1d',
+        bgcolor: '#81d742',
         px: 4,
         py: 1.5,
         alignItems: 'center',

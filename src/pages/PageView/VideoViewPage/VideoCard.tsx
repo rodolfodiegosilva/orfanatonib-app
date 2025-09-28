@@ -1,107 +1,245 @@
-import { useState } from 'react';
-import { Card, Typography, Box, Modal, Fade } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { motion } from 'framer-motion';
-import VideoPlayer from './VideoPlayer';
-import { MediaItem, MediaUploadType, MediaPlatform } from 'store/slices/types';
+import { Fragment, useState, useMemo } from "react";
+import { 
+  Card, 
+  Typography, 
+  Box, 
+  Dialog, 
+  IconButton,
+  Paper,
+  useTheme,
+  useMediaQuery,
+  Chip,
+  Zoom,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import VideoFileIcon from "@mui/icons-material/VideoFile";
+import { motion } from "framer-motion";
+import VideoPlayer from "./VideoPlayer";
+import { MediaItem, MediaUploadType } from "@/store/slices/types";
+import { getPreferredThumb } from "@/utils/video";
 
-interface Props {
-  video: MediaItem;
+interface Props { 
+  video: MediaItem 
 }
 
 const VideoCard = ({ video }: Props) => {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const thumb = useMemo(() => getPreferredThumb(video), [video]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const videoId = video.url?.split('v=')[1]?.split('&')[0];
-  const thumbnailUrl =
-    video.platformType === MediaPlatform.YOUTUBE && videoId
-      ? `https://img.youtube.com/vi/${videoId}/0.jpg`
-      : undefined;
+  const fileSize = video.size ? `${(video.size / 1024 / 1024).toFixed(1)} MB` : null;
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+    <Fragment>
+      <motion.div 
+        initial={{ opacity: 0, y: 16 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.4 }}
+        whileHover={{ y: -2 }}
       >
-        <Card
+        <Paper
+          elevation={3}
+          onClick={() => setOpen(true)}
           sx={{
-            p: 2,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-            borderRadius: 3,
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-5px)',
-              boxShadow: '0 6px 25px rgba(0,0,0,0.15)',
-            },
+            p: { xs: 2, md: 3 },
+            borderRadius: { xs: 3, md: 4 },
             cursor: 'pointer',
+            border: `2px solid ${theme.palette.primary.main}20`,
+            background: 'linear-gradient(135deg, #ffffff 0%, #fff3e0 100%)',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              elevation: 6,
+              transform: 'translateY(-4px)',
+              borderColor: theme.palette.primary.main,
+            },
           }}
-          onClick={handleOpen}
         >
-          <Box sx={{ position: 'relative' }}>
-            {video.uploadType === MediaUploadType.UPLOAD && video.url ? (
-              <video src={video.url} style={{ width: '100%', borderRadius: 3 }} muted />
-            ) : video.uploadType === MediaUploadType.LINK &&
-              video.platformType === MediaPlatform.YOUTUBE &&
-              thumbnailUrl ? (
-              <img
-                src={thumbnailUrl}
-                alt={video.title}
-                style={{ width: '100%', borderRadius: 3 }}
-              />
-            ) : (
-              <Box sx={{ bgcolor: '#e0e0e0', height: 150, borderRadius: 3 }} />
-            )}
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: 'rgba(0,0,0,0.3)',
-                borderRadius: 3,
-              }}
-            >
-              <PlayArrowIcon sx={{ fontSize: 48, color: '#fff' }} />
-            </Box>
-          </Box>
-          <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
-            {video.title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {video.description}
-          </Typography>
-        </Card>
-      </motion.div>
-
-      <Modal open={open} onClose={handleClose} closeAfterTransition>
-        <Fade in={open}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: { xs: '90%', sm: '70%', md: '50%' },
-              bgcolor: 'background.paper',
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 3,
+          {/* Video Thumbnail */}
+          <Box 
+            sx={{ 
+              position: 'relative', 
+              borderRadius: { xs: 2, md: 3 }, 
+              overflow: 'hidden',
+              mb: 2,
+              bgcolor: 'grey.100',
             }}
           >
-            <VideoPlayer video={video} />
+            {video.uploadType === MediaUploadType.UPLOAD && video.url ? (
+              <Box
+                component="video"
+                src={video.url}
+                muted
+                playsInline
+                sx={{
+                  width: '100%',
+                  height: { xs: 160, md: 200 },
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            ) : thumb ? (
+              <Box
+                component="img"
+                src={thumb}
+                alt={video.title}
+                sx={{
+                  width: '100%',
+                  height: { xs: 160, md: 200 },
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            ) : (
+              <Box 
+                sx={{ 
+                  height: { xs: 160, md: 200 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: 'grey.100',
+                }}
+              >
+                <VideoFileIcon sx={{ fontSize: '3rem', color: 'grey.400' }} />
+              </Box>
+            )}
+            
+            {/* Play Overlay */}
+            <Box 
+              sx={{ 
+                position: 'absolute', 
+                inset: 0, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                background: 'linear-gradient(180deg, rgba(0,0,0,.0) 0%, rgba(0,0,0,.35) 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.45) 100%)',
+                },
+                transition: 'background 0.3s ease',
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: '50%',
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'white',
+                    transform: 'scale(1.1)',
+                  },
+                }}
+              >
+                <PlayArrowIcon 
+                  sx={{ 
+                    fontSize: { xs: '2rem', md: '2.5rem' }, 
+                    color: 'primary.main',
+                    ml: 0.5, // Slight offset for play icon
+                  }} 
+                />
+              </Box>
+            </Box>
           </Box>
-        </Fade>
-      </Modal>
-    </>
+
+          {/* Content */}
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Header with title and size */}
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <VideoFileIcon sx={{ fontSize: '1rem', color: 'primary.main' }} />
+              {fileSize && (
+                <Chip
+                  label={fileSize}
+                  size="small"
+                  sx={{
+                    bgcolor: 'primary.light',
+                    color: 'white',
+                    fontSize: '0.75rem',
+                  }}
+                />
+              )}
+            </Box>
+
+            <Typography 
+              variant="h6" 
+              fontWeight="bold"
+              sx={{
+                fontSize: { xs: '1rem', md: '1.1rem' },
+                lineHeight: 1.3,
+                mb: 1,
+                color: 'primary.main',
+              }}
+            >
+              {video.title}
+            </Typography>
+            
+            {video.description && (
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.85rem', md: '0.9rem' },
+                  lineHeight: 1.5,
+                  flex: 1,
+                }}
+              >
+                {video.description}
+              </Typography>
+            )}
+          </Box>
+        </Paper>
+      </motion.div>
+
+      {/* Video Modal */}
+      <Dialog 
+        fullWidth 
+        maxWidth="lg" 
+        open={open} 
+        onClose={() => setOpen(false)} 
+        PaperProps={{ 
+          sx: { 
+            borderRadius: { xs: 3, md: 4 },
+            bgcolor: 'transparent',
+            boxShadow: 'none',
+          } 
+        }}
+      >
+        <Box sx={{ position: 'relative' }}>
+          <IconButton 
+            onClick={() => setOpen(false)} 
+            aria-label="Fechar"
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              bgcolor: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              zIndex: 1,
+              '&:hover': {
+                bgcolor: 'rgba(0,0,0,0.7)',
+              },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          
+          <Box sx={{ px: { xs: 2, md: 3 }, pb: 3 }}>
+            <Zoom in={open} timeout={300}>
+              <Box>
+                <VideoPlayer video={video} />
+              </Box>
+            </Zoom>
+          </Box>
+        </Box>
+      </Dialog>
+    </Fragment>
   );
 };
 

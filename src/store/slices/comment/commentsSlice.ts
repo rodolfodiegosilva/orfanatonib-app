@@ -6,7 +6,7 @@ export interface CommentData {
   updatedAt: string;
   name: string;
   comment: string;
-  orfanato: string;
+  clubinho: string;
   neighborhood: string;
   published?: boolean;
 }

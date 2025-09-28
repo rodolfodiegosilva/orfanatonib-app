@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import {
   Box,
   TextField,
@@ -155,7 +155,7 @@ export function IdeasMaterialVideos({ videos, setVideos }: VideosProps) {
           </FormControl>
         </Grid>
         {tempVideo.uploadType === MediaUploadType.LINK && (
-          <>
+          <Fragment>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Plataforma</InputLabel>
@@ -186,7 +186,7 @@ export function IdeasMaterialVideos({ videos, setVideos }: VideosProps) {
                 helperText={errors.url ? 'URL inválida ou obrigatória' : ''}
               />
             </Grid>
-          </>
+          </Fragment>
         )}
         {tempVideo.uploadType === MediaUploadType.UPLOAD && (
           <Grid item xs={12}>
@@ -210,14 +210,19 @@ export function IdeasMaterialVideos({ videos, setVideos }: VideosProps) {
 
       <Grid container spacing={2} sx={{ mt: 3 }}>
         {videos.map((video, index) => (
-          <Grid item xs={12} sm={6} key={index}>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
             <Box sx={{ p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
               <Typography fontWeight="bold">{video.title}</Typography>
               <Typography variant="body2">{video.description}</Typography>
               {video.uploadType === MediaUploadType.LINK ? (
                 <Box sx={{ aspectRatio: '16/9', mt: 1 }}>
                   <iframe
-                    src={video.url}
+                    src={video.platformType === MediaPlatform.YOUTUBE ? 
+                      video.url.includes('embed') ? 
+                        `${video.url}&autoplay=0&mute=0` : 
+                        video.url.replace(/watch\?v=/, 'embed/') + '?autoplay=0&mute=0' :
+                      video.url
+                    }
                     title={video.title}
                     allowFullScreen
                     style={{ width: '100%', height: '100%', border: 0 }}

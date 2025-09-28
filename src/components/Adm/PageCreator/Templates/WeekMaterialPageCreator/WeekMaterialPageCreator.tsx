@@ -13,14 +13,14 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../../store/slices';
-import { fetchRoutes } from '../../../../../store/slices/route/routeSlice';
-import { clearWeekMaterialData } from '../../../../../store/slices/week-material/weekMaterialSlice';
+import { AppDispatch, RootState } from '@/store/slices';
+import { fetchRoutes } from '@/store/slices/route/routeSlice';
+import { clearWeekMaterialData } from '@/store/slices/week-material/weekMaterialSlice';
 import WeekVideos from './WeekVideos';
 import WeekDocuments from './WeekDocuments';
 import WeekAudios from './WeekAudios';
 import WeekImages from './WeekImages';
-import api from '../../../../../config/axiosConfig';
+import api from '@/config/axiosConfig';
 import { MediaItem, MediaType, MediaUploadType } from 'store/slices/types';
 
 interface WeekMaterialPageCreatorProps {
@@ -68,6 +68,8 @@ export default function WeekMaterialPageCreator({
   const [pageTitle, setPageTitle] = useState('');
   const [pageSubtitle, setPageSubtitle] = useState('');
   const [pageDescription, setPageDescription] = useState('');
+
+  const [pageCurrentWeek, setPageCurrentWeek] = useState(false);
   const [tab, setTab] = useState(0);
 
   const [videos, setVideos] = useState<MediaItem[]>([]);
@@ -106,6 +108,7 @@ export default function WeekMaterialPageCreator({
       setPageTitle(weekMaterialSData.title);
       setPageSubtitle(weekMaterialSData.subtitle);
       setPageDescription(weekMaterialSData.description);
+      setPageCurrentWeek(weekMaterialSData.currentWeek);
       setVideos(weekMaterialSData.videos);
       setDocuments(weekMaterialSData.documents);
       setImages(weekMaterialSData.images);
@@ -140,8 +143,6 @@ export default function WeekMaterialPageCreator({
       const processedDocs = documents.map((d, i) => buildFileItem(d, i, 'document', formData));
       const processedImgs = images.map((i, n) => buildFileItem(i, n, 'image', formData));
       const processedAudios = audios.map((a, x) => buildFileItem(a, x, 'audio', formData));
-      console.log("processedVideos: ", processedVideos);
-
 
       const mapItem = (item: MediaItem & { fileField?: string }, type: MediaType) => ({
         ...(item.id && { id: item.id }),
@@ -169,6 +170,7 @@ export default function WeekMaterialPageCreator({
         pageTitle,
         pageSubtitle,
         pageDescription,
+        currentWeek: pageCurrentWeek,
         videos: processedVideos.map((v) => mapItem(v, MediaType.VIDEO)),
         documents: processedDocs.map((d) => mapItem(d, MediaType.DOCUMENT)),
         images: processedImgs.map((i) => mapItem(i, MediaType.IMAGE)),
@@ -214,9 +216,6 @@ export default function WeekMaterialPageCreator({
         px: { xs: 0, md: 4 },
         py: { xs: 0, md: 5 },
         mt: { xs: 0, md: 5 },
-        mb: { xs: 0, md: 0 },
-        width: '98%',
-        mx: 'auto',
       }}
     >
 
@@ -225,7 +224,7 @@ export default function WeekMaterialPageCreator({
         mb={3}
         fontWeight="bold"
         textAlign="center"
-        sx={{ mt: { xs: 0, md: 0 }, mb: { xs: 1, md: 3 }, fontSize: { xs: '1.5rem', md: '2rem' } }}
+        sx={{ mb: { xs: 1, md: 3 }, fontSize: { xs: '1.5rem', md: '2rem' } }}
       >
         {fromTemplatePage ? 'Adicionar Semana' : 'Editar Semana'}
       </Typography>
