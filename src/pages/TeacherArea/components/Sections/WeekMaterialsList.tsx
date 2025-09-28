@@ -185,7 +185,7 @@ const WeekMaterialsList = () => {
                                     mx: 'auto',
                                 }}
                             >
-                                Explore materiais atualizados semanalmente para enriquecer suas aulas e atividades do Clubinho
+                                Explore materiais atualizados semanalmente para enriquecer suas aulas e atividades do Shelterinho
                             </Typography>
                         </Box>
 

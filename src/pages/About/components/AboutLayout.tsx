@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, Container, Typography, useTheme } from '@mui/material';
 
 interface AboutLayoutProps {
-  children: React.ReactNode;
+  shelteredren: React.ReactNode;
 }
 
-const AboutLayout: React.FC<AboutLayoutProps> = ({ children }) => {
+const AboutLayout: React.FC<AboutLayoutProps> = ({ shelteredren }) => {
   const theme = useTheme();
 
   return (
@@ -46,7 +46,7 @@ const AboutLayout: React.FC<AboutLayoutProps> = ({ children }) => {
           }}
         >
           <Typography variant="h2" component="h1" sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem', md: '2.8rem', lg: '3rem' }, fontWeight: 800, background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 2px 4px rgba(0,0,0,0.1)', fontFamily: "'Poppins', sans-serif", mb: { xs: 1.5, sm: 2 }, lineHeight: 1.2, }} >
-            Sobre o Clubinho NIB
+            Sobre o Shelterinho NIB
           </Typography>
           <Typography
             variant="h6"
@@ -73,7 +73,7 @@ const AboutLayout: React.FC<AboutLayoutProps> = ({ children }) => {
             alignItems: 'start',
           }}
         >
-          {children}
+          {shelteredren}
         </Box>
       </Container>
     </Box>

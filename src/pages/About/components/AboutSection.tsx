@@ -73,7 +73,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ section, index }) => {
           height: '100%', 
           display: 'flex', 
           flexDirection: 'column',
-          '&:last-child': { pb: { xs: 2, sm: 3, md: 4 } }
+          '&:last-sheltered': { pb: { xs: 2, sm: 3, md: 4 } }
         }}>
           {/* Ícone */}
           <Box

@@ -35,7 +35,7 @@ const SpecialFamilyCallout: React.FC = () => {
           color="rgba(255,255,255,0.9)"
           sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}
         >
-          Um momento único para pais e crianças aprenderem e curtirem o Clubinho juntos.
+          Um momento único para pais e crianças aprenderem e curtirem o Shelterinho juntos.
         </Typography>
       </Box>
       <Button

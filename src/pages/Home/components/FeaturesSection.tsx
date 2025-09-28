@@ -52,7 +52,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
               fontFamily: "'Poppins', sans-serif",
             }}
           >
-            Por que escolher o Clubinho NIB?
+            Por que escolher o Shelterinho NIB?
           </Typography>
         </motion.div>
 

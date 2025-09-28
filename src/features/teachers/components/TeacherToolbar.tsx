@@ -16,8 +16,8 @@ import { Refresh, Clear } from "@mui/icons-material";
 export type TeacherFilters = {
   q?: string;
   active?: boolean;
-  hasClub?: boolean;
-  clubNumber?: number;
+  hasShelter?: boolean;
+  shelterNumber?: number;
 };
 
 type Props = {
@@ -38,18 +38,18 @@ export default function TeacherToolbar({
     value: TeacherFilters[K]
   ) => onChange((prev) => ({ ...prev, [key]: value }));
 
-  const handleHasClubChange = (v: string) =>
-    handleChange("hasClub", v === "" ? undefined : (v === "true") as any);
+  const handleHasShelterChange = (v: string) =>
+    handleChange("hasShelter", v === "" ? undefined : (v === "true") as any);
 
-  const handleClubNumberChange = (v: string) =>
-    handleChange("clubNumber", v === "" ? undefined : Number(v));
+  const handleShelterNumberChange = (v: string) =>
+    handleChange("shelterNumber", v === "" ? undefined : Number(v));
 
   const handleClear = () => {
     onChange(() => ({
       q: "",
       active: undefined,
-      hasClub: undefined,
-      clubNumber: undefined,
+      hasShelter: undefined,
+      shelterNumber: undefined,
     }));
   };
 
@@ -72,15 +72,15 @@ export default function TeacherToolbar({
             select
             fullWidth
             size="small"
-            label="Com Clubinho?"
+            label="Com Shelterinho?"
             value={
-              filters.hasClub === undefined ? "" : filters.hasClub ? "true" : "false"
+              filters.hasShelter === undefined ? "" : filters.hasShelter ? "true" : "false"
             }
-            onChange={(e) => handleHasClubChange(e.target.value)}
+            onChange={(e) => handleHasShelterChange(e.target.value)}
           >
             <MenuItem value="">Todos</MenuItem>
-            <MenuItem value="true">Somente com Clubinho</MenuItem>
-            <MenuItem value="false">Somente sem Clubinho</MenuItem>
+            <MenuItem value="true">Somente com Shelterinho</MenuItem>
+            <MenuItem value="false">Somente sem Shelterinho</MenuItem>
           </TextField>
         </Grid>
 
@@ -88,10 +88,10 @@ export default function TeacherToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Nº do Clubinho"
+            label="Nº do Shelterinho"
             type="number"
-            value={filters.clubNumber ?? ""}
-            onChange={(e) => handleClubNumberChange(e.target.value)}
+            value={filters.shelterNumber ?? ""}
+            onChange={(e) => handleShelterNumberChange(e.target.value)}
             inputProps={{ min: 1 }}
           />
         </Grid>

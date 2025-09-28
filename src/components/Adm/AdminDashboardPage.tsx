@@ -44,7 +44,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/slices";
 import { UserRole } from "@/store/slices/auth/authSlice";
 
-type SectionId = "all" | "pages" | "conteudos" | "clubinho" | "operacional";
+type SectionId = "all" | "pages" | "conteudos" | "shelterinho" | "operacional";
 
 interface CardData {
   title: string;
@@ -62,32 +62,32 @@ const cardData: CardData[] = [
 
   { title: "Páginas de Materiais", description: "Gerencie conteúdos semanais.", icon: <EventNote fontSize="large" color="primary" />, path: "/adm/paginas-materiais-semanais", section: "pages" },
   { title: "Páginas de Fotos", description: "Organize e edite galerias de imagens do site.", icon: <PhotoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-fotos", section: "pages" },
-  { title: "Fotos dos Clubinhos", description: "Organize e edite galerias de fotos dos Clubinhos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-clubinhos", section: "pages" },
-  { title: "Ideias compartilhadas", description: "Gerencie Ideias compartilhadas pelos Clubinhos", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/ideias-compartilhadas", section: "pages" },
+  { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos Abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-shelterinhos", section: "pages" },
+  { title: "Ideias compartilhadas", description: "Gerencie Ideias compartilhadas pelos Abrigos", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/ideias-compartilhadas", section: "pages" },
   { title: "Páginas de Vídeos", description: "Adicione vídeos ou links do YouTube para o site.", icon: <VideoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-videos", section: "pages" },
   { title: "Páginas de Ideias", description: "Gerencie páginas de ideias para professores.", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/paginas-ideias", section: "pages" },
 
-  { title: "Usuários", description: "Gerencie usuários do clubinho.", icon: <Group fontSize="large" color="primary" />, path: "/adm/usuarios", section: "clubinho" },
-  { title: "Professores", description: "Gerencie professores do clubinho.", icon: <School fontSize="large" color="primary" />, path: "/adm/professores", section: "clubinho" },
-  { title: "Coordenadores", description: "Gerencie coordenadores do clubinho.", icon: <SupervisorAccount fontSize="large" color="primary" />, path: "/adm/coordenadores", section: "clubinho" },
-  { title: "Crianças", description: "Gerencie crianças do clubinho.", icon: <Group fontSize="large" color="primary" />, path: "/adm/criancas", section: "clubinho" },
-  { title: "Clubinhos", description: "Gerencie clubinhos.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/clubinhos", section: "clubinho" },
-  { title: "Pagelas", description: "Gerencie pagelas.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/pagelas", section: "clubinho" },
+  { title: "Usuários", description: "Gerencie usuários do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/usuarios", section: "shelterinho" },
+  { title: "Professores", description: "Gerencie professores do abrigo.", icon: <School fontSize="large" color="primary" />, path: "/adm/professores", section: "shelterinho" },
+  { title: "Líderes", description: "Gerencie líderes do abrigo.", icon: <SupervisorAccount fontSize="large" color="primary" />, path: "/adm/lideres", section: "shelterinho" },
+  { title: "Crianças", description: "Gerencie crianças do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/criancas", section: "shelterinho" },
+  { title: "Abrigos", description: "Gerencie abrigos.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/shelterinhos", section: "shelterinho" },
+  { title: "Pagelas", description: "Gerencie pagelas.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/pagelas", section: "shelterinho" },
 
   { title: "Comentários", description: "Gerencie comentários dos usuários.", icon: <Comment fontSize="large" color="primary" />, path: "/adm/comentarios", section: "operacional" },
-  { title: "Contatos", description: "Gerencie contatos enviados para o Clubinho.", icon: <ContactPhone fontSize="large" color="primary" />, path: "/adm/contatos", section: "operacional" },
-  { title: "Feedbacks", description: "Gerencie feedbacks enviados para o Clubinho.", icon: <RateReview fontSize="large" color="primary" />, path: "/adm/feedbacks", section: "operacional" },
+  { title: "Contatos", description: "Gerencie contatos enviados para o Abrigo.", icon: <ContactPhone fontSize="large" color="primary" />, path: "/adm/contatos", section: "operacional" },
+  { title: "Feedbacks", description: "Gerencie feedbacks enviados para o Abrigo.", icon: <RateReview fontSize="large" color="primary" />, path: "/adm/feedbacks", section: "operacional" },
 ];
 
 const sectionLabels: Record<SectionId, string> = {
   all: "tudo",
   pages: "pages",
   conteudos: "conteúdos",
-  clubinho: "clubinho",
+  shelterinho: "shelterinho",
   operacional: "operacional",
 };
 
-const order: Exclude<SectionId, "all">[] = ["pages", "conteudos", "clubinho", "operacional"];
+const order: Exclude<SectionId, "all">[] = ["pages", "conteudos", "shelterinho", "operacional"];
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -96,8 +96,8 @@ export default function AdminDashboardPage() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const role = user?.role;
   const isAdmin = !!isAuthenticated && role === UserRole.ADMIN;
-  const isCoordinator = !!isAuthenticated && role === UserRole.COORDINATOR;
-  const isSimpleMode = isCoordinator && !isAdmin;
+  const isLeader = !!isAuthenticated && role === UserRole.COORDINATOR;
+  const isSimpleMode = isLeader && !isAdmin;
 
   const [query, setQuery] = React.useState("");
   const [section, setSection] = React.useState<SectionId>("all");
@@ -112,29 +112,29 @@ export default function AdminDashboardPage() {
   }, [isMobile]);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const coordinatorAllowed = new Set<string>([
+  const leaderAllowed = new Set<string>([
     "/adm/criancas",
     "/adm/professores",
-    "/adm/clubinhos",
+    "/adm/shelterinhos",
     "/adm/pagelas",
   ]);
 
   const canSeeCard = (card: CardData): boolean => {
     if (isAdmin) return true;
-    if (isCoordinator) return coordinatorAllowed.has(card.path);
+    if (isLeader) return leaderAllowed.has(card.path);
     return false;
   };
 
   const visibleCards = React.useMemo(
     () => cardData.filter(canSeeCard),
-    [isAdmin, isCoordinator]
+    [isAdmin, isLeader]
   );
 
   const grouped = React.useMemo(() => {
     const g: Record<Exclude<SectionId, "all">, CardData[]> = {
       pages: [],
       conteudos: [],
-      clubinho: [],
+      shelterinho: [],
       operacional: [],
     };
     for (const c of visibleCards) {
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
   }, [section, normalizedQuery, visibleCards]);
 
   const hasResults =
-    grouped.pages.length + grouped.conteudos.length + grouped.clubinho.length + grouped.operacional.length >
+    grouped.pages.length + grouped.conteudos.length + grouped.shelterinho.length + grouped.operacional.length >
     0;
 
   const MobileList: React.FC = () => {
@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
                 gap: 0.5,
               }}
             >
-              {(["all", "pages", "conteudos", "clubinho", "operacional"] as SectionId[]).map((key) => (
+              {(["all", "pages", "conteudos", "shelterinho", "operacional"] as SectionId[]).map((key) => (
                 <Button
                   key={key}
                   size="small"
@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
   const DesktopGrid: React.FC = () => {
     const allFiltered = order.flatMap((sec) => grouped[sec]);
     const greetName =
-      (user?.name && user.name.split(" ")[0]) || (isAdmin ? "Admin" : isCoordinator ? "Coordenador(a)" : "Usuário");
+      (user?.name && user.name.split(" ")[0]) || (isAdmin ? "Admin" : isLeader ? "Coordenador(a)" : "Usuário");
     return (
       <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: { xs: 4, md: 0 } }}>
         <Typography
@@ -356,7 +356,7 @@ export default function AdminDashboardPage() {
               }}
               sx={{ maxWidth: 360, mr: 1 }}
             />
-            {(["all", "pages", "conteudos", "clubinho", "operacional"] as SectionId[]).map((key) => (
+            {(["all", "pages", "conteudos", "shelterinho", "operacional"] as SectionId[]).map((key) => (
               <Button
                 key={key}
                 variant={section === key ? "contained" : "outlined"}

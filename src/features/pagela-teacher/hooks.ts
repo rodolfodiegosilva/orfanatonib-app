@@ -10,8 +10,8 @@ import {
   apiUpdatePagela,
   apiDeletePagela,
 } from "./api";
-import { apiFetchChildSimple } from "@/features/children/api";
-import type { ChildSimpleResponseDto } from "../children/types";
+import { apiFetchShelteredSimple } from "@/features/shelteredren/api";
+import type { ShelteredSimpleResponseDto } from "../shelteredren/types";
 
 export type Tri = "any" | "yes" | "no";
 const triToBoolString = (t: Tri): "true" | "false" | undefined =>
@@ -26,20 +26,20 @@ function useDebouncedValue<T>(value: T, delay = 250) {
   return debounced;
 }
 
-export function useChildrenBrowser() {
+export function useShelteredBrowser() {
   const [q, setQ] = useState("");
-  const [items, setItems] = useState<ChildSimpleResponseDto[]>([]);
+  const [items, setItems] = useState<ShelteredSimpleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setChildrenError] = useState<string>("");
+  const [error, setShelteredError] = useState<string>("");
 
   const search = useCallback(async (_term: string) => {
     setLoading(true);
-    setChildrenError("");
+    setShelteredError("");
     try {
-      const list = await apiFetchChildSimple();
+      const list = await apiFetchShelteredSimple();
       setItems(list);
     } catch (e: any) {
-      setChildrenError(
+      setShelteredError(
         e?.response?.data?.message || e?.message || "Erro ao listar crianças"
       );
     } finally {
@@ -62,11 +62,11 @@ export function useChildrenBrowser() {
 
   const byId = useMemo(() => new Map(items.map((c) => [c.id, c])), [items]);
 
-  return { q, onChangeQ, items, byId, loading, error, setError: setChildrenError, refetch };
+  return { q, onChangeQ, items, byId, loading, error, setError: setShelteredError, refetch };
 }
 
-export function useChildPagelas(
-  childId: string | null | undefined,
+export function useShelteredPagelas(
+  shelteredId: string | null | undefined,
   initial?: { year?: number; week?: number }
 ) {
   const [year, setYearState] = useState<number | undefined>(initial?.year);
@@ -95,7 +95,7 @@ export function useChildPagelas(
   }, [setYear, setWeek, setPresentQ, setMedQ, setVerseQ]);
 
   type Query = {
-    childId: string;
+    shelteredId: string;
     year?: number;
     week?: number;
     present?: "true" | "false";
@@ -106,9 +106,9 @@ export function useChildPagelas(
   };
 
   const query: Query | null = useMemo(() => {
-    if (!childId) return null;
+    if (!shelteredId) return null;
     return {
-      childId,
+      shelteredId,
       year,
       week,
       present: triToBoolString(presentQ),
@@ -117,7 +117,7 @@ export function useChildPagelas(
       page,
       limit,
     };
-  }, [childId, year, week, presentQ, medQ, verseQ, page, limit]);
+  }, [shelteredId, year, week, presentQ, medQ, verseQ, page, limit]);
 
   const debouncedQuery = useDebouncedValue(query, 250);
   const lastKeyRef = useRef<string>("");

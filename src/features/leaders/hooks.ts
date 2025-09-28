@@ -1,0 +1,178 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  apiAssignShelter,
+  apiGetLeader,
+  apiListSheltersSimple,
+  apiListLeaders,
+  apiUnassignShelter,
+  type ListLeadersParams,
+} from "./api";
+import type {
+  ShelterSimple,
+  LeaderFilters,
+  LeaderProfile,
+} from "./types";
+import type { SortingState } from "@tanstack/react-table";
+
+function mapSortingToServer(sorting: SortingState) {
+  const first = sorting?.[0];
+  const sortId =
+    first?.id === "user" ? "name"
+      : first?.id === "createdAt" ? "createdAt"
+        : "updatedAt";
+  const order: "asc" | "desc" = first?.desc ? "desc" : "asc";
+  return { sort: sortId as ListLeadersParams["sort"], order };
+}
+
+function mapFiltersToServer(filters: LeaderFilters) {
+  const active =
+    filters.active === "all" ? undefined
+      : filters.active === "active" ? true
+        : false;
+  const hasShelters =
+    filters.hasShelters === "all" ? undefined
+      : filters.hasShelters === "yes" ? true
+        : false;
+
+  return {
+    searchString: filters.searchString?.trim() || undefined,
+    active,
+    hasShelters,
+    shelterNumber:
+      filters.shelterNumber !== "" && filters.shelterNumber != null
+        ? Number(filters.shelterNumber)
+        : undefined,
+  } as Omit<ListLeadersParams, "page" | "limit" | "sort" | "order">;
+}
+
+export function useLeaderProfiles(
+  pageIndex: number,
+  pageSize: number,
+  sorting: SortingState,
+  filters: LeaderFilters
+) {
+  const [rows, setRows] = useState<LeaderProfile[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const fetchPage = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const { sort, order } = mapSortingToServer(sorting);
+      const qFilters = mapFiltersToServer(filters);
+      const data = await apiListLeaders({
+        page: pageIndex + 1,
+        limit: pageSize,
+        sort,
+        order,
+        ...qFilters,
+      });
+      setRows(data.items || []);
+      setTotal(data.total || 0);
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || err.message || "Erro ao listar líderes"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [pageIndex, pageSize, sorting, filters]);
+
+  useEffect(() => { fetchPage(); }, [fetchPage]);
+
+  const refreshOne = useCallback(async (leaderId: string) => {
+    try {
+      const updated = await apiGetLeader(leaderId);
+      setRows((prev) => {
+        const i = prev.findIndex((p) => p.id === leaderId);
+        if (i === -1) return prev;
+        const next = [...prev];
+        next[i] = updated;
+        return next;
+      });
+    } catch {
+      setRows((prev) => prev.filter((p) => p.id !== leaderId));
+    }
+  }, []);
+
+  return { rows, total, loading, error, setError, fetchPage, refreshOne };
+}
+
+export function useLeaderMutations(
+  refreshPage: () => Promise<void> | void,
+  refreshOne: (leaderId: string) => Promise<void> | void
+) {
+  const [dialogLoading, setDialogLoading] = useState(false);
+  const [dialogError, setDialogError] = useState("");
+
+
+  const assignShelter = useCallback(
+    async (leaderId: string, shelterId: string): Promise<string> => {
+      setDialogLoading(true); setDialogError("");
+      try {
+        const res: any = await apiAssignShelter(leaderId, shelterId);
+        await refreshOne(leaderId);
+        await refreshPage();
+        return res?.message || "Shelter atribuído ao líder com sucesso";
+      } catch (err: any) {
+        const msg =
+          err?.response?.data?.message || err.message || "Erro ao vincular shelterinho";
+        setDialogError(msg);
+        throw err;
+      } finally {
+        setDialogLoading(false);
+      }
+    },
+    [refreshOne, refreshPage]
+  );
+
+  const unassignShelter = useCallback(
+    async (leaderId: string, shelterId: string): Promise<string> => {
+      setDialogLoading(true); setDialogError("");
+      try {
+        const res: any = await apiUnassignShelter(leaderId, shelterId);
+        await refreshOne(leaderId);
+        await refreshPage();
+        return res?.message || "Shelter removido do líder com sucesso";
+      } catch (err: any) {
+        const msg =
+          err?.response?.data?.message || err.message || "Erro ao desvincular shelterinho";
+        setDialogError(msg);
+        throw err;
+      } finally {
+        setDialogLoading(false);
+      }
+    },
+    [refreshOne, refreshPage]
+  );
+
+  return { dialogLoading, dialogError, setDialogError, assignShelter, unassignShelter };
+}
+
+export function useSheltersIndex() {
+  const [shelters, setShelters] = useState<ShelterSimple[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const refresh = useCallback(async () => {
+    setLoading(true); setError("");
+    try {
+      const list = await apiListSheltersSimple();
+      setShelters(list || []);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || "Erro ao listar shelterinhos");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const byNumber = useMemo(() => {
+    const map = new Map<number, ShelterSimple>();
+    for (const c of shelters) if (typeof c.number === "number") map.set(c.number, c);
+    return map;
+  }, [shelters]);
+
+  return { shelters, byNumber, loading, error, refresh };
+}

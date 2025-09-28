@@ -10,7 +10,7 @@ export const ABOUT_SECTIONS: AboutSection[] = [
   {
     id: 'nossa-historia',
     title: 'Nossa História',
-    content: 'Com mais de 20 anos de experiência, o Ministério de Clubinho iniciou na Nova Igreja Batista Tabernáculo e hoje, sob a coordenação da Nova Igreja Batista da Torquato Tapajós, continua inovando na forma de levar a Palavra de Deus às crianças que não têm acesso aos ensinamentos bíblicos.',
+    content: 'Com mais de 20 anos de experiência, o Ministério de Shelterinho iniciou na Nova Igreja Batista Tabernáculo e hoje, sob a coordenação da Nova Igreja Batista da Torquato Tapajós, continua inovando na forma de levar a Palavra de Deus às crianças que não têm acesso aos ensinamentos bíblicos.',
   },
   {
     id: 'missao-visao',

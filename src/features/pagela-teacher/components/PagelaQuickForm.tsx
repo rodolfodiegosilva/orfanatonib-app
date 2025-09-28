@@ -26,9 +26,9 @@ import { todayISO } from "../utils";
 
 type Props = {
   initial?: Pagela | null;
-  childId: string;
-  childName: string;
-  childGender: string;
+  shelteredId: string;
+  shelteredName: string;
+  shelteredGender: string;
   defaultYear: number;
   defaultWeek: number;
   teacherProfileId?: string | null;
@@ -42,9 +42,9 @@ type Props = {
 
 export default function PagelaQuickForm({
   initial,
-  childId,
-  childName,
-  childGender,
+  shelteredId,
+  shelteredName,
+  shelteredGender,
 
   teacherProfileId,
   findPagela,
@@ -128,7 +128,7 @@ export default function PagelaQuickForm({
     }
   }, [parsedYear, parsedWeek, findPagela]);
 
-  const canSave = !!childId && parsedYear !== undefined && parsedWeek !== undefined;
+  const canSave = !!shelteredId && parsedYear !== undefined && parsedWeek !== undefined;
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -148,7 +148,7 @@ export default function PagelaQuickForm({
       await onUpdate(currentId, payloadCommon);
     } else {
       await onCreate({
-        childId,
+        shelteredId,
         ...payloadCommon,
       });
     }
@@ -167,7 +167,7 @@ export default function PagelaQuickForm({
 
   const yearWeekLabel = `Ano: ${parsedYear ?? "--"} • Semana: ${parsedWeek ?? "--"}`;
 
-  const article = childGender === "F" ? "a" : "o";
+  const article = shelteredGender === "F" ? "a" : "o";
 
   return (
     <Card
@@ -221,7 +221,7 @@ export default function PagelaQuickForm({
         >
           <Stack spacing={0}>
             <Typography variant="subtitle2" sx={{ color: "text.primary", opacity: 0.9, fontWeight: 800 }}>
-              {headerTitle} para {article} <strong>{childName || "—"}</strong>
+              {headerTitle} para {article} <strong>{shelteredName || "—"}</strong>
             </Typography>
 
             <Stack direction="row" spacing={0.75} alignItems="center">

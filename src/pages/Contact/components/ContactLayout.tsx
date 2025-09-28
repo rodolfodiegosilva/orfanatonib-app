@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, Container, Typography, Card, CardContent } from '@mui/material';
 
 interface ContactLayoutProps {
-  children: React.ReactNode;
+  shelteredren: React.ReactNode;
 }
 
-const ContactLayout: React.FC<ContactLayoutProps> = ({ children }) => {
+const ContactLayout: React.FC<ContactLayoutProps> = ({ shelteredren }) => {
   return (
     <Box
       component="main"
@@ -73,7 +73,7 @@ const ContactLayout: React.FC<ContactLayoutProps> = ({ children }) => {
               px: { xs: 1, sm: 0 },
             }}
           >
-            Entre em contato para saber mais informações sobre o Clubinho NIB
+            Entre em contato para saber mais informações sobre o Shelterinho NIB
           </Typography>
         </Box>
 
@@ -104,7 +104,7 @@ const ContactLayout: React.FC<ContactLayoutProps> = ({ children }) => {
           }}
         >
           <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-            {children}
+            {shelteredren}
           </CardContent>
         </Card>
       </Container>

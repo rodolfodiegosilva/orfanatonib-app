@@ -117,7 +117,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
             }}
           >
-            O que dizem sobre o Clubinho
+            O que dizem sobre o Shelterinho
           </Typography>
         </motion.div>
 
@@ -206,7 +206,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
                       fontSize: { xs: '0.9rem', md: '1rem' },
                     }}
                   >
-                    {testimonials[currentIndex].clubinho} - {testimonials[currentIndex].neighborhood}
+                    {testimonials[currentIndex].shelterinho} - {testimonials[currentIndex].neighborhood}
                   </Typography>
                 </CardContent>
               </Card>

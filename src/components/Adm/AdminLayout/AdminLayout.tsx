@@ -47,7 +47,7 @@ import { UserRole } from "@/store/slices/auth/authSlice";
 const drawerWidth = 240;
 
 type NavItem = { label: string; to: string; icon: ReactNode };
-type SectionId = "pages" | "conteudos" | "clubinho" | "operacional";
+type SectionId = "pages" | "conteudos" | "shelterinho" | "operacional";
 type Section = { id: SectionId; title: string; items: NavItem[] };
 type MobileTab = "tudo" | SectionId;
 
@@ -59,7 +59,7 @@ function AdminLayout() {
 
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const isAdmin = !!isAuthenticated && user?.role === UserRole.ADMIN;
-  const isCoordinator = !!isAuthenticated && user?.role === UserRole.COORDINATOR;
+  const isLeader = !!isAuthenticated && user?.role === UserRole.COORDINATOR;
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>("tudo");
@@ -80,7 +80,7 @@ function AdminLayout() {
         items: [
           { label: "Materiais semanais", to: "/adm/paginas-materiais-semanais", icon: <EventNote /> },
           { label: "Páginas de fotos", to: "/adm/paginas-fotos", icon: <PhotoLibrary /> },
-          { label: "Fotos dos clubinhos", to: "/adm/fotos-clubinhos", icon: <Collections /> },
+          { label: "Fotos dos shelterinhos", to: "/adm/fotos-shelterinhos", icon: <Collections /> },
           { label: "Ideias compartilhadas", to: "/adm/ideias-compartilhadas", icon: <Lightbulb /> },
           { label: "Páginas de vídeos", to: "/adm/paginas-videos", icon: <VideoLibrary /> },
           { label: "Páginas de ideias", to: "/adm/paginas-ideias", icon: <Lightbulb /> },
@@ -97,14 +97,14 @@ function AdminLayout() {
         ],
       },
       {
-        id: "clubinho",
-        title: "Clubinho",
+        id: "shelterinho",
+        title: "Abrigo",
         items: [
-          { label: "Clubinhos", to: "/adm/clubinhos", icon: <Groups /> },
+          { label: "Abrigos", to: "/adm/shelterinhos", icon: <Groups /> },
           { label: "Pagelas", to: "/adm/pagelas", icon: <Groups /> },
           { label: "Usuários", to: "/adm/usuarios", icon: <Group /> },
           { label: "Professores", to: "/adm/professores", icon: <School /> },
-          { label: "Coordenadores", to: "/adm/coordenadores", icon: <SupervisorAccount /> },
+          { label: "Líderes", to: "/adm/lideres", icon: <SupervisorAccount /> },
           { label: "Crianças", to: "/adm/criancas", icon: <Groups /> },
         ],
       },
@@ -121,16 +121,16 @@ function AdminLayout() {
     []
   );
 
-  const coordinatorAllowed = new Set<string>([
+  const leaderAllowed = new Set<string>([
     "/adm/criancas",
     "/adm/professores",
-    "/adm/clubinhos",
+    "/adm/shelterinhos",
     "/adm/pagelas",
   ]);
 
   const canSeeItem = (item: NavItem): boolean => {
     if (isAdmin) return true;
-    if (isCoordinator) return coordinatorAllowed.has(item.to);
+    if (isLeader) return leaderAllowed.has(item.to);
     return false;
   };
 
@@ -139,7 +139,7 @@ function AdminLayout() {
       .map((sec) => ({ ...sec, items: sec.items.filter(canSeeItem) }))
       .filter((sec) => sec.items.length > 0);
     return filtered;
-  }, [allSections, isAdmin, isCoordinator]);
+  }, [allSections, isAdmin, isLeader]);
 
   const sectionOfPath = (path: string): SectionId => {
     if (path.startsWith("/adm/paginas-") || path.startsWith("/adm/fotos-")) return "pages";
@@ -153,13 +153,13 @@ function AdminLayout() {
     }
     if (
       path.startsWith("/adm/usuarios") ||
-      path.startsWith("/adm/clubinhos") ||
+      path.startsWith("/adm/shelterinhos") ||
       path.startsWith("/adm/pagelas") ||
       path.startsWith("/adm/professores") ||
-      path.startsWith("/adm/coordenadores") ||
+      path.startsWith("/adm/lideres") ||
       path.startsWith("/adm/criancas")
     ) {
-      return "clubinho";
+      return "shelterinho";
     }
     return "operacional";
   };
@@ -187,7 +187,7 @@ function AdminLayout() {
     tudo: "tudo",
     pages: "pages",
     conteudos: "conteúdos",
-    clubinho: "clubinho",
+    shelterinho: "shelterinho",
     operacional: "operacional",
   };
 
@@ -210,7 +210,7 @@ function AdminLayout() {
               gap: 0.5,
             }}
           >
-            {(["tudo", "pages", "conteudos", "clubinho", "operacional"] as MobileTab[]).map((tab) => (
+            {(["tudo", "pages", "conteudos", "shelterinho", "operacional"] as MobileTab[]).map((tab) => (
               <Button
                 key={tab}
                 size="small"

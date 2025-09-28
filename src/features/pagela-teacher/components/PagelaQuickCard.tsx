@@ -27,9 +27,9 @@ import type { CreatePagelaPayload, Pagela, UpdatePagelaPayload } from "../types"
 import { todayISO, toLabelWeek } from "../utils";
 
 type Props = {
-  childName?: string;
+  shelteredName?: string;
   current?: Pagela | null;
-  childId: string;
+  shelteredId: string;
   year: number;
   week: number;
   teacherProfileId?: string | null;
@@ -54,9 +54,9 @@ function formatDateBRLong(date = new Date()) {
 }
 
 export default function PagelaQuickCard({
-  childName,
+  shelteredName,
   current,
-  childId,
+  shelteredId,
   year,
   week,
   teacherProfileId,
@@ -95,7 +95,7 @@ export default function PagelaQuickCard({
       });
     } else {
       await onCreate({
-        childId,
+        shelteredId,
         teacherProfileId: teacherProfileId ?? null,
         referenceDate,
         year,
@@ -157,7 +157,7 @@ export default function PagelaQuickCard({
               {isNew ? <AddCircleOutline fontSize="small" /> : <EditOutlined fontSize="small" />}
             </Box>
             <Stack spacing={0.3} sx={{ minWidth: 0, flex: 1 }}>
-              <Typography noWrap title={childName} sx={titleSx}>
+              <Typography noWrap title={shelteredName} sx={titleSx}>
                 {isNew ? "Criar pagela" : "Pagela da semana"}
               </Typography>
               <Typography variant="caption" color="text.secondary" noWrap>
@@ -182,7 +182,7 @@ export default function PagelaQuickCard({
                 {toLabelWeek(year, week)}
               </Typography>
             </Stack>
-            <Typography noWrap title={childName} sx={titleSx}>
+            <Typography noWrap title={shelteredName} sx={titleSx}>
               {isNew ? "Criando novo registro de pagela" : "Editando registro de pagela"}
             </Typography>
             <Chip
@@ -203,8 +203,8 @@ export default function PagelaQuickCard({
               {isXs ? (
                 <>
                   <Stack spacing={0.5} sx={{ minWidth: 0 }}>
-                    <Typography variant="subtitle1" noWrap title={childName} sx={titleSx}>
-                      {childName || "—"}
+                    <Typography variant="subtitle1" noWrap title={shelteredName} sx={titleSx}>
+                      {shelteredName || "—"}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" noWrap>
                       {toLabelWeek(year, week)}
@@ -227,7 +227,7 @@ export default function PagelaQuickCard({
                 <>
                   <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ gap: 1, minWidth: 0 }}>
                     <Typography variant="subtitle1" fontWeight={900} noWrap>
-                      {childName || "—"} • {toLabelWeek(year, week)}
+                      {shelteredName || "—"} • {toLabelWeek(year, week)}
                     </Typography>
                     <Chips />
                   </Stack>

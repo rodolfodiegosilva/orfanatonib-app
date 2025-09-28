@@ -689,7 +689,7 @@ const Eventos: React.FC = () => {
                     }}
                   >
                     <EventIcon sx={{ fontSize: { xs: 24, md: 40 } }} />
-                    Eventos do Clubinho
+                    Eventos do Shelterinho
                   </Typography>
                   <Typography
                     variant="h6"
@@ -699,7 +699,7 @@ const Eventos: React.FC = () => {
                       fontWeight: 400,
                     }}
                   >
-                    Participe das atividades e encontros do Clubinho!
+                    Participe das atividades e encontros do Shelterinho!
                   </Typography>
                 </Box>
 

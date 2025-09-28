@@ -19,7 +19,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const isAdmin = isAuthenticated && user?.role === UserRole.ADMIN;
   const isTeacher = isAuthenticated && user?.role === UserRole.TEACHER;
-  const isCoordinator = isAuthenticated && user?.role === UserRole.COORDINATOR;
+  const isLeader = isAuthenticated && user?.role === UserRole.COORDINATOR;
 
   const handleClick = () => closeMenu?.();
 
@@ -71,7 +71,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
       sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}
     >
       {renderLink('/', 'Início')}
-      {renderLink('/feed-clubinho', 'Feed Clubinho')}
+      {renderLink('/feed-shelter', 'Feed Abrigo')}
       {renderLink('/sobre', 'Sobre')}
       {renderLink('/eventos', 'Eventos')}
       {renderLink('/contato', 'Contato')}
@@ -79,7 +79,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
         <Fragment>
           {renderLink('/area-do-professor', 'Área do Professor')}
           {(isTeacher) && renderLink('/area-das-criancas', 'Área das crianças')}
-          {(isAdmin || isCoordinator) && renderLink('/adm', 'Administração')}
+          {(isAdmin || isLeader) && renderLink('/adm', 'Administração')}
           <Button
             onClick={handleLogout}
             variant="contained"

@@ -26,11 +26,11 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
-  const clubNumber =
-    teacher?.club?.number != null ? `#${teacher.club.number}` : "—";
+  const shelterNumber =
+    teacher?.shelter?.number != null ? `#${teacher.shelter.number}` : "—";
   const coordName =
-    teacher?.club?.coordinator?.user?.name ||
-    teacher?.club?.coordinator?.user?.email ||
+    teacher?.shelter?.leader?.user?.name ||
+    teacher?.shelter?.leader?.user?.email ||
     "—";
 
   return (
@@ -52,10 +52,10 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
             <Grid item xs={12} md={6}>
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Clubinho:
+                  Shelterinho:
                 </Typography>
-                {teacher.club?.number != null ? (
-                  <Chip size="small" color="primary" label={clubNumber} />
+                {teacher.shelter?.number != null ? (
+                  <Chip size="small" color="primary" label={shelterNumber} />
                 ) : (
                   <Typography variant="body2">—</Typography>
                 )}

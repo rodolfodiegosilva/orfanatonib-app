@@ -43,7 +43,7 @@ export default function ImageSectionManager() {
     // Define os dados da seção no Redux para o modo de edição
     dispatch(setData(section));
     // Redireciona para a página de edição de imagens
-    navigate('/adm/editar-imagens-clubinho');
+    navigate('/adm/editar-imagens-shelterinho');
   };
 
   const handleDelete = async () => {
@@ -65,7 +65,7 @@ export default function ImageSectionManager() {
   return (
     <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
       <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Imagens dos Clubinhos" />
+        <BackHeader title="Imagens dos Shelterinhos" />
         <Box sx={{ maxWidth: 560, mx: 'auto', mt: 2, mb: 4, position: 'relative' }}>
           <TextField
             fullWidth
@@ -105,7 +105,7 @@ export default function ImageSectionManager() {
           </Box>
         ) : filteredSections.length === 0 ? (
           <Box textAlign="center" mt={10}>
-            <Alert severity="info">Sem imagens dos clubinhos para mostrar.</Alert>
+            <Alert severity="info">Sem imagens dos shelterinhos para mostrar.</Alert>
           </Box>
         ) : (
           <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">

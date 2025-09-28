@@ -3,7 +3,7 @@ import type { PageDto, Pagela, CreatePagelaPayload, UpdatePagelaPayload } from "
 
 export async function apiListPagelasPaginated(
   params: {
-    childId: string;
+    shelteredId: string;
     year?: number;
     week?: number;
     present?: "true" | "false";
@@ -36,7 +36,7 @@ export async function apiDeletePagela(id: string) {
 }
 
 export async function apiCreateAcceptedChrist(payload: {
-  childId: string;
+  shelteredId: string;
   decision: "ACCEPTED" | "RECONCILED";
   notes?: string | null;
 }) {

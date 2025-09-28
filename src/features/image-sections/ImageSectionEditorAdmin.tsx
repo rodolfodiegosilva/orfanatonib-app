@@ -43,7 +43,7 @@ export default function ImageSectionEditorAdmin() {
       return false;
     }
     if (!sectionData?.description?.trim()) {
-      showError('A descrição das atividades do Clubinho é obrigatória.');
+      showError('A descrição das atividades do Shelterinho é obrigatória.');
       return false;
     }
     if (!sectionData?.mediaItems?.length) {
@@ -116,7 +116,7 @@ export default function ImageSectionEditorAdmin() {
 
     try {
       await saveSection(formData);
-      navigate('/adm/fotos-clubinhos');
+      navigate('/adm/fotos-shelterinhos');
     } catch (error) {
       console.error('Erro ao salvar a seção:', error);
       showError('Falha ao publicar as imagens compartilhadas. Tente novamente.');
@@ -132,7 +132,7 @@ export default function ImageSectionEditorAdmin() {
   // Se não há dados para editar, redireciona para o manager
   useEffect(() => {
     if (!sectionData) {
-      navigate('/adm/fotos-clubinhos');
+      navigate('/adm/fotos-shelterinhos');
     }
   }, [sectionData, navigate]);
 
@@ -193,7 +193,7 @@ export default function ImageSectionEditorAdmin() {
                     fontSize: { xs: '0.8rem', md: '0.85rem' },
                   }}
                 >
-                  Editar e publicar imagens compartilhadas dos Clubinhos
+                  Editar e publicar imagens compartilhadas dos Shelterinhos
                 </Typography>
               </Box>
               
@@ -207,7 +207,7 @@ export default function ImageSectionEditorAdmin() {
               >
                 <Button
                   variant="outlined"
-                  onClick={() => navigate('/adm/fotos-clubinhos')}
+                  onClick={() => navigate('/adm/fotos-shelterinhos')}
                   disabled={isSaving}
                   size="small"
                   sx={{
@@ -337,8 +337,8 @@ export default function ImageSectionEditorAdmin() {
                 initialIsPublic={sectionData?.public ?? true}
                 initialMediaItems={sectionData?.mediaItems || []}
                 onChange={handleChange}
-                captionPlaceholder="EX: Clubinho 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
-                descriptionPlaceholder="EX: Revisar e aprimorar a descrição das atividades do Clubinho: dinâmicas, brincadeiras, ensinamentos bíblicos e momentos especiais registrados."
+                captionPlaceholder="EX: Shelterinho 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
+                descriptionPlaceholder="EX: Revisar e aprimorar a descrição das atividades do Shelterinho: dinâmicas, brincadeiras, ensinamentos bíblicos e momentos especiais registrados."
               />
             </motion.div>
           </Paper>

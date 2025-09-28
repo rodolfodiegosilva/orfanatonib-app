@@ -39,7 +39,7 @@ const TeacherArea: React.FC = () => {
       />
 
       <FofinhoButton 
-        references={['materials', 'childrenArea', 'photos', 'rate', 'events', 'help']} 
+        references={['materials', 'shelteredrenArea', 'photos', 'rate', 'events', 'help']} 
       />
 
       <MotivationSection motivationText={MOTIVATION_TEXT} />

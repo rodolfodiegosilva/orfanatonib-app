@@ -13,7 +13,7 @@ import {
   HelpOutline as HelpOutlineIcon,
   EventAvailable as EventAvailableIcon,
   Badge as BadgeIcon,
-  ChildCare as ChildCareIcon,
+  ShelteredCare as ShelteredCareIcon,
 } from '@mui/icons-material';
 
 type MUIButtonColor =
@@ -102,8 +102,8 @@ const buttonMap: Record<string, FofinhoButtonProps> = {
     color: 'primary',
   },
   photos: {
-    to: '/imagens-clubinho',
-    label: 'Envie fotos do seu Clubinho',
+    to: '/imagens-shelterinho',
+    label: 'Envie fotos do seu Shelterinho',
     icon: PhotoCameraIcon,
     color: 'success',
   },
@@ -161,10 +161,10 @@ const buttonMap: Record<string, FofinhoButtonProps> = {
     icon: BadgeIcon,
     color: 'primary',
   },
-  childrenArea: {
+  shelteredrenArea: {
     to: '/area-das-criancas',
     label: 'Área das Crianças',
-    icon: ChildCareIcon,
+    icon: ShelteredCareIcon,
     color: 'primary',
   },
 };

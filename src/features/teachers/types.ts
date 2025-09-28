@@ -2,13 +2,13 @@ export const TZ = "America/Manaus";
 
 export type MinimalUser = { id: string; name?: string; email?: string; phone?: string };
 
-export type ClubSimple = { id: string; number?: number; weekday?: string };
+export type ShelterSimple = { id: string; number?: number; weekday?: string };
 
 export type TeacherProfile = {
   id: string;
   user: MinimalUser;
-  club?: (ClubSimple & {
-    coordinator?: { user?: MinimalUser } | null;
+  shelter?: (ShelterSimple & {
+    leader?: { user?: MinimalUser } | null;
   }) | null;
   active?: boolean;
   createdAt?: string;
@@ -27,10 +27,10 @@ export type TeacherQuery = {
   searchString?: string; 
   q?: string;
   active?: boolean;
-  hasClub?: boolean;
-  clubNumber?: number;
+  hasShelter?: boolean;
+  shelterNumber?: number;
   page?: number;
   limit?: number;
-  sort?: "updatedAt" | "createdAt" | "name" | "clubNumber";
+  sort?: "updatedAt" | "createdAt" | "name" | "shelterNumber";
   order?: "asc" | "desc";
 };

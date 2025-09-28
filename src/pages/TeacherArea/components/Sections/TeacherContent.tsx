@@ -81,7 +81,7 @@ const TeacherContent: React.FC<TeacherContentProps> = ({ userName }) => {
               mb: 1,
             }}
           >
-            Bem-vindo ao site do Clubinho onde consegue encontrar materiais, ideias e recursos para enriquecer suas aulas!
+            Bem-vindo ao site do Shelterinho onde consegue encontrar materiais, ideias e recursos para enriquecer suas aulas!
           </Typography>
 
           <Typography

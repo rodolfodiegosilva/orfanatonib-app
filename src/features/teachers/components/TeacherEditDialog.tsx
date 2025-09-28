@@ -23,8 +23,8 @@ type Props = {
   teacher: TeacherProfile | null;
   loading: boolean;
   error: string;
-  onSetClub: (clubNumber: number) => void;
-  onClearClub: () => void;
+  onSetShelter: (shelterNumber: number) => void;
+  onClearShelter: () => void;
   onClose: () => void;
 };
 
@@ -33,30 +33,30 @@ export default function TeacherEditDialog({
   teacher,
   loading,
   error,
-  onSetClub,
-  onClearClub,
+  onSetShelter,
+  onClearShelter,
   onClose,
 }: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [clubInput, setClubInput] = React.useState<string>("");
+  const [shelterInput, setShelterInput] = React.useState<string>("");
   const [localErr, setLocalErr] = React.useState<string>("");
 
   React.useEffect(() => {
-    setClubInput(teacher?.club?.number ? String(teacher.club.number) : "");
+    setShelterInput(teacher?.shelter?.number ? String(teacher.shelter.number) : "");
     setLocalErr("");
   }, [teacher]);
 
   const submit = React.useCallback(() => {
     setLocalErr("");
-    const v = Number(clubInput);
-    if (!clubInput || Number.isNaN(v) || v <= 0) {
-      setLocalErr("Informe um número de Clubinho válido (maior que zero).");
+    const v = Number(shelterInput);
+    if (!shelterInput || Number.isNaN(v) || v <= 0) {
+      setLocalErr("Informe um número de Shelterinho válido (maior que zero).");
       return;
     }
-    onSetClub(v);
-  }, [clubInput, onSetClub]);
+    onSetShelter(v);
+  }, [shelterInput, onSetShelter]);
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter" && !loading) {
@@ -65,12 +65,12 @@ export default function TeacherEditDialog({
     }
   };
 
-  const currentClubLabel =
-    teacher?.club?.number != null ? `#${teacher.club.number}` : "—";
+  const currentShelterLabel =
+    teacher?.shelter?.number != null ? `#${teacher.shelter.number}` : "—";
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Clubinho</DialogTitle>
+      <DialogTitle>Vincular / Desvincular Shelterinho</DialogTitle>
 
       <DialogContent
         dividers
@@ -92,18 +92,18 @@ export default function TeacherEditDialog({
                 {teacher.user?.name || teacher.user?.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Clubinho atual: <strong>{currentClubLabel}</strong>
+                Shelterinho atual: <strong>{currentShelterLabel}</strong>
               </Typography>
             </Grid>
 
             <Grid item xs={12} md={8}>
               <TextField
-                label="Número do Clubinho"
+                label="Número do Shelterinho"
                 type="number"
                 size="small"
                 fullWidth
-                value={clubInput}
-                onChange={(e) => setClubInput(e.target.value)}
+                value={shelterInput}
+                onChange={(e) => setShelterInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 inputProps={{ min: 1 }}
                 disabled={loading}
@@ -113,9 +113,9 @@ export default function TeacherEditDialog({
                   ),
                 }}
                 helperText={
-                  teacher?.club?.number
+                  teacher?.shelter?.number
                     ? `Digite um novo número para alterar o vínculo`
-                    : `Digite o número do Clubinho para vincular`
+                    : `Digite o número do Shelterinho para vincular`
                 }
               />
             </Grid>
@@ -129,14 +129,14 @@ export default function TeacherEditDialog({
                 <Button
                   variant="contained"
                   onClick={submit}
-                  disabled={loading || !clubInput}
+                  disabled={loading || !shelterInput}
                 >
                   Vincular
                 </Button>
                 <Button
                   color="warning"
                   variant="outlined"
-                  onClick={onClearClub}
+                  onClick={onClearShelter}
                   disabled={loading}
                 >
                   Desvincular
