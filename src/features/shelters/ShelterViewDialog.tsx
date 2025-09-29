@@ -35,7 +35,7 @@ import {
   Phone as PhoneIcon,
   WhatsApp,
 } from "@mui/icons-material";
-import { ShelterResponseDto, WEEKDAYS } from "../types";
+import { ShelterResponseDto, WEEKDAYS } from "./types";
 import { fmtDate } from "@/utils/dates";
 import { CopyButton, initials } from "@/utils/components";
 

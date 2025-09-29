@@ -11,7 +11,7 @@ import { Visibility, Edit, Delete } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { ShelteredResponseDto } from "../types";
-import ShelteredrenCards from "./ShelteredrenCards";
+import ShelteredCards from "./ShelteredCards";
 
 type Props = {
   rows: ShelteredResponseDto[];
@@ -29,14 +29,14 @@ type Props = {
 
 import { formatDate, gLabel } from "@/utils/dateUtils";
 
-export default function ShelteredrenTable(props: Props) {
+export default function ShelteredTable(props: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"), { noSsr: true });
 
-  return isXs ? <ShelteredrenCards {...props} /> : <ShelteredrenTableDesktop {...props} />;
+  return isXs ? <ShelteredCards {...props} /> : <ShelteredTableDesktop {...props} />;
 }
 
-function ShelteredrenTableDesktop(props: Props) {
+function ShelteredTableDesktop(props: Props) {
   const {
     rows, total, pageIndex, pageSize, setPageIndex, setPageSize,
     sorting, setSorting, onOpenView, onStartEdit, onAskDelete,

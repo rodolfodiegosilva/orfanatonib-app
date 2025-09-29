@@ -6,8 +6,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 
 
-export function SectionHeader({ context, title, subtitle }: { context: "shelters" | "shelteredren" | "pagelas"; title: string; subtitle?: string; }) {
-const icon = context === "shelters" ? <PeopleAltIcon /> : context === "shelteredren" ? <PersonIcon /> : <EventAvailableIcon />;
+export function SectionHeader({ context, title, subtitle }: { context: "shelters" | "sheltered" | "pagelas"; title: string; subtitle?: string; }) {
+const icon = context === "shelters" ? <PeopleAltIcon /> : context === "sheltered" ? <PersonIcon /> : <EventAvailableIcon />;
 return (
 <Stack direction="row" alignItems="center" spacing={1}>
 <Badge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} badgeContent={<WbSunnyIcon fontSize="inherit" />}>

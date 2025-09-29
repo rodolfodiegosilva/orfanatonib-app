@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
-import SheltersToolbar from "./components/SheltersToolbar";
-import SheltersTable from "./components/SheltersTable";
-import ShelterViewDialog from "./components/ShelterViewDialog";
-import ShelterFormDialog from "./components/ShelterFormDialog";
+import SheltersToolbar from "./SheltersToolbar";
+import SheltersTable from "./SheltersTable";
+import ShelterViewDialog from "./ShelterViewDialog";
+import ShelterFormDialog from "./ShelterFormDialog";
 import { useShelterDetails, useShelterMutations, useShelters, useOptions } from "./hooks";
 import {
   ShelterResponseDto,

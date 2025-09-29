@@ -67,7 +67,7 @@ function CopyButton({ value, title = "Copiar" }: { value?: string; title?: strin
   );
 }
 
-function LineCard({ icon, title, shelteredren }: { icon: React.ReactNode; title: string; shelteredren: React.ReactNode }) {
+function LineCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2, height: "100%" }}>
       <Stack spacing={0.5} sx={{ height: "100%" }}>
@@ -77,7 +77,7 @@ function LineCard({ icon, title, shelteredren }: { icon: React.ReactNode; title:
             {title}
           </Typography>
         </Stack>
-        {shelteredren}
+        {children}
       </Stack>
     </Paper>
   );

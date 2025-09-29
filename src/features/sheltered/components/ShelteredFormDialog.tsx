@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { UserRole } from "@/store/slices/auth/authSlice";
 import { CreateShelteredForm, EditShelteredForm } from "../types";
 import { apiFetchSimpleShelters } from "@/features/shelters/api";
-import ShelterAutocomplete from "@/features/shelters/components/form/ShelterAutocomplete";
+import ShelterAutocomplete from "@/features/shelters/form/ShelterAutocomplete";
 import { RootState } from "@/store/slices";
 
 type Props = {

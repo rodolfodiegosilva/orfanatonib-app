@@ -24,10 +24,10 @@ import { PagelasPanel } from "./components/PagelasPanel";
 import { ShelteredPanel } from "./components/ShelteredPanel";
 
 import type { ShelterResponseDto } from "@/features/shelters/types";
-import type { ShelteredResponseDto } from "@/features/shelteredren/types";
+import type { ShelteredResponseDto } from "@/features/sheltered/types";
 import BackHeader from "@/components/common/header/BackHeader";
 
-type MobileStep = "shelters" | "shelteredren" | "pagelas";
+type MobileStep = "shelters" | "sheltered" | "pagelas";
 
 export default function PagelaSheltersManager() {
   const theme = useTheme();
@@ -40,7 +40,7 @@ export default function PagelaSheltersManager() {
   useEffect(() => {
     if (!isMobile) return;
     if (!selectedShelter) setMobileStep("shelters");
-    else if (!selectedSheltered) setMobileStep("shelteredren");
+    else if (!selectedSheltered) setMobileStep("sheltered");
     else setMobileStep("pagelas");
   }, [isMobile, selectedShelter, selectedSheltered]);
 
@@ -48,8 +48,8 @@ export default function PagelaSheltersManager() {
     if (!isMobile) return;
     if (mobileStep === "pagelas") {
       setSelectedSheltered(null);
-      setMobileStep("shelteredren");
-    } else if (mobileStep === "shelteredren") {
+      setMobileStep("sheltered");
+    } else if (mobileStep === "sheltered") {
       setSelectedShelter(null);
       setMobileStep("shelters");
     }
@@ -171,7 +171,7 @@ export default function PagelaSheltersManager() {
                   }}
                 >
                   <SectionHeader
-                    context="shelteredren"
+                    context="sheltered"
                     title="Crianças"
                     subtitle={selectedShelter ? `Abrigo #${selectedShelter.number}` : "Escolha um Abrigo"}
                   />
@@ -223,7 +223,7 @@ export default function PagelaSheltersManager() {
                       onSelect={(shelter) => {
                         setSelectedShelter(shelter);
                         setSelectedSheltered(null);
-                        setMobileStep("shelteredren");
+                        setMobileStep("sheltered");
                       }}
                       selectedId={selectedShelter?.id || null}
                     />
@@ -232,11 +232,11 @@ export default function PagelaSheltersManager() {
               </Card>
             )}
 
-            {mobileStep === "shelteredren" && (
+            {mobileStep === "sheltered" && (
               <Card sx={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex" }}>
                 <CardContent sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", gap: 2, minHeight: 0 }}>
                   <SectionHeader
-                    context="shelteredren"
+                    context="sheltered"
                     title="Crianças"
                     subtitle={selectedShelter ? `Abrigo #${selectedShelter.number}` : undefined}
                   />

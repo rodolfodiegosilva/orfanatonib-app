@@ -10,8 +10,8 @@ import {
   apiUpdatePagela,
   apiDeletePagela,
 } from "./api";
-import { apiFetchShelteredSimple } from "@/features/shelteredren/api";
-import type { ShelteredSimpleResponseDto } from "../shelteredren/types";
+import { apiFetchShelteredSimple } from "@/features/sheltered/api";
+import type { ShelteredSimpleResponseDto } from "../sheltered/types";
 
 export type Tri = "any" | "yes" | "no";
 const triToBoolString = (t: Tri): "true" | "false" | undefined =>

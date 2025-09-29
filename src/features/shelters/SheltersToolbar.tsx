@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Add, Refresh, CleaningServices } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { ShelterFilters } from "../types";
+import { ShelterFilters } from "./types";
 import { selectIsAdmin } from "@/store/selectors/routeSelectors";
 
 type Props = {

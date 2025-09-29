@@ -4,13 +4,13 @@ import {
   Box, Avatar, Tooltip, IconButton, useTheme
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import ShelteredCareIcon from "@mui/icons-material/ShelteredCare";
+import ChildCareIcon from "@mui/icons-material/ChildCare";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
-import { ShelteredSimpleResponseDto } from "@/features/shelteredren/types";
+import { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 import DecisionModal from "./DecisionModal";
 
 function genderPastel(seed: string, gender: string | undefined) {
@@ -131,14 +131,14 @@ export default function ShelteredCard({
               fontWeight: 900,
             }}
           >
-            {initials || <ShelteredCareIcon />}
+            {initials || <ChildCareIcon />}
           </Avatar>
         </Box>
 
         <CardActionArea onClick={() => onClick(sheltered)} sx={{ display: "flex" }}>
           <CardContent sx={{ pt: 3.5, pb: 2.25, px: { xs: 1.5, sm: 2 } }}>
             <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.5 }}>
-              <ShelteredCareIcon fontSize="small" sx={{ opacity: 0.7 }} />
+              <ChildCareIcon fontSize="small" sx={{ opacity: 0.7 }} />
               <Typography
                 variant="subtitle1"
                 fontWeight={900}

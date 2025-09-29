@@ -19,10 +19,10 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { ArrowBack, FamilyRestroom, Phone, Add } from "@mui/icons-material";
-import { useShelteredrenBrowser, useShelteredPagelas } from "./hooks";
+import { useShelteredBrowser, useShelteredPagelas } from "./hooks";
 import PagelaList from "./components/PagelaList";
 import PagelaQuickForm from "./components/PagelaQuickForm";
-import type { ShelteredSimpleResponseDto } from "../shelteredren/types";
+import type { ShelteredSimpleResponseDto } from "../sheltered/types";
 import type { Pagela } from "./types";
 
 function genderPastel(seed: string, gender?: string) {
@@ -47,7 +47,7 @@ export default function ShelteredPagelasPage() {
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { byId, loading: loadingShelteredren, error: cError, setError: setCErr, onChangeQ } =
-    useShelteredrenBrowser();
+    useShelteredBrowser();
   React.useEffect(() => {
     if (!loc.state?.sheltered && !byId.get(shelteredId)) onChangeQ("");
   }, [shelteredId]);

@@ -11,9 +11,9 @@ import { RootState } from "@/store/slices";
 
 import { useShelteredBrowser } from "./hooks";
 import ShelteredCard from "./components/ShelteredCard";
-import { CreateShelteredForm, EditShelteredForm, ShelteredResponseDto } from "../shelteredren/types";
-import { useShelteredMutations } from "../shelteredren/hooks";
-import ShelteredFormDialog from "../shelteredren/components/ShelteredFormDialog";
+import { CreateShelteredForm, EditShelteredForm, ShelteredResponseDto } from "../sheltered/types";
+import { useShelteredMutations } from "../sheltered/hooks";
+import ShelteredFormDialog from "../sheltered/components/ShelteredFormDialog";
 import { apiFetchSheltered } from "../sheltered/api";
 
 export default function ShelteredBrowserPage() {

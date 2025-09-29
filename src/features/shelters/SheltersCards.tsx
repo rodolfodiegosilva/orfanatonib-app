@@ -13,7 +13,7 @@ import {
   Phone as PhoneIcon,
 } from "@mui/icons-material";
 import { SortingState } from "@tanstack/react-table";
-import { ShelterResponseDto } from "../types";
+import { ShelterResponseDto } from "./types";
 import { formatDate, weekdayLabel } from "@/utils/dateUtils";
 import { CopyButton } from "@/utils/components";
 

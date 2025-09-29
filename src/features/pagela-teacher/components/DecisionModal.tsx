@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { apiCreateAcceptedChrist } from "../api";
-import type { ShelteredSimpleResponseDto } from "@/features/shelteredren/types";
+import type { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 

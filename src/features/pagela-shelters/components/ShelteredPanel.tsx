@@ -12,8 +12,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useTheme, alpha } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { apiFetchShelteredren } from "@/features/shelteredren/api";
-import type { ShelteredResponseDto, ShelteredFilters, ShelteredSort } from "@/features/shelteredren/types";
+import { apiFetchSheltered } from "@/features/sheltered/api";
+import type { ShelteredResponseDto, ShelteredFilters, ShelteredSort } from "@/features/sheltered/types";
 import type { ShelterResponseDto } from "@/features/shelters/types";
 import { EmptyState } from "./common/EmptyState";
 import { PlaceholderCard } from "./common/PlaceholderCard";

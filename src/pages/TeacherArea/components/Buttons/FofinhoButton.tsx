@@ -13,7 +13,7 @@ import {
   HelpOutline as HelpOutlineIcon,
   EventAvailable as EventAvailableIcon,
   Badge as BadgeIcon,
-  ShelteredCare as ShelteredCareIcon,
+  ChildCare as ShelteredCareIcon,
 } from '@mui/icons-material';
 
 type MUIButtonColor =

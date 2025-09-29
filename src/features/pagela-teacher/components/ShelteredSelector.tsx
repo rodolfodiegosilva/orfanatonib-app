@@ -3,7 +3,7 @@ import {
   Autocomplete, Avatar, Box, CircularProgress, ListItem, ListItemAvatar,
   ListItemText, TextField, Typography, Chip
 } from "@mui/material";
-import { ShelteredSimpleResponseDto } from "@/features/shelteredren/types";
+import { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 
 type Props = {
   loading: boolean;

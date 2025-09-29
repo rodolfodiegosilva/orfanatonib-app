@@ -10,7 +10,7 @@ import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import { useTheme, alpha } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { ShelteredResponseDto } from "@/features/shelteredren/types";
+import type { ShelteredResponseDto } from "@/features/sheltered/types";
 import { apiListPagelasPaginated } from "@/features/pagela-teacher/api";
 import type { Pagela } from "@/features/pagela-teacher/types";
 import { EmptyState } from "./common/EmptyState";

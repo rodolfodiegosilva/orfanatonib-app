@@ -10,7 +10,7 @@ import {
 import { Visibility, Edit, Delete, AccessTime } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { ShelterResponseDto, WEEKDAYS } from "../types";
+import { ShelterResponseDto, WEEKDAYS } from "./types";
 import { fmtDate } from "@/utils/dates";
 import SheltersCards from "./SheltersCards";
 

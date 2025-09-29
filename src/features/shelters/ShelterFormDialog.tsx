@@ -11,7 +11,7 @@ import TeachersSelect from "./form/TeachersSelect";
 import {
   LeaderOption, CreateShelterForm, EditShelterForm, TeacherOption,
   Weekday, WEEKDAYS
-} from "../types";
+} from "./types";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/selectors/routeSelectors";
 

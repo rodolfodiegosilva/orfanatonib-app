@@ -4,7 +4,7 @@ import {
 } from "./api";
 import { ShelteredFilters, ShelteredResponseDto, ShelteredSort, CreateShelteredForm, EditShelteredForm } from "./types";
 
-export function useShelteredren(pageIndex: number, pageSize: number, sorting: ShelteredSort, filters: ShelteredFilters) {
+export function useSheltered(pageIndex: number, pageSize: number, sorting: ShelteredSort, filters: ShelteredFilters) {
   const [rows, setRows] = useState<ShelteredResponseDto[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);

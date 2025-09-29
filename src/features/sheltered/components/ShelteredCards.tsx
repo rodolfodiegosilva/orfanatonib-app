@@ -5,7 +5,7 @@ import {
   Divider, TablePagination, Tooltip, Collapse, ButtonBase,
   Paper, Avatar, Slide, Link
 } from "@mui/material";
-import { Visibility, Edit, Delete, SwapVert, CakeOutlined, PlaceOutlined, ExpandMore as ExpandMoreIcon, LocationOnOutlined, Phone as PhoneIcon, ShelteredCare, PersonOutlined, WhatsApp } from "@mui/icons-material";
+import { Visibility, Edit, Delete, SwapVert, CakeOutlined, PlaceOutlined, ExpandMore as ExpandMoreIcon, LocationOnOutlined, Phone as PhoneIcon, ChildCare, PersonOutlined, WhatsApp } from "@mui/icons-material";
 import { SortingState } from "@tanstack/react-table";
 import { ShelteredResponseDto } from "../types";
 import { RootState } from "@/store/slices";
@@ -358,7 +358,7 @@ export default function ShelteredrenCards(props: Props) {
                         >
                           <Stack spacing={1}>
                             <Stack direction="row" spacing={0.75} alignItems="center">
-                              <ShelteredCare fontSize="small" color="primary" />
+                              <ChildCare fontSize="small" color="primary" />
                               <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
                                 Informações da Criança
                               </Typography>
