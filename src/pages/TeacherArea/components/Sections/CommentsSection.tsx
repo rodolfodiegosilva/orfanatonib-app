@@ -129,14 +129,14 @@ const CommentsSection: React.FC = () => {
   const labels: Record<string, string> = {
     name: 'Nome (obrigatório)',
     comment: 'Comentário (obrigatório)',
-    shelterinho: 'Shelterinho (obrigatório)',
+    shelterinho: 'Abrigo (obrigatório)',
     neighborhood: 'Bairro (obrigatório)',
   };
 
   const placeholders: Record<string, string> = {
     name: 'Seu nome',
     comment: 'Escreva seu comentário aqui...',
-    shelterinho: 'Ex: Shelterinho do Amor',
+    shelterinho: 'Ex: Abrigo do Amor',
     neighborhood: 'Ex: Jardim das Flores',
   };
 

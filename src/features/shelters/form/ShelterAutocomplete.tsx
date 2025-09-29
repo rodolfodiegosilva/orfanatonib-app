@@ -29,7 +29,7 @@ type Props = {
 export default function ShelterAutocomplete({
   value,
   onChange,
-  label = "Shelterinho",
+  label = "Abrigo",
   placeholder = "Digite para filtrar…",
   helperText,
   errorText,

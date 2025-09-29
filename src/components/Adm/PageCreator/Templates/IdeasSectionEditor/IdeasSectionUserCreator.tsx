@@ -255,7 +255,7 @@ export function IdeasSectionUserCreator() {
         >
           Jesus colocou no seu coração uma ideia brilhante?<br />
           Pode ser uma brincadeira, um versículo, uma forma especial de contar<br />
-          uma história ou qualquer outra atividade para o seu Shelterinho!<br /><br />
+          uma história ou qualquer outra atividade para o seu Abrigo!<br /><br />
           Agora você também pode enviar <strong>vídeos, imagens e documentos</strong><br />
           para mostrar como fez e ajudar outros professores a colocarem em prática. 📹📸📄
         </Typography>

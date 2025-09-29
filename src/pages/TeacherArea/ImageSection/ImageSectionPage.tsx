@@ -45,7 +45,7 @@ export default function ImageSectionPage() {
 
   const validate = useCallback((): boolean => {
     if (!sectionData?.caption?.trim()) {
-      showError('O título das atividades do seu Shelterinho é obrigatório.');
+      showError('O título das atividades do seu Abrigo é obrigatório.');
       return false;
     }
     if (!sectionData?.description?.trim()) {
@@ -53,7 +53,7 @@ export default function ImageSectionPage() {
       return false;
     }
     if (!sectionData?.mediaItems?.length) {
-      showError('Adicione pelo menos uma imagem das atividades do seu Shelterinho.');
+      showError('Adicione pelo menos uma imagem das atividades do seu Abrigo.');
       return false;
     }
     return true;
@@ -103,7 +103,7 @@ export default function ImageSectionPage() {
 
     setNotification({
       open: true,
-      message: 'Imagens do seu Shelterinho compartilhadas com sucesso!',
+      message: 'Imagens do seu Abrigo compartilhadas com sucesso!',
       severity: 'success',
     });
 
@@ -122,7 +122,7 @@ export default function ImageSectionPage() {
       navigate('/area-do-professor');
     } catch (error) {
       console.error('Erro ao salvar a seção:', error);
-      showError('Falha ao compartilhar as imagens do seu Shelterinho. Tente novamente.');
+      showError('Falha ao compartilhar as imagens do seu Abrigo. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
@@ -259,7 +259,7 @@ export default function ImageSectionPage() {
                     mb: 1,
                   }}
                 >
-                  📸 Enviar Imagens do seu Shelterinho
+                  📸 Enviar Imagens do seu Abrigo
                 </Typography>
 
                 <Typography
@@ -271,7 +271,7 @@ export default function ImageSectionPage() {
                     mx: 'auto',
                   }}
                 >
-                  Registre e compartilhe os momentos especiais das atividades do seu Shelterinho para inspirar outros professores
+                  Registre e compartilhe os momentos especiais das atividades do seu Abrigo para inspirar outros professores
                 </Typography>
               </Box>
             </Box>
@@ -297,8 +297,8 @@ export default function ImageSectionPage() {
                 initialIsPublic={sectionData?.public ?? true}
                 initialMediaItems={sectionData?.mediaItems || []}
                 onChange={handleChange}
-                captionPlaceholder="EX: Shelterinho 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
-                descriptionPlaceholder="EX: Descreva as atividades realizadas no seu Shelterinho: dinâmicas, brincadeiras, ensinamentos bíblicos, momentos especiais com as crianças e como elas reagiram às atividades."
+                captionPlaceholder="EX: Abrigo 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
+                descriptionPlaceholder="EX: Descreva as atividades realizadas no seu Abrigo: dinâmicas, brincadeiras, ensinamentos bíblicos, momentos especiais com as crianças e como elas reagiram às atividades."
               />
             </motion.div>
 
@@ -341,7 +341,7 @@ export default function ImageSectionPage() {
                     },
                     transition: 'all 0.3s ease',
                   }}
-                  aria-label="Compartilhar imagens do Shelterinho"
+                  aria-label="Compartilhar imagens do Abrigo"
                 >
                   {isSaving ? 'Enviando...' : '🚀 Compartilhar Imagens'}
                 </Button>

@@ -18,7 +18,9 @@ export type MinimalTeacher = {
 
 export type ShelterSimple = {
   id: string;
-  name?: string;
+  number: number;
+  weekday: string;
+  teachers?: MinimalTeacher[];
 };
 
 export type ShelterWithTeachers = ShelterSimple & {
@@ -27,11 +29,11 @@ export type ShelterWithTeachers = ShelterSimple & {
 
 export type LeaderProfile = {
   id: string;
-  active?: boolean;
+  active: boolean;
   user: MinimalUser;
-  shelters?: ShelterWithTeachers[];
-  createdAt?: string;
-  updatedAt?: string;
+  shelter?: ShelterSimple | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type PageDto<T> = {
@@ -42,8 +44,13 @@ export type PageDto<T> = {
 };
 
 export type LeaderFilters = {
-  searchString: string;
-  active: "all" | "active" | "inactive";
-  hasShelters: "all" | "yes" | "no";
-  shelterName?: string | "";
+  searchString?: string;
+  q?: string;
+  active?: boolean;
+  hasShelters?: boolean;
+  shelterName?: string;
+  page?: number;
+  limit?: number;
+  sort?: "updatedAt" | "createdAt" | "name";
+  order?: "asc" | "desc";
 };

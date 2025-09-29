@@ -73,7 +73,7 @@ const ContactLayout: React.FC<ContactLayoutProps> = ({ shelteredren }) => {
               px: { xs: 1, sm: 0 },
             }}
           >
-            Entre em contato para saber mais informações sobre o Shelterinho NIB
+            Entre em contato para saber mais informações sobre o Orfanato NIB
           </Typography>
         </Box>
 

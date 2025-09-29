@@ -25,23 +25,12 @@ function mapSortingToServer(sorting: SortingState) {
 }
 
 function mapFiltersToServer(filters: LeaderFilters) {
-  const active =
-    filters.active === "all" ? undefined
-      : filters.active === "active" ? true
-        : false;
-  const hasShelters =
-    filters.hasShelters === "all" ? undefined
-      : filters.hasShelters === "yes" ? true
-        : false;
-
   return {
     searchString: filters.searchString?.trim() || undefined,
-    active,
-    hasShelters,
-    shelterNumber:
-      filters.shelterNumber !== "" && filters.shelterNumber != null
-        ? Number(filters.shelterNumber)
-        : undefined,
+    q: filters.q?.trim() || undefined,
+    active: filters.active,
+    hasShelters: filters.hasShelters,
+    shelterName: filters.shelterName?.trim() || undefined,
   } as Omit<ListLeadersParams, "page" | "limit" | "sort" | "order">;
 }
 
@@ -118,7 +107,7 @@ export function useLeaderMutations(
         return res?.message || "Shelter atribuído ao líder com sucesso";
       } catch (err: any) {
         const msg =
-          err?.response?.data?.message || err.message || "Erro ao vincular shelterinho";
+          err?.response?.data?.message || err.message || "Erro ao vincular abrigo";
         setDialogError(msg);
         throw err;
       } finally {
@@ -129,7 +118,7 @@ export function useLeaderMutations(
   );
 
   const unassignShelter = useCallback(
-    async (leaderId: string, shelterId: string): Promise<string> => {
+    async (leaderId: string, shelterId?: string): Promise<string> => {
       setDialogLoading(true); setDialogError("");
       try {
         const res: any = await apiUnassignShelter(leaderId, shelterId);
@@ -138,7 +127,7 @@ export function useLeaderMutations(
         return res?.message || "Shelter removido do líder com sucesso";
       } catch (err: any) {
         const msg =
-          err?.response?.data?.message || err.message || "Erro ao desvincular shelterinho";
+          err?.response?.data?.message || err.message || "Erro ao desvincular abrigo";
         setDialogError(msg);
         throw err;
       } finally {

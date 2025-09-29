@@ -89,7 +89,7 @@ export default function TeacherCards({
   const sortOptions = useMemo(
     () => [
       { id: "teacher", label: "Nome" },
-      { id: "shelter", label: "Nº do Shelterinho" },
+      { id: "shelter", label: "Nº do Abrigo" },
       { id: "updatedAt", label: "Atualizado em" },
       { id: "createdAt", label: "Criado em" },
     ],
@@ -278,9 +278,9 @@ export default function TeacherCards({
                           overflow: "hidden",
                           textOverflow: "ellipsis"
                         }}
-                        title={shelter ? `Shelterinho ${shelter.name ?? "?"}` : "Sem Shelterinho"}
+                        title={shelter ? `Abrigo ${shelter.name ?? "?"}` : "Sem Abrigo"}
                       >
-                        {shelter ? `Shelterinho ${shelter.name ?? "?"}` : "Sem Shelterinho"}
+                        {shelter ? `Abrigo ${shelter.name ?? "?"}` : "Sem Abrigo"}
                       </Typography>
                     </Box>
                   </Stack>
@@ -390,7 +390,7 @@ export default function TeacherCards({
                           </Stack>
                         </Paper>
 
-                        {/* Shelterinho */}
+                        {/* Abrigo */}
                         {shelter && (
                           <Paper
                             variant="outlined"
@@ -406,7 +406,7 @@ export default function TeacherCards({
                               <Stack direction="row" spacing={0.75} alignItems="center">
                                 <SchoolOutlined fontSize="small" color="primary" />
                                 <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                  Shelterinho {shelter.name ?? "?"}
+                                  Abrigo {shelter.name ?? "?"}
                                 </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap rowGap={1}>
@@ -490,7 +490,7 @@ export default function TeacherCards({
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Vincular / Alterar Shelterinho">
+                    <Tooltip title="Vincular / Alterar Abrigo">
                       <IconButton
                         size="small"
                         onClick={() => onEditLinks(t)}
@@ -502,7 +502,7 @@ export default function TeacherCards({
                         <LinkIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Desvincular Shelterinho">
+                    <Tooltip title="Desvincular Abrigo">
                       <IconButton
                         size="small"
                         color="error"

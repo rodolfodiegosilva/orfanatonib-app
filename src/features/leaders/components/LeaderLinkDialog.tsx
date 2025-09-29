@@ -28,7 +28,7 @@ export default function LeaderLinkDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Shelterinho</DialogTitle>
+      <DialogTitle>Vincular / Desvincular Abrigo</DialogTitle>
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -42,7 +42,7 @@ export default function LeaderLinkDialog({
 
             <Grid item xs={12} md={6}>
               <TextField
-                label="Número do Shelterinho para Vincular"
+                label="Número do Abrigo para Vincular"
                 type="number"
                 fullWidth
                 value={linkNumber}
@@ -55,7 +55,7 @@ export default function LeaderLinkDialog({
 
             <Grid item xs={12} md={6}>
               <TextField
-                label="Número do Shelterinho para Remover"
+                label="Número do Abrigo para Remover"
                 type="number"
                 fullWidth
                 value={unlinkNumber}

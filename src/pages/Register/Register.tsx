@@ -275,13 +275,13 @@ const Register: React.FC<RegisterProps> = ({ commonUser }) => {
                       fullWidth
                       margin="normal"
                       error={!!errors.role}
-                      helperText={errors.role?.message || 'Informe se você é Professor ou Coordenador'}
+                      helperText={errors.role?.message || 'Informe se você é Professor ou Líder'}
                     >
                       <MenuItem value="">
                         <em>Selecione</em>
                       </MenuItem>
                       <MenuItem value="teacher">Professor</MenuItem>
-                      <MenuItem value="leader">Coordenador</MenuItem>
+                      <MenuItem value="leader">Líder</MenuItem>
                     </TextField>
                   )}
                 />

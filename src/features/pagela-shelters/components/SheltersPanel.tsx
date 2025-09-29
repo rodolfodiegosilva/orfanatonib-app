@@ -167,7 +167,7 @@ export function SheltersPanel({
                                             <Stack spacing={0.75} sx={{ p: 1.25, minHeight: touchMin }}>
                                                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                                                     <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                                                        Shelterinho #{c.number}
+                                                        Abrigo #{c.number}
                                                     </Typography>
                                                     <Chip
                                                         size="small"

@@ -102,7 +102,7 @@ export async function apiLoadTeacherOptions() {
     name: t.user?.name ?? t.user?.email ?? t.id,
     // Temporarily use id until types are fully updated
     assignedShelter: t.shelter?.name ?? t.shelter?.id ?? null,
-    vinculado: t.vinculado,
+    vinculado: !!t.shelter,
   })) as TeacherOption[];
 }
 

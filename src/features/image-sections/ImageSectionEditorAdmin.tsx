@@ -43,7 +43,7 @@ export default function ImageSectionEditorAdmin() {
       return false;
     }
     if (!sectionData?.description?.trim()) {
-      showError('A descrição das atividades do Shelterinho é obrigatória.');
+      showError('A descrição das atividades do Abrigo é obrigatória.');
       return false;
     }
     if (!sectionData?.mediaItems?.length) {
@@ -193,7 +193,7 @@ export default function ImageSectionEditorAdmin() {
                     fontSize: { xs: '0.8rem', md: '0.85rem' },
                   }}
                 >
-                  Editar e publicar imagens compartilhadas dos Shelterinhos
+                  Editar e publicar imagens compartilhadas dos Abrigos
                 </Typography>
               </Box>
               
@@ -337,8 +337,8 @@ export default function ImageSectionEditorAdmin() {
                 initialIsPublic={sectionData?.public ?? true}
                 initialMediaItems={sectionData?.mediaItems || []}
                 onChange={handleChange}
-                captionPlaceholder="EX: Shelterinho 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
-                descriptionPlaceholder="EX: Revisar e aprimorar a descrição das atividades do Shelterinho: dinâmicas, brincadeiras, ensinamentos bíblicos e momentos especiais registrados."
+                captionPlaceholder="EX: Abrigo 90: Gincana de Páscoa - Crianças aprendendo sobre ressurreição"
+                descriptionPlaceholder="EX: Revisar e aprimorar a descrição das atividades do Abrigo: dinâmicas, brincadeiras, ensinamentos bíblicos e momentos especiais registrados."
               />
             </motion.div>
           </Paper>

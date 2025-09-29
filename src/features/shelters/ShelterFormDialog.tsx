@@ -62,7 +62,7 @@ export default function ShelterFormDialog({
         },
       }}
     >
-      <DialogTitle>{isCreate ? "Criar Shelterinho" : "Editar Shelterinho"}</DialogTitle>
+      <DialogTitle>{isCreate ? "Criar Abrigo" : "Editar Abrigo"}</DialogTitle>
 
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -70,7 +70,7 @@ export default function ShelterFormDialog({
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              label="Nome do Shelterinho"
+              label="Nome do Abrigo"
               type="text"
               fullWidth
               value={name}

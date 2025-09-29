@@ -103,7 +103,7 @@ const buttonMap: Record<string, FofinhoButtonProps> = {
   },
   photos: {
     to: '/imagens-shelterinho',
-    label: 'Envie fotos do seu Shelterinho',
+    label: 'Envie fotos do seu Abrigo',
     icon: PhotoCameraIcon,
     color: 'success',
   },

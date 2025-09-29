@@ -44,7 +44,7 @@ export default function ImageSectionEditor({
   initialIsPublic,
   initialMediaItems,
   onChange,
-  captionPlaceholder = 'Shelterinho 90: Gincana de Páscoa',
+  captionPlaceholder = 'Abrigo 90: Gincana de Páscoa',
   descriptionPlaceholder = 'Descreva o que aconteceu, como uma gincana, culto especial ou passeio com as crianças.',
 }: ImageSectionEditorProps) {
   const theme = useTheme();
@@ -383,7 +383,7 @@ export default function ImageSectionEditor({
                         fontWeight: 500,
                       }}
                     >
-                      📷 Adicione imagens dos momentos especiais do seu Shelterinho!
+                      📷 Adicione imagens dos momentos especiais do seu Abrigo!
                     </Typography>
                     <Typography 
                       color="text.secondary" 

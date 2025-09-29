@@ -23,7 +23,7 @@ type Props = {
   teacher: TeacherProfile | null;
   loading: boolean;
   error: string;
-  onSetShelter: (shelterNumber: number) => void;
+  onSetShelter: (shelterId: string) => void;
   onClearShelter: () => void;
   onClose: () => void;
 };
@@ -44,7 +44,7 @@ export default function TeacherEditDialog({
   const [localErr, setLocalErr] = React.useState<string>("");
 
   React.useEffect(() => {
-    setShelterInput(teacher?.shelter?.number ? String(teacher.shelter.number) : "");
+    setShelterInput(teacher?.shelter?.id ? teacher.shelter.id : "");
     setLocalErr("");
   }, [teacher]);
 
@@ -52,7 +52,7 @@ export default function TeacherEditDialog({
     setLocalErr("");
     const v = Number(shelterInput);
     if (!shelterInput || Number.isNaN(v) || v <= 0) {
-      setLocalErr("Informe um número de Shelterinho válido (maior que zero).");
+      setLocalErr("Informe um número de Abrigo válido (maior que zero).");
       return;
     }
     onSetShelter(v);
@@ -66,11 +66,11 @@ export default function TeacherEditDialog({
   };
 
   const currentShelterLabel =
-    teacher?.shelter?.number != null ? `#${teacher.shelter.number}` : "—";
+    teacher?.shelter?.name ?? "—";
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Shelterinho</DialogTitle>
+      <DialogTitle>Vincular / Desvincular Abrigo</DialogTitle>
 
       <DialogContent
         dividers
@@ -92,13 +92,13 @@ export default function TeacherEditDialog({
                 {teacher.user?.name || teacher.user?.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Shelterinho atual: <strong>{currentShelterLabel}</strong>
+                Abrigo atual: <strong>{currentShelterLabel}</strong>
               </Typography>
             </Grid>
 
             <Grid item xs={12} md={8}>
               <TextField
-                label="Número do Shelterinho"
+                label="Número do Abrigo"
                 type="number"
                 size="small"
                 fullWidth
@@ -115,7 +115,7 @@ export default function TeacherEditDialog({
                 helperText={
                   teacher?.shelter?.number
                     ? `Digite um novo número para alterar o vínculo`
-                    : `Digite o número do Shelterinho para vincular`
+                    : `Digite o número do Abrigo para vincular`
                 }
               />
             </Grid>

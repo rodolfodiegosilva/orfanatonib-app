@@ -38,7 +38,7 @@ export default function LeaderTable({
   const columns = useMemo<ColumnDef<LeaderProfile>[]>(() => [
     {
       id: "user",
-      header: "Coordenador",
+      header: "Líder",
       cell: ({ row }) => {
         const u = row.original.user;
         return (
@@ -51,7 +51,7 @@ export default function LeaderTable({
     },
     {
       id: "shelters",
-      header: "Shelterinhos",
+      header: "Abrigos",
       cell: ({ row }) => {
         const list = row.original.shelters ?? [];
         if (!list.length) return <Chip size="small" label="—" />;

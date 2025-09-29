@@ -17,7 +17,7 @@ export type TeacherFilters = {
   q?: string;
   active?: boolean;
   hasShelter?: boolean;
-  shelterNumber?: number;
+  shelterName?: string;
 };
 
 type Props = {
@@ -41,15 +41,16 @@ export default function TeacherToolbar({
   const handleHasShelterChange = (v: string) =>
     handleChange("hasShelter", v === "" ? undefined : (v === "true") as any);
 
-  const handleShelterNumberChange = (v: string) =>
-    handleChange("shelterNumber", v === "" ? undefined : Number(v));
+  const handleShelterName = (v: string) => {
+    set("shelterName", v === "" ? undefined : v);
+  };
 
   const handleClear = () => {
     onChange(() => ({
       q: "",
       active: undefined,
       hasShelter: undefined,
-      shelterNumber: undefined,
+      shelterName: undefined,
     }));
   };
 
@@ -72,15 +73,15 @@ export default function TeacherToolbar({
             select
             fullWidth
             size="small"
-            label="Com Shelterinho?"
+            label="Com Abrigo?"
             value={
               filters.hasShelter === undefined ? "" : filters.hasShelter ? "true" : "false"
             }
             onChange={(e) => handleHasShelterChange(e.target.value)}
           >
             <MenuItem value="">Todos</MenuItem>
-            <MenuItem value="true">Somente com Shelterinho</MenuItem>
-            <MenuItem value="false">Somente sem Shelterinho</MenuItem>
+            <MenuItem value="true">Somente com Abrigo</MenuItem>
+            <MenuItem value="false">Somente sem Abrigo</MenuItem>
           </TextField>
         </Grid>
 
@@ -88,11 +89,11 @@ export default function TeacherToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Nº do Shelterinho"
-            type="number"
-            value={filters.shelterNumber ?? ""}
-            onChange={(e) => handleShelterNumberChange(e.target.value)}
-            inputProps={{ min: 1 }}
+            label="Nome do Abrigo"
+            type="text"
+            value={filters.shelterName ?? ""}
+            onChange={(e) => handleShelterName(e.target.value)}
+            inputProps={{}}
           />
         </Grid>
 

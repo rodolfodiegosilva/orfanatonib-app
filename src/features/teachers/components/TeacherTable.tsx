@@ -88,7 +88,7 @@ const ActionsCell = memo(function ActionsCell({
         </Tooltip>
       )}
 
-      <Tooltip title="Vincular / Alterar Shelterinho">
+      <Tooltip title="Vincular / Alterar Abrigo">
         <IconButton
           size={isXs ? "small" : "medium"}
           onClick={() => onEditLinks(teacher)}
@@ -99,7 +99,7 @@ const ActionsCell = memo(function ActionsCell({
       </Tooltip>
 
       {isAdmin && (
-        <Tooltip title="Desvincular Shelterinho">
+        <Tooltip title="Desvincular Abrigo">
           <IconButton
             size={isXs ? "small" : "medium"}
             onClick={() => onClearShelter(teacher.id)}
@@ -146,15 +146,15 @@ export default function TeacherTable({
     },
     {
       id: "shelter",
-      header: "Shelterinho",
+      header: "Abrigo",
       cell: ({ row }) => (
-        <Chip size="small" label={row.original.shelter?.number ?? "—"} />
+        <Chip size="small" label={row.original.shelter?.name ?? "—"} />
       ),
       meta: { width: 100 },
     },
     {
       id: "coord",
-      header: "Coordenador",
+      header: "Líder",
       cell: ({ row }) => {
         const c = row.original.shelter?.leader?.user;
         return <Typography noWrap>{c?.name || c?.email || "—"}</Typography>;

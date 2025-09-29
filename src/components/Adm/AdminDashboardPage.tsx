@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
   const DesktopGrid: React.FC = () => {
     const allFiltered = order.flatMap((sec) => grouped[sec]);
     const greetName =
-      (user?.name && user.name.split(" ")[0]) || (isAdmin ? "Admin" : isLeader ? "Coordenador(a)" : "Usuário");
+      (user?.name && user.name.split(" ")[0]) || (isAdmin ? "Admin" : isLeader ? "Líder(a)" : "Usuário");
     return (
       <Box sx={{ width: "100%", px: { xs: 2, md: 6 }, pt: { xs: 4, md: 0 } }}>
         <Typography

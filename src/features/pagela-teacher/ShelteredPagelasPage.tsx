@@ -194,7 +194,7 @@ export default function ShelteredPagelasPage() {
                 <Chip
                   size="small"
                   color="success"
-                  label="Shelterinho"
+                  label="Abrigo"
                   sx={{ fontWeight: 800, height: 22, alignSelf: "flex-start", "& .MuiChip-label": { px: 0.75 } }}
                 />
               )}
@@ -283,7 +283,7 @@ export default function ShelteredPagelasPage() {
                       <Chip
                         size="small"
                         color="success"
-                        label="Shelterinho"
+                        label="Abrigo"
                         sx={{ fontWeight: 700 }}
                       />
                     )}

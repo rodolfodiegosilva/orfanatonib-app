@@ -31,12 +31,7 @@ export default function LeaderProfilesManager() {
     { id: "updatedAt", desc: true },
   ]);
 
-  const [filters, setFilters] = React.useState<LeaderFilters>({
-    searchString: "",
-    active: "all",
-    hasShelters: "all",
-    shelterNumber: "",
-  });
+  const [filters, setFilters] = React.useState<LeaderFilters>({});
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
     useLeaderProfiles(pageIndex, pageSize, sorting, filters);
@@ -95,7 +90,7 @@ export default function LeaderProfilesManager() {
     const num = Number(linkNumber);
     const shelter = byNumber.get(num);
     if (!num || !shelter) {
-      setDialogError("Shelterinho não encontrado pelo número informado.");
+      setDialogError("Abrigo não encontrado pelo número informado.");
       return;
     }
     try {
@@ -112,7 +107,7 @@ export default function LeaderProfilesManager() {
     const num = Number(unlinkNumber);
     const shelter = byNumber.get(num);
     if (!num || !shelter) {
-      setDialogError("Shelterinho não encontrado pelo número informado.");
+      setDialogError("Abrigo não encontrado pelo número informado.");
       return;
     }
     try {
@@ -140,7 +135,7 @@ export default function LeaderProfilesManager() {
         bgcolor: "#f9fafb"
       }}
     >
-      <BackHeader title="Gerenciar Coordenadores" />
+      <BackHeader title="Gerenciar Líderes" />
       <LeaderToolbar
         filters={filters}
         onChange={(updater) => {

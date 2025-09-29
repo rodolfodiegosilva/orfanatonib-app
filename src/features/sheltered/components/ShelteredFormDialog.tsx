@@ -180,7 +180,7 @@ export default function ShelteredFormDialog({
             {isTeacher ? (
               <Stack spacing={0.75}>
                 <Typography variant="caption" sx={{ fontWeight: 700, opacity: 0.8 }}>
-                  Shelterinho (obrigatório)
+                  Abrigo (obrigatório)
                 </Typography>
 
                 {loadingShelterDetail ? (
@@ -209,7 +209,7 @@ export default function ShelteredFormDialog({
 
                 {showErrors && !req.shelterId && (
                   <Typography variant="caption" color="error">
-                    Selecione um Shelterinho
+                    Selecione um Abrigo
                   </Typography>
                 )}
               </Stack>
@@ -218,8 +218,8 @@ export default function ShelteredFormDialog({
                 value={effectiveShelterId}
                 onChange={(id) => setField("shelterId", id)}
                 required
-                label="Shelterinho (obrigatório)"
-                errorText={showErrors && !req.shelterId ? "Selecione um Shelterinho" : undefined}
+                label="Abrigo (obrigatório)"
+                errorText={showErrors && !req.shelterId ? "Selecione um Abrigo" : undefined}
                 fetchOnMount
               />
             )}

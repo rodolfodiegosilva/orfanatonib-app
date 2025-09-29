@@ -218,7 +218,7 @@ export default function ShelteredBrowserPage() {
             Você não está vinculado a nenhum shelterinho.
           </Typography>
           <Typography>
-            Entre em contato com <strong>seu Coordenador</strong> ou envie uma mensagem para  <strong>(92) 99127-4881</strong> ou <strong>(92) 98155-3139</strong>.
+            Entre em contato com <strong>seu Líder</strong> ou envie uma mensagem para  <strong>(92) 99127-4881</strong> ou <strong>(92) 98155-3139</strong>.
           </Typography>
         </Alert>
       ) : (

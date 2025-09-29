@@ -105,7 +105,7 @@ export function ShelteredPanel({
   }, [fetchShelteredren]);
 
   if (!shelter) {
-    return <PlaceholderCard title="Escolha um Shelterinho" subtitle="Clique em um Shelterinho para ver suas crianças." />;
+    return <PlaceholderCard title="Escolha um Abrigo" subtitle="Clique em um Abrigo para ver suas crianças." />;
   }
 
   return (
@@ -146,7 +146,7 @@ export function ShelteredPanel({
           {!loading && error && <Alert severity="error">{error}</Alert>}
 
           {!loading && !error && rows.length === 0 && (
-            <EmptyState title="Sem crianças neste Shelterinho" subtitle="Cadastre crianças ou escolha outro Shelterinho." />
+            <EmptyState title="Sem crianças neste Abrigo" subtitle="Cadastre crianças ou escolha outro Abrigo." />
           )}
 
           {!loading && !error && rows.map((c) => {

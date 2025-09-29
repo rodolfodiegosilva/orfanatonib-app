@@ -25,7 +25,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
       <Box
         component="img"
         src={banner}
-        alt="Banner Shelterinho NIB"
+        alt="Banner Orfanato NIB"
         sx={{
           width: '100%',
           height: '100%',
@@ -106,7 +106,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
               lineHeight: 1.1,
             }}
           >
-            Bem-vindo ao Shelterinho NIB
+            Bem-vindo ao Orfanato NIB
           </Typography>
         </motion.div>
 

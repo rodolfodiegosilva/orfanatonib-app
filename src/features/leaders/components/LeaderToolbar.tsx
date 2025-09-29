@@ -36,17 +36,10 @@ export default function LeaderToolbar({
   ) => onChange((prev) => ({ ...prev, [key]: val }));
 
   const clear = () =>
-    onChange(() => ({
-      searchString: "",
-      active: "all",
-      hasShelters: "all",
-      shelterNumber: "",
-    }));
+    onChange(() => ({}));
 
-  const handleShelterNumber = (v: string) => {
-    if (v === "") return set("shelterNumber", "");
-    const n = Number(v);
-    if (Number.isFinite(n) && n >= 0) set("shelterNumber", n);
+  const handleShelterName = (v: string | undefined) => {
+    set("shelterName", v);
   };
 
   return (
@@ -57,8 +50,8 @@ export default function LeaderToolbar({
             fullWidth
             size="small"
             label="Buscar (nome, e-mail, telefone)"
-            value={filters.searchString}
-            onChange={(e) => set("searchString", e.target.value)}
+            value={filters.searchString ?? ""}
+            onChange={(e) => set("searchString", e.target.value || undefined)}
             placeholder="Ex.: Ana, ana@site.com, 92..."
             inputProps={{ "aria-label": "Campo de busca" }}
           />
@@ -70,10 +63,14 @@ export default function LeaderToolbar({
             <Select
               labelId="coord-vinculo-label"
               label="Vínculo"
-              value={filters.hasShelters}
-              onChange={(e) =>
-                set("hasShelters", e.target.value as LeaderFilters["hasShelters"])
-              }
+              value={filters.hasShelters ?? "all"}
+              onChange={(e) => {
+                if (e.target.value === "all") {
+                  set("hasShelters", undefined);
+                } else {
+                  set("hasShelters", e.target.value === "yes");
+                }
+              }}
             >
               <MenuItem value="all">Todos</MenuItem>
               <MenuItem value="yes">Com shelterinhos</MenuItem>
@@ -86,11 +83,11 @@ export default function LeaderToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Nº do Shelterinho"
-            type="number"
-            value={filters.shelterNumber ?? ""}
-            onChange={(e) => handleShelterNumber(e.target.value)}
-            inputProps={{ inputMode: "numeric", min: 0 }}
+            label="Nome do Abrigo"
+            type="text"
+            value={filters.shelterName ?? ""}
+            onChange={(e) => handleShelterName(e.target.value || undefined)}
+            inputProps={{}}
           />
         </Grid>
 

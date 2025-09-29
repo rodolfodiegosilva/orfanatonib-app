@@ -13,7 +13,7 @@ export function useTeacherProfiles(
   pageIndex: number,  
   pageSize: number,
   sorting: SortingState,
-  filters: Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterNumber">,
+  filters: Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterName">,
 ) {
   const [rows, setRows] = useState<TeacherProfile[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -27,9 +27,9 @@ export function useTeacherProfiles(
         searchString: filters.searchString ?? undefined,
         active: filters.active ?? undefined,
         hasShelter: filters.hasShelter ?? undefined,
-        shelterNumber: filters.shelterNumber ?? undefined,
+        shelterName: filters.shelterName ?? undefined,
       }),
-    [filters.q, filters.searchString, filters.active, filters.hasShelter, filters.shelterNumber]
+    [filters.q, filters.searchString, filters.active, filters.hasShelter, filters.shelterName]
   );
 
   const sortParam = useMemo<Pick<TeacherQuery, "sort" | "order">>(() => {
@@ -57,7 +57,7 @@ export function useTeacherProfiles(
     setError("");
     try {
       const data: Page<TeacherProfile> = await apiListTeachers({
-        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterNumber">),
+        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterName">),
         page: pageIndex + 1, 
         limit: pageSize,
         sort: sortParam.sort,
@@ -104,20 +104,17 @@ export function useTeacherMutations(
   const setShelter = useCallback(async (teacherId: string, shelterId: string) => {
     setDialogLoading(true); setDialogError("");
     try { await apiAssignTeacherToShelter(teacherId, shelterId); await refreshOne(teacherId); }
-    catch (err: any) { setDialogError(err?.response?.data?.message || err.message || "Erro ao vincular Shelterinho"); throw err; }
+    catch (err: any) { setDialogError(err?.response?.data?.message || err.message || "Erro ao vincular Abrigo"); throw err; }
     finally { setDialogLoading(false); }
   }, [refreshOne]);
 
   const clearShelter = useCallback(async (teacherId: string) => {
     setDialogLoading(true); setDialogError("");
     try {
-      const current = await apiGetTeacher(teacherId);
-      const currentShelterId = current?.shelter?.id;
-      if (!currentShelterId) return;
-      await apiUnassignTeacherFromShelter(teacherId, currentShelterId);
+      await apiUnassignTeacherFromShelter(teacherId);
       await refreshOne(teacherId);
     } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao desvincular Shelterinho");
+      setDialogError(err?.response?.data?.message || err.message || "Erro ao desvincular Abrigo");
       throw err;
     } finally { setDialogLoading(false); }
   }, [refreshOne]);
@@ -142,11 +139,11 @@ export function useSheltersIndex() {
     }
   }, []);
 
-  const byNumber = useMemo(() => {
-    const map = new Map<number, ShelterSimple>();
-    for (const c of shelters) if (typeof c.number === "number") map.set(c.number, c);
+  const byId = useMemo(() => {
+    const map = new Map<string, ShelterSimple>();
+    for (const c of shelters) map.set(c.id, c);
     return map;
   }, [shelters]);
 
-  return { shelters, byNumber, loading, error, refresh };
+  return { shelters, byId, loading, error, refresh };
 }

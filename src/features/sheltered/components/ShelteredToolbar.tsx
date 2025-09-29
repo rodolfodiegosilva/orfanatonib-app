@@ -193,7 +193,7 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
           <TextField
             fullWidth
             size="small"
-            label="Nº Shelterinho"
+            label="Nº Abrigo"
             type="number"
             value={filters.shelterNumber ?? ""}
             onChange={e => set("shelterNumber", e.target.value ? Number(e.target.value) : undefined)}
@@ -211,7 +211,7 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
 
         <Grid item xs={12} md={3}>
           <DateFilterInput
-            label="No Shelterinho"
+            label="No Abrigo"
             from={filters.joinedFrom}
             to={filters.joinedTo}
             onChange={(from, to) => onChange(prev => ({ ...prev, joinedFrom: from, joinedTo: to }))}

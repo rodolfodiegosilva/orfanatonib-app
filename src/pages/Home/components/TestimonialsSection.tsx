@@ -117,7 +117,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
             }}
           >
-            O que dizem sobre o Shelterinho
+            O que dizem sobre o Abrigo
           </Typography>
         </motion.div>
 

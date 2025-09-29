@@ -70,7 +70,7 @@ export default function SheltersToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Shelterinho"
+            label="Abrigo"
             value={filters.shelterSearchString ?? ""}
             onChange={(e) => handleChange("shelterSearchString", e.target.value)}
             placeholder="Número, dia ou horário (ex.: 14:30)"
@@ -136,10 +136,10 @@ export default function SheltersToolbar({
                   </Tooltip>
 
                   {isAdmin && (
-                    <Tooltip title="Criar Shelterinho">
+                    <Tooltip title="Criar Abrigo">
                       <Fab
                         color="primary"
-                        aria-label="Criar Shelterinho"
+                        aria-label="Criar Abrigo"
                         onClick={onCreateClick}
                         sx={{ boxShadow: 6 }}
                       >

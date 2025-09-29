@@ -105,7 +105,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
         }}
       >
         {!shelter ? (
-          <Typography variant="h6">Detalhes do Shelterinho</Typography>
+          <Typography variant="h6">Detalhes do Abrigo</Typography>
         ) : (
           <Stack spacing={1.25}>
             <Stack direction="row" spacing={1.25} alignItems="center">
@@ -119,7 +119,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                 }}
                 aria-label="avatar do shelterinho"
               >
-                {initials(`Shelterinho ${shelter.name}`)}
+                {initials(`Abrigo ${shelter.name}`)}
               </Avatar>
               <Box sx={{ minWidth: 0 }}>
                 <Stack
@@ -132,9 +132,9 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                     variant="h6"
                     fontWeight={800}
                     noWrap={!isXs}
-                    title={`Shelterinho ${shelter.name}`}
+                    title={`Abrigo ${shelter.name}`}
                   >
-                    Shelterinho {shelter.name}
+                    Abrigo {shelter.name}
                   </Typography>
                 </Stack>
               </Box>

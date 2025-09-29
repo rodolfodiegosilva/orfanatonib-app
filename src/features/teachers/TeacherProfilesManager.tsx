@@ -16,7 +16,7 @@ export type TeacherFilters = {
   q?: string;
   active?: boolean;
   hasShelter?: boolean;
-  shelterNumber?: number;
+  shelterName?: string;
 };
 
 export default function TeacherProfilesManager() {
@@ -31,7 +31,7 @@ export default function TeacherProfilesManager() {
     q: "",
     active: undefined,
     hasShelter: undefined,
-    shelterNumber: undefined,
+    shelterId: undefined,
   });
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
@@ -40,7 +40,7 @@ export default function TeacherProfilesManager() {
       searchString: undefined,
       active: filters.active,
       hasShelter: filters.hasShelter,
-      shelterNumber: filters.shelterNumber,
+      shelterName: filters.shelterName,
     });
 
   const doRefresh = React.useCallback(() => {
@@ -48,7 +48,7 @@ export default function TeacherProfilesManager() {
   }, [fetchPage]);
 
   const {
-    byNumber,
+    byId,
     loading: sheltersLoading,
     error: sheltersError,
     refresh: refreshShelters,
@@ -61,11 +61,11 @@ export default function TeacherProfilesManager() {
   const [editing, setEditing] = React.useState<TeacherProfile | null>(null);
 
   const onSetShelter = React.useCallback(
-    async (teacher: TeacherProfile | null, shelterNumberInput: number) => {
-      if (!teacher || !shelterNumberInput) return;
-      const shelter = byNumber.get(shelterNumberInput);
+    async (teacher: TeacherProfile | null, shelterName: string) => {
+      if (!teacher || !shelterName) return;
+      const shelter = byId.get(shelterName);
       if (!shelter) {
-        setDialogError("Shelterinho não encontrado pelo número informado.");
+        setDialogError("Abrigo não encontrado pelo nome informado.");
         return;
       }
       try {
@@ -76,7 +76,7 @@ export default function TeacherProfilesManager() {
       } catch {
       }
     },
-    [byNumber, setShelter, fetchPage, refreshShelters, setDialogError]
+    [byId, setShelter, fetchPage, refreshShelters, setDialogError]
   );
 
   const onClearShelter = React.useCallback(

@@ -65,7 +65,7 @@ export default function ImageSectionManager() {
   return (
     <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
       <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Imagens dos Shelterinhos" />
+        <BackHeader title="Imagens dos Abrigos" />
         <Box sx={{ maxWidth: 560, mx: 'auto', mt: 2, mb: 4, position: 'relative' }}>
           <TextField
             fullWidth

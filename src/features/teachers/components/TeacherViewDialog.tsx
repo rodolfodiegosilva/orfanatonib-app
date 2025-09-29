@@ -26,8 +26,7 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
-  const shelterNumber =
-    teacher?.shelter?.number != null ? `#${teacher.shelter.number}` : "—";
+  const shelterName = teacher?.shelter?.name ?? "—";
   const coordName =
     teacher?.shelter?.leader?.user?.name ||
     teacher?.shelter?.leader?.user?.email ||
@@ -52,10 +51,10 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
             <Grid item xs={12} md={6}>
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Shelterinho:
+                  Abrigo:
                 </Typography>
-                {teacher.shelter?.number != null ? (
-                  <Chip size="small" color="primary" label={shelterNumber} />
+                {teacher.shelter?.name ? (
+                  <Chip size="small" color="primary" label={shelterName} />
                 ) : (
                   <Typography variant="body2">—</Typography>
                 )}
@@ -64,7 +63,7 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
 
             <Grid item xs={12} md={6}>
               <Typography variant="body2">
-                <strong>Coordenador:</strong> {coordName}
+                <strong>Líder:</strong> {coordName}
               </Typography>
             </Grid>
 

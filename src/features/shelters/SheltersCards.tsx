@@ -143,7 +143,7 @@ export default function SheltersCards(props: Props) {
                       transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       flexShrink: 0,
                     }}
-                    aria-label={`Shelterinho ${c.name}`}
+                    aria-label={`Abrigo ${c.name}`}
                   >
                     {c.name}
                   </Avatar>
@@ -437,7 +437,7 @@ export default function SheltersCards(props: Props) {
                   }}
                 >
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    Shelterinho {c.name}
+                    Abrigo {c.name}
                   </Typography>
                   
                   <Stack direction="row" spacing={0.5}>

@@ -16,7 +16,7 @@ const NavBar: React.FC = () => {
           href="/"
           sx={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
         >
-          Shelterinho NIB
+          Orfanato NIB
         </Typography>
         <Box>{isMobile ? <MobileNavigation /> : <DesktopNavigation />}</Box>
       </Toolbar>

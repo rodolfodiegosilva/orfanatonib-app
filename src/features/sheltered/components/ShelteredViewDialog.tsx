@@ -160,7 +160,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
                   <Chip size="small" label={sheltered.gender === "feminino" ? "Feminino" : "Masculino"} color="default" />
                   {typeof age === "number" && <Chip size="small" label={`${age} anos`} color="default" />}
                   {sheltered.shelter ? (
-                    <Chip size="small" label={`Shelterinho ${sheltered.shelter.name}`} color="primary" variant="outlined" />
+                    <Chip size="small" label={`Abrigo ${sheltered.shelter.name}`} color="primary" variant="outlined" />
                   ) : (
                     <Chip size="small" label="Sem shelterinho" variant="outlined" />
                   )}
@@ -220,7 +220,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
                 </LineCard>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <LineCard icon={<PhoneIcon fontSize="small" />} title="No Shelterinho desde">
+                <LineCard icon={<PhoneIcon fontSize="small" />} title="No Abrigo desde">
                   <Typography>{fmtDate(sheltered.joinedAt || "")}</Typography>
                 </LineCard>
               </Grid>

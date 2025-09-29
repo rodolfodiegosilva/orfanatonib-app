@@ -16,13 +16,13 @@ export default function LeaderViewDialog({ open, loading, leader, onClose }: Pro
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
   const teachers = React.useMemo(() => {
-    if (!leader?.shelters) return [];
-    return leader.shelters.flatMap(c => c.teachers ?? []);
+    if (!leader?.shelter) return [];
+    return leader.shelter?.teachers ?? [];
   }, [leader]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Detalhes do Coordenador</DialogTitle>
+      <DialogTitle>Detalhes do Líder</DialogTitle>
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
         {loading && <Box textAlign="center" my={2}><CircularProgress size={24} /></Box>}
         {!!leader && (
@@ -32,10 +32,10 @@ export default function LeaderViewDialog({ open, loading, leader, onClose }: Pro
 
             <Grid item xs={12}><Divider sx={{ my: 1 }} /></Grid>
 
-            <Grid item xs={12}><strong>Shelterinhos</strong></Grid>
+            <Grid item xs={12}><strong>Abrigos</strong></Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                {(leader.shelters ?? []).map((c) => <Chip key={c.id} label={`#${c.number ?? "?"}`} />)}
+                {leader.shelter ? <Chip label={`#${leader.shelter.number ?? "?"}`} /> : <Typography variant="body2">—</Typography>}
               </Box>
             </Grid>
 

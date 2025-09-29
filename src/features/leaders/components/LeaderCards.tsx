@@ -367,7 +367,7 @@ export default function LeaderCards(props: Props) {
                             <Stack direction="row" spacing={0.75} alignItems="center">
                               <SchoolOutlined fontSize="small" color="primary" />
                               <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                Shelterinhos Vinculados ({shelters.length})
+                                Abrigos Vinculados ({shelters.length})
                               </Typography>
                             </Stack>
                             

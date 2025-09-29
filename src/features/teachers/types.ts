@@ -2,18 +2,23 @@ export const TZ = "America/Manaus";
 
 export type MinimalUser = { id: string; name?: string; email?: string; phone?: string };
 
-export type ShelterSimple = { id: string; name?: string };
+export type ShelterSimple = { 
+  id: string; 
+  name: string;
+  leader?: {
+    id: string;
+    active: boolean;
+    user: MinimalUser;
+  } | null;
+};
 
 export type TeacherProfile = {
   id: string;
+  active: boolean;
   user: MinimalUser;
-  shelter?: (ShelterSimple & {
-    leader?: { user?: MinimalUser } | null;
-  }) | null;
-  active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  vinculado?: boolean;
+  shelter?: ShelterSimple | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Page<T> = {
@@ -31,6 +36,6 @@ export type TeacherQuery = {
   shelterName?: string;
   page?: number;
   limit?: number;
-  sort?: "updatedAt" | "createdAt" | "name" | "shelterName";
+  sort?: "updatedAt" | "createdAt" | "name";
   order?: "asc" | "desc";
 };
