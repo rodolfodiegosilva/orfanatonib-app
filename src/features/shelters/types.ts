@@ -1,19 +1,5 @@
 import { UserRole } from "@/store/slices/auth/authSlice";
 
-export type Weekday =
-  | "monday" | "tuesday" | "wednesday" | "thursday"
-  | "friday" | "saturday" | "sunday";
-
-export const WEEKDAYS: { value: Weekday; label: string }[] = [
-  { value: "monday", label: "Segunda" },
-  { value: "tuesday", label: "Terça" },
-  { value: "wednesday", label: "Quarta" },
-  { value: "thursday", label: "Quinta" },
-  { value: "friday", label: "Sexta" },
-  { value: "saturday", label: "Sábado" },
-  { value: "sunday", label: "Domingo" },
-];
-
 export type UserPublicDto = {
   id: string;
   name?: string;
@@ -43,9 +29,7 @@ export type AddressResponseDto = {
 
 export type ShelterSimpleResponseDto = {
   id: string;
-  number: number;
-  weekday: Weekday;
-  time?: string | null;
+  name: string;
   address: AddressResponseDto;
   createdAt: string;
   updatedAt: string;
@@ -53,9 +37,7 @@ export type ShelterSimpleResponseDto = {
 
 export type ShelterResponseDto = {
   id: string;
-  number: number;
-  weekday: Weekday;
-  time?: string | null;
+  name: string;
   address: AddressResponseDto;
   leader?: LeaderMiniDto | null;
   teachers: TeacherMiniDto[];
@@ -78,9 +60,7 @@ export type Paginated<T> = {
 };
 
 export type CreateShelterForm = {
-  number: number;
-  weekday: Weekday;
-  time?: string | null;
+  name: string;
   address: Partial<AddressResponseDto> & {
     street: string; district: string; city: string; state: string; postalCode: string;
   };
@@ -98,7 +78,7 @@ export type ShelterFilters = {
 };
 
 export type ShelterSort =
-  | { id: "number" | "weekday" | "time" | "createdAt" | "updatedAt" | "city" | "state"; desc: boolean }
+  | { id: "name" | "createdAt" | "updatedAt" | "city" | "state"; desc: boolean }
   | null;
 
 export type LeaderOption = { leaderProfileId: string; name: string };

@@ -7,7 +7,7 @@ import {
 import { useSelector } from "react-redux";
 import { UserRole } from "@/store/slices/auth/authSlice";
 import { CreateShelteredForm, EditShelteredForm } from "../types";
-import { apiFetchSimpleShelters } from "@/features/shelters/api";
+import { apiFetchSheltersList } from "@/features/shelters/api";
 import ShelterAutocomplete from "@/features/shelters/form/ShelterAutocomplete";
 import { RootState } from "@/store/slices";
 
@@ -58,7 +58,7 @@ export default function ShelteredFormDialog({
       try {
         setLoadingShelterDetail(true);
         setShelterDetailErr("");
-        const items = await apiFetchSimpleShelters();
+        const items = await apiFetchSheltersList();
         if (!cancelled) setShelterOptions(Array.isArray(items) ? items : []);
       } catch (e: any) {
         if (!cancelled) setShelterDetailErr(e?.response?.data?.message || e?.message || "Falha ao carregar shelterinhos");

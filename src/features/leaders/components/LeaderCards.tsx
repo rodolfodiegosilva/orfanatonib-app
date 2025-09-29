@@ -13,7 +13,6 @@ import type { LeaderProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
 import { RootState } from "@/store/slices";
 import { buildWhatsappLink } from "@/utils/whatsapp";
-import { weekdayLabel } from "@/utils/dateUtils";
 import { CopyButton, initials } from "@/utils/components";
 
 
@@ -395,14 +394,8 @@ export default function LeaderCards(props: Props) {
                                         <Chip 
                                           size="small" 
                                           color="primary" 
-                                          label={`#${cl.number ?? "?"}`}
+                                          label={cl.name ?? "?"}
                                           sx={{ fontWeight: 600, fontSize: "0.75rem" }}
-                                        />
-                                        <Chip 
-                                          size="small" 
-                                          variant="outlined" 
-                                          label={weekdayLabel(cl.weekday)}
-                                          sx={{ fontWeight: 500, fontSize: "0.75rem" }}
                                         />
                                         <Chip 
                                           size="small" 

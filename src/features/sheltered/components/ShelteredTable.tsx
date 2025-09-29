@@ -74,7 +74,7 @@ function ShelteredTableDesktop(props: Props) {
     {
       id: "shelterNumber",
       header: "Shelterinho",
-      cell: ({ row }) => row.original.shelter?.number ?? <Chip size="small" label="—" />,
+      cell: ({ row }) => row.original.shelter?.name ?? <Chip size="small" label="—" />,
       meta: { width: 100 },
     },
     {

@@ -3,7 +3,8 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import FormHelperText from "@mui/material/FormHelperText";
-import { apiFetchSimpleShelters } from "@/features/shelters/api";
+import { apiFetchSheltersList } from "@/features/shelters/api";
+import { ShelterResponseDto } from "@/features/shelters/types";
 
 export type SimpleShelterResponseDto = {
   id: string;
@@ -49,7 +50,7 @@ export default function ShelterAutocomplete({
     setLoading(true);
     setLoadError("");
     try {
-      const items = await apiFetchSimpleShelters();
+      const items = await apiFetchSheltersList();
       const safe = Array.isArray(items) ? items : [];
       setOptions(safe);
 

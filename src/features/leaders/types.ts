@@ -18,8 +18,7 @@ export type MinimalTeacher = {
 
 export type ShelterSimple = {
   id: string;
-  number?: number;
-  weekday?: string;
+  name?: string;
 };
 
 export type ShelterWithTeachers = ShelterSimple & {
@@ -46,5 +45,5 @@ export type LeaderFilters = {
   searchString: string;
   active: "all" | "active" | "inactive";
   hasShelters: "all" | "yes" | "no";
-  shelterNumber?: number | "";
+  shelterName?: string | "";
 };

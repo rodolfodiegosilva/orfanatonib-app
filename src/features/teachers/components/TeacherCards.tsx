@@ -41,7 +41,6 @@ import type { TeacherProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
 import { RootState } from "@/store/slices";
 import { buildWhatsappLink } from "@/utils/whatsapp";
-import { weekdayLabel } from "@/utils/dateUtils";
 import { CopyButton, initials } from "@/utils/components";
 
 
@@ -279,9 +278,9 @@ export default function TeacherCards({
                           overflow: "hidden",
                           textOverflow: "ellipsis"
                         }}
-                        title={shelter ? `Shelterinho #${shelter.number ?? "?"}` : "Sem Shelterinho"}
+                        title={shelter ? `Shelterinho ${shelter.name ?? "?"}` : "Sem Shelterinho"}
                       >
-                        {shelter ? `Shelterinho #${shelter.number ?? "?"}` : "Sem Shelterinho"}
+                        {shelter ? `Shelterinho ${shelter.name ?? "?"}` : "Sem Shelterinho"}
                       </Typography>
                     </Box>
                   </Stack>
@@ -407,20 +406,14 @@ export default function TeacherCards({
                               <Stack direction="row" spacing={0.75} alignItems="center">
                                 <SchoolOutlined fontSize="small" color="primary" />
                                 <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                  Shelterinho #{shelter.number ?? "?"}
+                                  Shelterinho {shelter.name ?? "?"}
                                 </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap rowGap={1}>
                                 <Chip
                                   size="small"
                                   color="primary"
-                                  label={`#${shelter.number ?? "?"}`}
-                                  sx={{ fontWeight: 500 }}
-                                />
-                                <Chip
-                                  size="small"
-                                  variant="outlined"
-                                  label={weekdayLabel(shelter.weekday)}
+                                  label={shelter.name ?? "?"}
                                   sx={{ fontWeight: 500 }}
                                 />
                                 <Chip

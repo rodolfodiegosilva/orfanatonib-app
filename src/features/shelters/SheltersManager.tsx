@@ -10,7 +10,6 @@ import {
   ShelterResponseDto,
   CreateShelterForm,
   EditShelterForm,
-  Weekday,
   ShelterFilters,
   ShelterSort,
 } from "./types";
@@ -74,9 +73,7 @@ export default function SheltersManager() {
   const [creating, setCreating] = useState<CreateShelterForm | null>(null);
   const openCreate = () =>
     setCreating({
-      number: 0,
-      weekday: "saturday" as Weekday,
-      time: null,
+      name: "",
       address: {
         street: "",
         district: "",
@@ -105,8 +102,6 @@ export default function SheltersManager() {
       delete (payload as any).leaderProfileId;
     }
 
-    if (payload.time === "") delete (payload as any).time;
-
     await createShelter(payload, pageIndex + 1, pageSize, filters, sorting);
     await reloadOptions();
     setCreating(null);
@@ -117,9 +112,7 @@ export default function SheltersManager() {
   const startEdit = (c: ShelterResponseDto) => {
     setEditing({
       id: c.id,
-      number: c.number,
-      weekday: c.weekday,
-      time: c.time ?? null,
+      name: c.name,
       address: c.address,
       leaderProfileId: c.leader?.id ?? null,
       teacherProfileIds: (c.teachers ?? []).map((t) => t.id),
@@ -136,10 +129,6 @@ export default function SheltersManager() {
       ...rest,
       teacherProfileIds: teacherIds,
     };
-
-    if ((payload as any).time === "") {
-      (payload as any).time = null;
-    }
 
     if (rest.leaderProfileId === undefined) {
       delete (payload as any).leaderProfileId;
@@ -255,7 +244,7 @@ export default function SheltersManager() {
 
       <DeleteConfirmDialog
         open={!!confirmDelete}
-        title={confirmDelete ? `#${confirmDelete.number}` : ""}
+        title={confirmDelete ? confirmDelete.name : ""}
         onClose={() => {
           setConfirmDelete(null);
           setDialogError("");

@@ -1,6 +1,6 @@
 import api from "@/config/axiosConfig";
 import {
-  ShelterResponseDto, Paginated, CreateShelterForm, EditShelterForm,
+  ShelterResponseDto, CreateShelterForm, EditShelterForm,
   LeaderMiniDto, TeacherOption, UserPublicDto,
   ShelterFilters, ShelterSort,
   LeaderOption,
@@ -8,6 +8,14 @@ import {
 } from "./types";
 import { LeaderProfile } from "../leaders/types";
 import { TeacherProfile } from "../teachers/types";
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  pageCount: number;
+};
 
 export async function apiFetchShelters(args: {
   page: number;
@@ -25,13 +33,12 @@ export async function apiFetchShelters(args: {
   const sortField = sort?.id ?? "updatedAt";
   const order = sort?.desc ? "DESC" : "ASC";
 
-  const { data } = await api.get<Paginated<ShelterResponseDto>>("/shelters", {
+  const { data } = await api.get<PaginatedResponse<ShelterResponseDto>>("/shelters", {
     params: {
       page,
       limit,
-      addressSearchString: addressSearchString || undefined,
-      userSearchString: userSearchString || undefined,
-      shelterSearchString: shelterSearchString || undefined,
+      searchString: shelterSearchString || undefined,
+      nameSearchString: shelterSearchString || undefined,
       sort: sortField,
       order,
     },
@@ -44,8 +51,8 @@ export async function apiFetchShelter(id: string) {
   return data;
 }
 
-export async function apiFetchSimpleShelters() {
-  const { data } = await api.get<SimpleShelterResponseDto[]>(`/shelters/simple-options`);
+export async function apiFetchSheltersList() {
+  const { data } = await api.get<SimpleShelterResponseDto[]>(`/shelters/list`);
   return data;
 }
 
@@ -55,7 +62,7 @@ export async function apiCreateShelter(payload: CreateShelterForm) {
 }
 
 export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm, "id">) {
-  const { data } = await api.patch<ShelterResponseDto>(`/shelters/${id}`, payload);
+  const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, payload);
   return data;
 }
 
@@ -76,7 +83,7 @@ export async function apiGetLeaderProfile(userId: string) {
 }
 
 export async function apiGetTeacherProfile(userId: string) {
-  const { data } = await api.get<{ id: string; user: UserPublicDto; shelter?: { id: string; number?: number } | null }>(`/teacher-profiles/${userId}`);
+  const { data } = await api.get<{ id: string; user: UserPublicDto; shelter?: { id: string; name?: string } | null }>(`/teacher-profiles/${userId}`);
   return data;
 }
 
@@ -93,7 +100,8 @@ export async function apiLoadTeacherOptions() {
   return data.map((t) => ({
     teacherProfileId: t.id,
     name: t.user?.name ?? t.user?.email ?? t.id,
-    assignedShelter: t.shelter?.number ?? null,
+    // Temporarily use id until types are fully updated
+    assignedShelter: t.shelter?.name ?? t.shelter?.id ?? null,
     vinculado: t.vinculado,
   })) as TeacherOption[];
 }

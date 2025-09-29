@@ -14,7 +14,7 @@ export type ShelteredResponseDto = {
   guardianPhone: string;
   birthDate: string;
   joinedAt: string | null;
-  shelter: { id: string; number: number; weekday?: string } | null;
+  shelter: { id: string; name: string } | null;
   address: {
     id: string;
     street: string;
@@ -68,7 +68,7 @@ export type Paginated<T> = {
 
 export type ShelteredFilters = {
   searchString?: string;
-  shelterNumber?: number;
+  shelterName?: string;
   birthDateFrom?: string;
   birthDateTo?: string;
   joinedFrom?: string;

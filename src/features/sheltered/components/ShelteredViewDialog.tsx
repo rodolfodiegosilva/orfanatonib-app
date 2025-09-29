@@ -160,7 +160,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
                   <Chip size="small" label={sheltered.gender === "F" ? "Feminino" : "Masculino"} color="default" />
                   {typeof age === "number" && <Chip size="small" label={`${age} anos`} color="default" />}
                   {sheltered.shelter ? (
-                    <Chip size="small" label={`Shelterinho #${sheltered.shelter.number}${sheltered.shelter.weekday ? ` • ${sheltered.shelter.weekday}` : ""}`} color="primary" variant="outlined" />
+                    <Chip size="small" label={`Shelterinho ${sheltered.shelter.name}`} color="primary" variant="outlined" />
                   ) : (
                     <Chip size="small" label="Sem shelterinho" variant="outlined" />
                   )}

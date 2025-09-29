@@ -9,8 +9,7 @@ import AddressFields from "./form/AddressFields";
 import LeaderSelect from "./form/LeaderSelect";
 import TeachersSelect from "./form/TeachersSelect";
 import {
-  LeaderOption, CreateShelterForm, EditShelterForm, TeacherOption,
-  Weekday, WEEKDAYS
+  LeaderOption, CreateShelterForm, EditShelterForm, TeacherOption
 } from "./types";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/selectors/routeSelectors";
@@ -47,12 +46,7 @@ export default function ShelterFormDialog({
 
   const teachers = (value as any).teacherProfileIds ?? [];
   const coord = (value as any).leaderProfileId ?? null;
-  const time = (value as any).time ?? "";
-
-  const numberValue =
-    isAdmin
-      ? (isCreate ? ((value as any).number ?? 0) : ((value as any).number ?? ""))
-      : undefined;
+  const name = (value as any).name ?? "";
 
   return (
     <Dialog
@@ -74,50 +68,14 @@ export default function ShelterFormDialog({
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
         <Grid container spacing={2}>
-          {isAdmin && (
-            <Grid item xs={12} md={3}>
-              <TextField
-                label="Número"
-                type="text"
-                fullWidth
-                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                value={numberValue}
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  const onlyDigits = raw.replace(/\D/g, "");
-                  const parsed = onlyDigits ? Number(onlyDigits) : undefined;
-                  onChange({ ...value, number: parsed } as any);
-                }}
-              />
-            </Grid>
-          )}
-
-          <Grid item xs={12} md={5}>
-            <FormControl fullWidth>
-              <InputLabel>Dia da semana</InputLabel>
-              <Select
-                label="Dia da semana"
-                value={(value as any).weekday ?? "saturday"}
-                onChange={(e) =>
-                  onChange({ ...value, weekday: e.target.value as Weekday } as any)
-                }
-              >
-                {WEEKDAYS.map((w) => (
-                  <MenuItem key={w.value} value={w.value}>{w.label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12}>
             <TextField
-              label="Horário"
-              type="time"
+              label="Nome do Shelterinho"
+              type="text"
               fullWidth
-              inputProps={{ step: 60 }}
-              value={time}
-              onChange={(e) => onChange({ ...value, time: e.target.value } as any)}
-              helperText="0:00 a 23:59"
+              value={name}
+              onChange={(e) => onChange({ ...value, name: e.target.value } as any)}
+              placeholder="Ex: Abrigo Central 1"
             />
           </Grid>
 

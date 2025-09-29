@@ -9,12 +9,12 @@ import {
   Visibility, Edit, Delete, SwapVert,
   ExpandMore as ExpandMoreIcon,
   CalendarMonthOutlined, LocationOnOutlined,
-  SupervisorAccount, Group as GroupIcon, AccessTime as AccessTimeIcon,
+  SupervisorAccount, Group as GroupIcon,
   Phone as PhoneIcon,
 } from "@mui/icons-material";
 import { SortingState } from "@tanstack/react-table";
 import { ShelterResponseDto } from "./types";
-import { formatDate, weekdayLabel } from "@/utils/dateUtils";
+import { formatDate } from "@/utils/dateUtils";
 import { CopyButton } from "@/utils/components";
 
 type Props = {
@@ -51,9 +51,7 @@ export default function SheltersCards(props: Props) {
   const toggleSortDir = () => setSorting([{ id: sortField, desc: !sortDesc }]);
 
   const sortOptions = useMemo(() => ([
-    { id: "number", label: "Número" },
-    { id: "weekday", label: "Dia da semana" },
-    { id: "time", label: "Horário" },
+    { id: "name", label: "Nome" },
     { id: "updatedAt", label: "Atualizado em" },
     { id: "createdAt", label: "Criado em" },
   ]), []);
@@ -145,9 +143,9 @@ export default function SheltersCards(props: Props) {
                       transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       flexShrink: 0,
                     }}
-                    aria-label={`Shelterinho número ${c.number}`}
+                    aria-label={`Shelterinho ${c.name}`}
                   >
-                    {c.number}
+                    {c.name}
                   </Avatar>
 
                   <Stack 
@@ -167,30 +165,10 @@ export default function SheltersCards(props: Props) {
                         textOverflow: "ellipsis"
                       }}
                     >
-                      {weekdayLabel(c.weekday)}
+                      {c.name}
                     </Typography>
                   </Stack>
 
-                  {c.time && (
-                    <Stack 
-                      direction="row" 
-                      spacing={0.5} 
-                      alignItems="center"
-                      sx={{ minWidth: 0, flexShrink: 0 }}
-                    >
-                      <AccessTimeIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                      <Typography 
-                        variant="body2" 
-                        color="text.secondary" 
-                        sx={{ 
-                          fontWeight: 600,
-                          whiteSpace: "nowrap"
-                        }}
-                      >
-                        {c.time}
-                      </Typography>
-                    </Stack>
-                  )}
 
                   <ButtonBase
                     onClick={() => toggle(c.id)}
@@ -293,26 +271,11 @@ export default function SheltersCards(props: Props) {
                           "& .MuiChip-label": { px: 0.5 }
                         }}
                       />
-                      {c.time && (
-                        <Chip
-                          size="small"
-                          variant="filled"
-                          icon={<AccessTimeIcon sx={{ fontSize: 12 }} />}
-                          label={c.time}
-                          color="success"
-                          sx={{ 
-                            fontWeight: 600, 
-                            fontSize: "0.7rem",
-                            height: 20,
-                            "& .MuiChip-label": { px: 0.5 }
-                          }}
-                        />
-                      )}
                       <Chip
                         size="small"
                         variant="outlined"
-                        icon={<CalendarMonthOutlined sx={{ fontSize: 12 }} />}
-                        label={weekdayLabel(c.weekday)}
+                        icon={<LocationOnOutlined sx={{ fontSize: 12 }} />}
+                        label={addrPreview}
                         sx={{ 
                           fontWeight: 600, 
                           fontSize: "0.7rem",
@@ -474,7 +437,7 @@ export default function SheltersCards(props: Props) {
                   }}
                 >
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    Shelterinho #{c.number}
+                    Shelterinho {c.name}
                   </Typography>
                   
                   <Stack direction="row" spacing={0.5}>

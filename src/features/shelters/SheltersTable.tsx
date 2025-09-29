@@ -7,7 +7,7 @@ import {
   ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel,
   SortingState, useReactTable
 } from "@tanstack/react-table";
-import { Visibility, Edit, Delete, AccessTime } from "@mui/icons-material";
+import { Visibility, Edit, Delete } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { ShelterResponseDto, WEEKDAYS } from "./types";
@@ -49,38 +49,14 @@ function SheltersTableDesktop(props: Props) {
   const columns = useMemo<ColumnDef<ShelterResponseDto>[]>(() => {
     const base: ColumnDef<ShelterResponseDto>[] = [
       {
-        accessorKey: "number",
-        header: "Nº",
+        accessorKey: "name",
+        header: "Nome",
         cell: ({ getValue }) => <Typography fontWeight={700}>{String(getValue())}</Typography>,
-        meta: { width: 80 },
-      },
-      {
-        accessorKey: "weekday",
-        header: "Dia da semana",
-        cell: ({ getValue }) => {
-          const v = String(getValue() ?? "");
-          const label = WEEKDAYS.find((w) => w.value === v)?.label ?? v;
-          return <Typography>{label}</Typography>;
-        },
-        meta: { width: 150 },
-      },
-      {
-        accessorKey: "time",
-        header: "Horário",
-        cell: ({ row }) => {
-          const t = row.original.time;
-          return (
-            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-              <AccessTime fontSize="inherit" sx={{ fontSize: 16, color: "text.secondary" }} />
-              <Typography>{t || "—"}</Typography>
-            </Box>
-          );
-        },
-        meta: { width: 120 },
+        meta: { width: 200 },
       },
       {
         id: "leader",
-        header: "Coordenador",
+        header: "Líder",
         cell: ({ row }) => {
           const c = row.original.leader;
           const label = c?.user?.name || c?.user?.email || "—";

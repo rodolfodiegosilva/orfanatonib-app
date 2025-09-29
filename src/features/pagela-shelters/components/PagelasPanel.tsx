@@ -88,7 +88,7 @@ export function PagelasPanel({ sheltered }: { sheltered: ShelteredResponseDto | 
     <Stack sx={{ height: "100%" }} spacing={2}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
         <Chip label={`Total: ${total}`} color="info" variant="outlined" />
-        <Chip label={`Shelterinho #${sheltered?.shelter?.number ?? "-"}`} color="secondary" variant="outlined" />
+        <Chip label={`Shelterinho ${sheltered?.shelter?.name ?? "-"}`} color="secondary" variant="outlined" />
       </Box>
 
       <Box sx={{ flex: 1, overflow: "auto", pr: 1 }}>

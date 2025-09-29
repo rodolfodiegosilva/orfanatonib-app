@@ -167,7 +167,7 @@ export default function ShelteredrenCards(props: Props) {
                       size="small"
                       color={c.shelter ? "primary" : "default"}
                       variant={c.shelter ? "filled" : "outlined"}
-                      label={c.shelter ? `Shelterinho #${c.shelter.number}` : "Sem shelterinho"}
+                      label={c.shelter ? `Shelterinho ${c.shelter.name}` : "Sem shelterinho"}
                       sx={{
                         fontSize: "0.7rem",
                         height: 20,

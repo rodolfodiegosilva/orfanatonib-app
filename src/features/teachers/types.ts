@@ -2,7 +2,7 @@ export const TZ = "America/Manaus";
 
 export type MinimalUser = { id: string; name?: string; email?: string; phone?: string };
 
-export type ShelterSimple = { id: string; number?: number; weekday?: string };
+export type ShelterSimple = { id: string; name?: string };
 
 export type TeacherProfile = {
   id: string;
@@ -28,9 +28,9 @@ export type TeacherQuery = {
   q?: string;
   active?: boolean;
   hasShelter?: boolean;
-  shelterNumber?: number;
+  shelterName?: string;
   page?: number;
   limit?: number;
-  sort?: "updatedAt" | "createdAt" | "name" | "shelterNumber";
+  sort?: "updatedAt" | "createdAt" | "name" | "shelterName";
   order?: "asc" | "desc";
 };

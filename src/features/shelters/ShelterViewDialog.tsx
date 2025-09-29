@@ -30,12 +30,11 @@ import {
   LocationCityOutlined,
   MapOutlined,
   LocalPostOfficeOutlined,
-  AccessTime as AccessTimeIcon,
   ContentCopy,
   Phone as PhoneIcon,
   WhatsApp,
 } from "@mui/icons-material";
-import { ShelterResponseDto, WEEKDAYS } from "./types";
+import { ShelterResponseDto } from "./types";
 import { fmtDate } from "@/utils/dates";
 import { CopyButton, initials } from "@/utils/components";
 
@@ -50,11 +49,11 @@ type Props = {
 function LineCard({
   icon,
   title,
-  shelteredren,
+  children,
 }: {
   icon: React.ReactNode;
   title: string;
-  shelteredren: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2 }}>
@@ -65,7 +64,7 @@ function LineCard({
             {title}
           </Typography>
         </Stack>
-        {shelteredren}
+        {children}
       </Stack>
     </Paper>
   );
@@ -76,9 +75,6 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
   
-  const weekdayLabel =
-    shelter && WEEKDAYS.find((w) => w.value === shelter.weekday)?.label;
-
   const address = shelter?.address;
   const teachers = shelter?.teachers ?? [];
 
@@ -123,7 +119,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                 }}
                 aria-label="avatar do shelterinho"
               >
-                {initials(`Shelterinho ${shelter.number}`)}
+                {initials(`Shelterinho ${shelter.name}`)}
               </Avatar>
               <Box sx={{ minWidth: 0 }}>
                 <Stack
@@ -136,28 +132,10 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                     variant="h6"
                     fontWeight={800}
                     noWrap={!isXs}
-                    title={`Shelterinho #${shelter.number}`}
+                    title={`Shelterinho ${shelter.name}`}
                   >
-                    Shelterinho #{shelter.number}
+                    Shelterinho {shelter.name}
                   </Typography>
-                  {weekdayLabel && (
-                    <Chip
-                      size="small"
-                      label={weekdayLabel}
-                      color="primary"
-                      variant="outlined"
-                      icon={<CalendarToday sx={{ fontSize: 16 }} />}
-                    />
-                  )}
-                  {shelter?.time && (
-                    <Chip
-                      size="small"
-                      label={shelter.time}
-                      color="info"
-                      variant="outlined"
-                      icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
-                    />
-                  )}
                 </Stack>
               </Box>
             </Stack>
@@ -183,23 +161,9 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
           <Stack spacing={2}>
             <Grid container spacing={1.25}>
               <Grid item xs={12} sm={6}>
-                <LineCard icon={<NumbersOutlined fontSize="small" />} title="Número">
+                <LineCard icon={<NumbersOutlined fontSize="small" />} title="Nome">
                   <Typography variant="body1" fontWeight={600}>
-                    #{shelter.number}
-                  </Typography>
-                </LineCard>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <LineCard icon={<CalendarToday fontSize="small" />} title="Dia da semana">
-                  <Typography variant="body1">
-                    {weekdayLabel || "—"}
-                  </Typography>
-                </LineCard>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <LineCard icon={<AccessTimeIcon fontSize="small" />} title="Horário">
-                  <Typography variant="body1">
-                    {shelter.time || "—"}
+                    {shelter.name}
                   </Typography>
                 </LineCard>
               </Grid>
@@ -223,7 +187,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                 />
                 <Chip
                   size="small"
-                  label={`Coordenador: ${shelter.leader ? "Vinculado" : "Não vinculado"}`}
+                  label={`Líder: ${shelter.leader ? "Vinculado" : "Não vinculado"}`}
                   color={shelter.leader ? "success" : "default"}
                   variant={shelter.leader ? "filled" : "outlined"}
                 />
@@ -253,7 +217,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
 
             <Grid container spacing={1.25}>
               <Grid item xs={12}>
-                <LineCard icon={<PersonOutline fontSize="small" />} title="Coordenador">
+                <LineCard icon={<PersonOutline fontSize="small" />} title="Líder">
                   {shelter.leader ? (
                     <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                       <Typography variant="body1" fontWeight={600}>

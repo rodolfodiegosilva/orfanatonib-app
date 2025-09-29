@@ -39,7 +39,7 @@ export function useShelters(
         filters,
         sort: sorting,
       });
-      setRows(Array.isArray(data?.data) ? data.data : []);
+      setRows(Array.isArray(data?.items) ? data.items : []);
       setTotal(Number(data?.total ?? 0));
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || "Erro ao listar shelteres");
