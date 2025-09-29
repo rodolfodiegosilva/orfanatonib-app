@@ -31,6 +31,6 @@ export async function apiUnassignTeacherFromShelter(teacherId: string, shelterId
 }
 
 export async function apiListSheltersSimple() {
-  const { data } = await api.get<ShelterSimple[]>("/shelters/list");
+  const { data } = await api.get<ShelterSimple[]>("/shelters/simple");
   return data;
 }

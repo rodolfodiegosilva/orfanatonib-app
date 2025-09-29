@@ -41,6 +41,7 @@ export default function LeaderProfilesManager() {
   }, [fetchPage]);
 
   const {
+    shelters,
     byNumber,
     loading: sheltersLoading,
     error: sheltersError,
@@ -67,8 +68,6 @@ export default function LeaderProfilesManager() {
 
   const [viewing, setViewing] = React.useState<LeaderProfile | null>(null);
   const [linking, setLinking] = React.useState<LeaderProfile | null>(null);
-  const [linkNumber, setLinkNumber] = React.useState<string>("");
-  const [unlinkNumber, setUnlinkNumber] = React.useState<string>("");
 
   const {
     dialogLoading,
@@ -81,43 +80,35 @@ export default function LeaderProfilesManager() {
   const closeLinkDialog = React.useCallback(() => {
     setLinking(null);
     setDialogError("");
-    setLinkNumber("");
-    setUnlinkNumber("");
   }, [setDialogError]);
 
-  const onLinkConfirm = async () => {
-    if (!linking?.id || !linkNumber) return;
-    const num = Number(linkNumber);
-    const shelter = byNumber.get(num);
-    if (!num || !shelter) {
-      setDialogError("Abrigo não encontrado pelo número informado.");
-      return;
-    }
-    try {
-      const msg = await assignShelter(linking.id, shelter.id);
-      showSnack(msg || "Shelter atribuído ao líder com sucesso", "success");
-      closeLinkDialog();
-    } catch {
-      showSnack("Falha ao vincular shelterinho", "error");
-    }
-  };
+  const onSetShelter = React.useCallback(
+    async (leader: LeaderProfile | null, shelterId: string) => {
+      if (!leader || !shelterId) return;
+      try {
+        const msg = await assignShelter(leader.id, shelterId);
+        showSnack(msg || "Abrigo atribuído ao líder com sucesso", "success");
+        closeLinkDialog();
+      } catch {
+        showSnack("Falha ao vincular abrigo", "error");
+      }
+    },
+    [assignShelter, closeLinkDialog, showSnack]
+  );
 
-  const onUnlinkConfirm = async () => {
-    if (!linking?.id || !unlinkNumber) return;
-    const num = Number(unlinkNumber);
-    const shelter = byNumber.get(num);
-    if (!num || !shelter) {
-      setDialogError("Abrigo não encontrado pelo número informado.");
-      return;
-    }
-    try {
-      const msg = await unassignShelter(linking.id, shelter.id);
-      showSnack(msg || "Shelter removido do líder com sucesso", "success");
-      closeLinkDialog();
-    } catch {
-      showSnack("Falha ao desvincular shelterinho", "error");
-    }
-  };
+  const onClearShelter = React.useCallback(
+    async (leaderId: string) => {
+      if (!leaderId) return;
+      try {
+        const msg = await unassignShelter(leaderId);
+        showSnack(msg || "Abrigo desvinculado do líder com sucesso", "success");
+        closeLinkDialog();
+      } catch {
+        showSnack("Falha ao desvincular abrigo", "error");
+      }
+    },
+    [unassignShelter, closeLinkDialog, showSnack]
+  );
 
   React.useEffect(() => {
     doRefresh();
@@ -202,12 +193,9 @@ export default function LeaderProfilesManager() {
       <LeaderLinkDialog
         open={!!linking}
         leader={linking}
-        linkNumber={linkNumber}
-        unlinkNumber={unlinkNumber}
-        onChangeLink={setLinkNumber}
-        onChangeUnlink={setUnlinkNumber}
-        onLink={onLinkConfirm}
-        onUnlink={onUnlinkConfirm}
+        shelters={shelters}
+        onSetShelter={(shelterId) => onSetShelter(linking, shelterId)}
+        onClearShelter={() => onClearShelter(linking?.id || "")}
         loading={dialogLoading}
         error={dialogError}
         onClose={closeLinkDialog}

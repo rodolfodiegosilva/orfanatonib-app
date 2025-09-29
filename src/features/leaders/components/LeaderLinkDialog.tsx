@@ -1,88 +1,166 @@
 import React from "react";
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, TextField, Alert, Box, Typography
+  Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, Alert, Box, Typography, Stack,
+  FormControl, InputLabel, Select, MenuItem, Chip, useMediaQuery, useTheme
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { LeaderProfile } from "../types";
+import { LeaderProfile, ShelterSimple } from "../types";
 
 type Props = {
   open: boolean;
   leader: LeaderProfile | null;
-  linkNumber: string;
-  unlinkNumber: string;
-  onChangeLink: (v: string) => void;
-  onChangeUnlink: (v: string) => void;
-  onLink: () => void;
-  onUnlink: () => void;
+  shelters: ShelterSimple[];
+  onSetShelter: (shelterId: string) => void;
+  onClearShelter: () => void;
   loading: boolean;
   error: string;
   onClose: () => void;
 };
 
 export default function LeaderLinkDialog({
-  open, leader, linkNumber, unlinkNumber, onChangeLink, onChangeUnlink,
-  onLink, onUnlink, loading, error, onClose,
+  open, leader, shelters, onSetShelter, onClearShelter, loading, error, onClose,
 }: Props) {
-  const disabledLink = loading || !linkNumber;
-  const disabledUnlink = loading || !unlinkNumber;
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [selectedShelterId, setSelectedShelterId] = React.useState<string>("");
+  const [localErr, setLocalErr] = React.useState<string>("");
+
+  React.useEffect(() => {
+    setSelectedShelterId("");
+    setLocalErr("");
+  }, [leader]);
+
+  const hasShelter = !!leader?.shelter;
+  const currentShelterName = leader?.shelter?.name ?? "—";
+
+  const handleVincular = React.useCallback(() => {
+    setLocalErr("");
+    if (!selectedShelterId) {
+      setLocalErr("Selecione um abrigo para vincular.");
+      return;
+    }
+    onSetShelter(selectedShelterId);
+  }, [selectedShelterId, onSetShelter]);
+
+  const handleDesvincular = React.useCallback(() => {
+    setLocalErr("");
+    onClearShelter();
+  }, [onClearShelter]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Abrigo</DialogTitle>
-      <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      <DialogTitle>
+        {hasShelter ? "Desvincular Abrigo" : "Vincular Abrigo"}
+      </DialogTitle>
+      <DialogContent dividers sx={{ p: { xs: 2, md: 3 }, position: "relative" }}>
+        {(error || localErr) && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error || localErr}
+          </Alert>
+        )}
 
         {!!leader && (
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography>
-                <strong>{leader.user?.name ?? leader.user?.email}</strong>
+              <Typography
+                component="div"
+                sx={{ fontWeight: 700, lineHeight: 1.3 }}
+              >
+                {leader.user?.name || leader.user?.email || "—"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Abrigo atual: <strong>{currentShelterName}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Número do Abrigo para Vincular"
-                type="number"
-                fullWidth
-                value={linkNumber}
-                onChange={(e) => onChangeLink(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !disabledLink) onLink(); }}
-                disabled={loading}
-                inputProps={{ inputMode: "numeric", min: 0 }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Número do Abrigo para Remover"
-                type="number"
-                fullWidth
-                value={unlinkNumber}
-                onChange={(e) => onChangeUnlink(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !disabledUnlink) onUnlink(); }}
-                disabled={loading}
-                inputProps={{ inputMode: "numeric", min: 0 }}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <Button variant="contained" onClick={onLink} disabled={disabledLink}>
-                  Vincular
-                </Button>
-                <Button color="warning" variant="outlined" onClick={onUnlink} disabled={disabledUnlink}>
-                  Desvincular
-                </Button>
-                {loading && <CircularProgress size={20} />}
-              </Box>
-            </Grid>
+            {hasShelter ? (
+              // Já tem abrigo - só desvincular
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: "grey.50",
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "grey.300",
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Este líder já está vinculado ao abrigo <strong>{currentShelterName}</strong>.
+                    Clique em "Desvincular" para remover o vínculo.
+                  </Typography>
+                </Box>
+              </Grid>
+            ) : (
+              // Não tem abrigo - selecionar para vincular
+              <Grid item xs={12}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Selecionar Abrigo</InputLabel>
+                  <Select
+                    value={selectedShelterId}
+                    onChange={(e) => setSelectedShelterId(e.target.value)}
+                    label="Selecionar Abrigo"
+                    disabled={loading}
+                  >
+                    {shelters.map((shelter) => (
+                      <MenuItem key={shelter.id} value={shelter.id}>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Chip 
+                            size="small" 
+                            label={shelter.name} 
+                            color="primary" 
+                            variant="outlined"
+                          />
+                        </Stack>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
           </Grid>
+        )}
+
+        {loading && (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              bgcolor: "rgba(255,255,255,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <CircularProgress size={28} />
+          </Box>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} disabled={loading}>Fechar</Button>
+        <Button onClick={onClose} sx={{ color: "text.secondary" }}>
+          Fechar
+        </Button>
+        {hasShelter ? (
+          <Button
+            color="warning"
+            variant="contained"
+            onClick={handleDesvincular}
+            disabled={loading}
+          >
+            Desvincular
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={handleVincular}
+            disabled={loading || !selectedShelterId}
+          >
+            Vincular
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

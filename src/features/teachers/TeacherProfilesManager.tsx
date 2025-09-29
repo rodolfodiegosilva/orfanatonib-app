@@ -48,6 +48,7 @@ export default function TeacherProfilesManager() {
   }, [fetchPage]);
 
   const {
+    shelters,
     byId,
     loading: sheltersLoading,
     error: sheltersError,
@@ -61,22 +62,17 @@ export default function TeacherProfilesManager() {
   const [editing, setEditing] = React.useState<TeacherProfile | null>(null);
 
   const onSetShelter = React.useCallback(
-    async (teacher: TeacherProfile | null, shelterName: string) => {
-      if (!teacher || !shelterName) return;
-      const shelter = byId.get(shelterName);
-      if (!shelter) {
-        setDialogError("Abrigo não encontrado pelo nome informado.");
-        return;
-      }
+    async (teacher: TeacherProfile | null, shelterId: string) => {
+      if (!teacher || !shelterId) return;
       try {
-        await setShelter(teacher.id, shelter.id);
+        await setShelter(teacher.id, shelterId);
         setEditing(null);
         setDialogError("");
         await Promise.all([fetchPage(), refreshShelters()]);
       } catch {
       }
     },
-    [byId, setShelter, fetchPage, refreshShelters, setDialogError]
+    [setShelter, fetchPage, refreshShelters, setDialogError]
   );
 
   const onClearShelter = React.useCallback(
@@ -187,7 +183,8 @@ export default function TeacherProfilesManager() {
         teacher={editing}
         loading={dialogLoading}
         error={dialogError}
-        onSetShelter={(num) => onSetShelter(editing, num)}
+        shelters={shelters}
+        onSetShelter={(shelterId) => onSetShelter(editing, shelterId)}
         onClearShelter={() => editing && onClearShelter(editing.id)}
         onClose={() => {
           setEditing(null);

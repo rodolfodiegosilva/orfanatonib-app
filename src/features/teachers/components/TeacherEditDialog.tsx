@@ -6,23 +6,28 @@ import {
   DialogActions,
   Button,
   Grid,
-  TextField,
   Alert,
   Box,
   Typography,
   Stack,
-  InputAdornment,
   useMediaQuery,
   useTheme,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { TeacherProfile } from "../types";
+import { ShelterSimple } from "../types";
 
 type Props = {
   open: boolean;
   teacher: TeacherProfile | null;
   loading: boolean;
   error: string;
+  shelters: ShelterSimple[];
   onSetShelter: (shelterId: string) => void;
   onClearShelter: () => void;
   onClose: () => void;
@@ -33,6 +38,7 @@ export default function TeacherEditDialog({
   teacher,
   loading,
   error,
+  shelters,
   onSetShelter,
   onClearShelter,
   onClose,
@@ -40,37 +46,36 @@ export default function TeacherEditDialog({
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [shelterInput, setShelterInput] = React.useState<string>("");
+  const [selectedShelterId, setSelectedShelterId] = React.useState<string>("");
   const [localErr, setLocalErr] = React.useState<string>("");
 
   React.useEffect(() => {
-    setShelterInput(teacher?.shelter?.id ? teacher.shelter.id : "");
+    setSelectedShelterId("");
     setLocalErr("");
   }, [teacher]);
 
-  const submit = React.useCallback(() => {
+  const hasShelter = !!teacher?.shelter;
+  const currentShelterName = teacher?.shelter?.name ?? "—";
+
+  const handleVincular = React.useCallback(() => {
     setLocalErr("");
-    const v = Number(shelterInput);
-    if (!shelterInput || Number.isNaN(v) || v <= 0) {
-      setLocalErr("Informe um número de Abrigo válido (maior que zero).");
+    if (!selectedShelterId) {
+      setLocalErr("Selecione um abrigo para vincular.");
       return;
     }
-    onSetShelter(v);
-  }, [shelterInput, onSetShelter]);
+    onSetShelter(selectedShelterId);
+  }, [selectedShelterId, onSetShelter]);
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === "Enter" && !loading) {
-      e.preventDefault();
-      submit();
-    }
-  };
-
-  const currentShelterLabel =
-    teacher?.shelter?.name ?? "—";
+  const handleDesvincular = React.useCallback(() => {
+    setLocalErr("");
+    onClearShelter();
+  }, [onClearShelter]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Abrigo</DialogTitle>
+      <DialogTitle>
+        {hasShelter ? "Desvincular Abrigo" : "Vincular Abrigo"}
+      </DialogTitle>
 
       <DialogContent
         dividers
@@ -92,57 +97,55 @@ export default function TeacherEditDialog({
                 {teacher.user?.name || teacher.user?.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Abrigo atual: <strong>{currentShelterLabel}</strong>
+                Abrigo atual: <strong>{currentShelterName}</strong>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} md={8}>
-              <TextField
-                label="Número do Abrigo"
-                type="number"
-                size="small"
-                fullWidth
-                value={shelterInput}
-                onChange={(e) => setShelterInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                inputProps={{ min: 1 }}
-                disabled={loading}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">#</InputAdornment>
-                  ),
-                }}
-                helperText={
-                  teacher?.shelter?.number
-                    ? `Digite um novo número para alterar o vínculo`
-                    : `Digite o número do Abrigo para vincular`
-                }
-              />
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Stack
-                direction={isXs ? "row" : "column"}
-                spacing={1}
-                sx={{ height: "100%", alignItems: "stretch", justifyContent: "center" }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={submit}
-                  disabled={loading || !shelterInput}
+            {hasShelter ? (
+              // Já tem abrigo - só desvincular
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: "grey.50",
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "grey.300",
+                  }}
                 >
-                  Vincular
-                </Button>
-                <Button
-                  color="warning"
-                  variant="outlined"
-                  onClick={onClearShelter}
-                  disabled={loading}
-                >
-                  Desvincular
-                </Button>
-              </Stack>
-            </Grid>
+                  <Typography variant="body2" color="text.secondary">
+                    Este professor já está vinculado ao abrigo <strong>{currentShelterName}</strong>.
+                    Clique em "Desvincular" para remover o vínculo.
+                  </Typography>
+                </Box>
+              </Grid>
+            ) : (
+              // Não tem abrigo - selecionar para vincular
+              <Grid item xs={12}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Selecionar Abrigo</InputLabel>
+                  <Select
+                    value={selectedShelterId}
+                    onChange={(e) => setSelectedShelterId(e.target.value)}
+                    label="Selecionar Abrigo"
+                    disabled={loading}
+                  >
+                    {shelters.map((shelter) => (
+                      <MenuItem key={shelter.id} value={shelter.id}>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Chip 
+                            size="small" 
+                            label={shelter.name} 
+                            color="primary" 
+                            variant="outlined"
+                          />
+                        </Stack>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
           </Grid>
         )}
 
@@ -167,6 +170,24 @@ export default function TeacherEditDialog({
         <Button onClick={onClose} sx={{ color: "text.secondary" }}>
           Fechar
         </Button>
+        {hasShelter ? (
+          <Button
+            color="warning"
+            variant="contained"
+            onClick={handleDesvincular}
+            disabled={loading}
+          >
+            Desvincular
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={handleVincular}
+            disabled={loading || !selectedShelterId}
+          >
+            Vincular
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

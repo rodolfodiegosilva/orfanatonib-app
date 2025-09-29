@@ -82,7 +82,7 @@ export default function LeaderCards(props: Props) {
       <Grid container spacing={{ xs: 1, sm: 1.25 }}>
         {rows.map((c) => {
           const expanded = open.has(c.id);
-          const shelters = c.shelters ?? [];
+          const shelters = c.shelter ? [c.shelter] : [];
           const totalTeachers = shelters.reduce((acc, cl) => acc + (cl.teachers?.length || 0), 0);
           const wa = buildWhatsappLink({ id: c.id, name: c.user?.name, phone: c.user?.phone } as any, loggedUser?.name);
 
@@ -293,7 +293,7 @@ export default function LeaderCards(props: Props) {
                         size="small"
                         variant="filled"
                         icon={<SchoolOutlined sx={{ fontSize: 12 }} />}
-                        label={`Shelters: ${shelters.length}`}
+                        label={`Abrigos: ${shelters.length}`}
                         color="info"
                         sx={{ 
                           fontWeight: 600, 
@@ -373,7 +373,7 @@ export default function LeaderCards(props: Props) {
                             
                             {shelters.length === 0 ? (
                               <Typography variant="body2" color="text.secondary">
-                                Nenhum shelterinho vinculado.
+                                Nenhum abrigo vinculado.
                               </Typography>
                             ) : (
                               <Stack spacing={1.5}>
@@ -394,7 +394,7 @@ export default function LeaderCards(props: Props) {
                                         <Chip 
                                           size="small" 
                                           color="primary" 
-                                          label={cl.name ?? "?"}
+                                          label={cl.name ?? cl.id}
                                           sx={{ fontWeight: 600, fontSize: "0.75rem" }}
                                         />
                                         <Chip 
@@ -495,7 +495,7 @@ export default function LeaderCards(props: Props) {
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Vincular/Desvincular shelterinho">
+                    <Tooltip title="Vincular/Desvincular abrigo">
                       <IconButton 
                         size="small" 
                         onClick={() => onLink(c)}

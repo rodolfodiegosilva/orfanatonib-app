@@ -53,11 +53,11 @@ export default function LeaderTable({
       id: "shelters",
       header: "Abrigos",
       cell: ({ row }) => {
-        const list = row.original.shelters ?? [];
-        if (!list.length) return <Chip size="small" label="—" />;
+        const shelter = row.original.shelter;
+        if (!shelter) return <Chip size="small" label="—" />;
         return (
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            {list.map((c) => <Chip key={c.id} size="small" label={`#${c.number ?? "?"}`} />)}
+            <Chip key={shelter.id} size="small" label={shelter.name ?? shelter.id} />
           </Box>
         );
       },
@@ -66,7 +66,8 @@ export default function LeaderTable({
       id: "teachers",
       header: "Professores",
       cell: ({ row }) => {
-        const list = (row.original.shelters ?? []).flatMap(c => c.teachers ?? []);
+        const shelter = row.original.shelter;
+        const list = shelter?.teachers ?? [];
         if (!list.length) return <Chip size="small" label="—" />;
         return (
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
@@ -118,7 +119,7 @@ export default function LeaderTable({
                 </IconButton>
               </Tooltip>
             )}
-            <Tooltip title="Vincular/Desvincular shelterinho">
+            <Tooltip title="Vincular/Desvincular abrigo">
               <IconButton size={isXs ? "small" : "medium"} onClick={() => onLink(row.original)}>
                 <LinkIcon fontSize="inherit" />
               </IconButton>

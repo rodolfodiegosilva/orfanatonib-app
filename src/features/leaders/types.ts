@@ -18,9 +18,21 @@ export type MinimalTeacher = {
 
 export type ShelterSimple = {
   id: string;
-  number: number;
-  weekday: string;
-  teachers?: MinimalTeacher[];
+  name: string;
+  address?: {
+    id: string;
+    street: string;
+    number: string;
+    district: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    complement?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type ShelterWithTeachers = ShelterSimple & {

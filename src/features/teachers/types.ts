@@ -5,11 +5,20 @@ export type MinimalUser = { id: string; name?: string; email?: string; phone?: s
 export type ShelterSimple = { 
   id: string; 
   name: string;
-  leader?: {
+  address?: {
     id: string;
-    active: boolean;
-    user: MinimalUser;
-  } | null;
+    street: string;
+    number: string;
+    district: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    complement?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type TeacherProfile = {
