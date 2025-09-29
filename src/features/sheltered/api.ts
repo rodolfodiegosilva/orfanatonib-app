@@ -8,19 +8,25 @@ export async function apiFetchShelteredren(args: {
   sort?: ShelteredSort;
 }) {
   const { page, limit, filters, sort } = args;
-  const orderBy = sort?.id ?? 'updatedAt';
+  const orderBy = sort?.id ?? 'name';
   const order = sort?.desc ? 'DESC' : 'ASC';
 
-  const { data } = await api.get<Paginated<ShelteredResponseDto>>("/shelteredren", {
+  const { data } = await api.get<Paginated<ShelteredResponseDto>>("/sheltered", {
     params: {
       page,
       limit,
       orderBy,
       order,
       searchString: filters?.searchString || undefined,
-      shelterNumber: filters?.shelterNumber ?? undefined,
+      shelterId: filters?.shelterId || undefined,
+      shelterName: filters?.shelterName || undefined,
+      city: filters?.city || undefined,
+      state: filters?.state || undefined,
+      gender: filters?.gender || undefined,
+      birthDate: filters?.birthDate || undefined,
       birthDateFrom: filters?.birthDateFrom || undefined,
       birthDateTo: filters?.birthDateTo || undefined,
+      joinedAt: filters?.joinedAt || undefined,
       joinedFrom: filters?.joinedFrom || undefined,
       joinedTo: filters?.joinedTo || undefined,
     },
@@ -29,25 +35,25 @@ export async function apiFetchShelteredren(args: {
 }
 
 export async function apiFetchSheltered(id: string) {
-  const { data } = await api.get<ShelteredResponseDto>(`/shelteredren/${id}`);
+  const { data } = await api.get<ShelteredResponseDto>(`/sheltered/${id}`);
   return data;
 }
 
 export async function apiFetchShelteredSimple() {
-  const { data } = await api.get<ShelteredSimpleResponseDto[]>(`/shelteredren/simple`);
+  const { data } = await api.get<ShelteredSimpleResponseDto[]>(`/sheltered/simple`);
   return data;
 }
 
 export async function apiCreateSheltered(payload: CreateShelteredForm) {
-  const { data } = await api.post<ShelteredResponseDto>("/shelteredren", payload);
+  const { data } = await api.post<ShelteredResponseDto>("/sheltered", payload);
   return data;
 }
 
 export async function apiUpdateSheltered(id: string, payload: Omit<EditShelteredForm, "id">) {
-  const { data } = await api.put<ShelteredResponseDto>(`/shelteredren/${id}`, payload);
+  const { data } = await api.put<ShelteredResponseDto>(`/sheltered/${id}`, payload);
   return data;
 }
 
 export async function apiDeleteSheltered(id: string) {
-  await api.delete(`/shelteredren/${id}`);
+  await api.delete(`/sheltered/${id}`);
 }

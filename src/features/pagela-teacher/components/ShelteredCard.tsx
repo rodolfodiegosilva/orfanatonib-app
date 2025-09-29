@@ -155,7 +155,7 @@ export default function ShelteredCard({
                 variant="body2"
                 color="text.secondary"
                 noWrap
-                title={sheltered.guardianName}
+                title={sheltered.guardianName ?? undefined}
                 sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
               >
                 Resp.: {sheltered.guardianName || "—"}
@@ -164,7 +164,7 @@ export default function ShelteredCard({
 
             <Stack direction="row" spacing={0.75} alignItems="center">
               <PhoneIcon fontSize="small" sx={{ opacity: 0.7 }} />
-              <Typography variant="body2" color="text.secondary" noWrap title={sheltered.guardianPhone}>
+              <Typography variant="body2" color="text.secondary" noWrap title={sheltered.guardianPhone ?? undefined}>
                 Tel.: {sheltered.guardianPhone || "—"}
               </Typography>
             </Stack>

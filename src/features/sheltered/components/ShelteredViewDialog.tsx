@@ -145,7 +145,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
                 sx={{
                   width: 48,
                   height: 48,
-                  bgcolor: sheltered.gender === "F" ? "secondary.main" : "primary.main",
+                  bgcolor: sheltered.gender === "feminino" ? "secondary.main" : "primary.main",
                   color: "white",
                   fontWeight: 700,
                 }}
@@ -157,7 +157,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
                   <Typography variant="h6" fontWeight={800} noWrap={!isXs} title={sheltered.name}>
                     {sheltered.name || "—"}
                   </Typography>
-                  <Chip size="small" label={sheltered.gender === "F" ? "Feminino" : "Masculino"} color="default" />
+                  <Chip size="small" label={sheltered.gender === "feminino" ? "Feminino" : "Masculino"} color="default" />
                   {typeof age === "number" && <Chip size="small" label={`${age} anos`} color="default" />}
                   {sheltered.shelter ? (
                     <Chip size="small" label={`Shelterinho ${sheltered.shelter.name}`} color="primary" variant="outlined" />

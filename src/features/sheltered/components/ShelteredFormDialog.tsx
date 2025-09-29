@@ -123,8 +123,8 @@ export default function ShelteredFormDialog({
                 value={(value as any).gender ?? ""}
                 onChange={(e) => setField("gender", e.target.value)}
               >
-                <MenuItem value="M">Menino</MenuItem>
-                <MenuItem value="F">Menina</MenuItem>
+                <MenuItem value="masculino">Masculino</MenuItem>
+                <MenuItem value="feminino">Feminino</MenuItem>
               </Select>
               {showErrors && !req.gender && <FormHelperText>Selecione o gênero</FormHelperText>}
             </FormControl>

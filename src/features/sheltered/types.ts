@@ -9,7 +9,7 @@ export type ShelteredListItemDto = {
 export type ShelteredResponseDto = {
   id: string;
   name: string;
-  gender: "M" | "F";
+  gender: "masculino" | "feminino";
   guardianName: string;
   guardianPhone: string;
   birthDate: string;
@@ -24,8 +24,6 @@ export type ShelteredResponseDto = {
     state: string;
     postalCode: string;
     complement?: string;
-    createdAt: string;
-    updatedAt: string;
   } | null;
   createdAt: string;
   updatedAt: string;
@@ -42,10 +40,10 @@ export type AcceptedChristShortDto = {
 export type ShelteredSimpleResponseDto = {
   id: string;
   name: string;
-  guardianName: string;
-  guardianPhone: string;
-  gender: string;
-  shelterId: string;
+  guardianName: string | null;
+  gender: "masculino" | "feminino";
+  guardianPhone: string | null;
+  shelterId: string | null;
   acceptedChrists: AcceptedChristShortDto[];
 };
 
@@ -68,9 +66,15 @@ export type Paginated<T> = {
 
 export type ShelteredFilters = {
   searchString?: string;
+  shelterId?: string;
   shelterName?: string;
+  city?: string;
+  state?: string;
+  gender?: "masculino" | "feminino";
+  birthDate?: string;
   birthDateFrom?: string;
   birthDateTo?: string;
+  joinedAt?: string;
   joinedFrom?: string;
   joinedTo?: string;
 };
@@ -81,7 +85,7 @@ export type ShelteredSort =
 
 export type CreateShelteredForm = {
   name: string;
-  gender: "M" | "F";
+  gender: "masculino" | "feminino";
   guardianName: string;
   guardianPhone: string;
   birthDate: string;

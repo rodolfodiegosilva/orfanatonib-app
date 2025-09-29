@@ -77,7 +77,7 @@ export default function ShelteredManager() {
   const openCreate = () =>
     setCreating({
       name: "",
-      gender: "M",
+      gender: "masculino",
       guardianName: "",
       guardianPhone: "",
       birthDate: "",
