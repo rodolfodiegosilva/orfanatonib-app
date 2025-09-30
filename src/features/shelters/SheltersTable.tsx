@@ -190,7 +190,7 @@ function SheltersTableDesktop(props: Props) {
             {rowModel.rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
-                  <Typography variant="body2" color="text.secondary">Nenhum shelterinho encontrado.</Typography>
+                  <Typography variant="body2" color="text.secondary">Nenhum abrigo encontrado.</Typography>
                 </TableCell>
               </TableRow>
             ) : (

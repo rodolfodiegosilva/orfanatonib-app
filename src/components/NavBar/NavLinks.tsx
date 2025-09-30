@@ -45,16 +45,21 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
           handleClick();
         }}
         variant={active ? 'contained' : 'text'}
-        color={active ? 'success' : 'inherit'}
+        color={active ? 'primary' : 'inherit'}
         fullWidth={!!isMobile}
         sx={{
           justifyContent: isMobile ? 'flex-start' : 'center',
           fontWeight: 'bold',
-          ...(isMobile ? { color: '#fff' } : {}),
+          color: isMobile ? '#FFFF00' : (active ? '#000000' : '#FFFF00'),
+          backgroundColor: active ? '#FFFF00' : 'transparent',
           ...(active && !isMobile ? { boxShadow: 'none' } : null),
           minHeight: 44,
           textTransform: 'none',
           maxWidth: '100%',
+          '&:hover': {
+            backgroundColor: isMobile ? 'rgba(255, 255, 0, 0.1)' : (active ? '#CCCC00' : 'rgba(255, 255, 0, 0.1)'),
+            color: isMobile ? '#FFFFFF' : (active ? '#000000' : '#FFFFFF')
+          }
         }}
       >
         {label}
@@ -71,7 +76,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
       sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}
     >
       {renderLink('/', 'Início')}
-      {renderLink('/feed-shelter', 'Feed Abrigo')}
+      {renderLink('/feed-shelter', 'Feed Orfanato')}
       {renderLink('/sobre', 'Sobre')}
       {renderLink('/eventos', 'Eventos')}
       {renderLink('/contato', 'Contato')}
@@ -83,9 +88,19 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
           <Button
             onClick={handleLogout}
             variant="contained"
-            color="error"
             fullWidth={!!isMobile}
-            sx={{ fontWeight: 'bold', minHeight: 44, textTransform: 'none', maxWidth: '100%' }}
+            sx={{ 
+              fontWeight: 'bold', 
+              minHeight: 44, 
+              textTransform: 'none', 
+              maxWidth: '100%',
+              backgroundColor: '#FF0000',
+              color: '#FFFFFF',
+              '&:hover': {
+                backgroundColor: '#CC0000',
+                color: '#FFFFFF'
+              }
+            }}
           >
             Sair
           </Button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import { Box, Typography, Container, Grid, Card, CardContent } from '@mui/material';
 import { motion } from 'framer-motion';
 import { FeaturesSectionProps } from '../types';
@@ -43,10 +44,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
             sx={{
               fontSize: { xs: '1.5rem', sm: '2.5rem', md: '3rem' },
               fontWeight: 800,
-              background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#000000',
               textAlign: 'center',
               mb: { xs: 4, md: 6 },
               fontFamily: "'Poppins', sans-serif",
@@ -113,7 +111,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
                       component="h3"
                       sx={{
                         fontWeight: 700,
-                        color: '#2c3e50',
+                        color: '#000000',
                         mb: 2,
                         fontSize: { xs: '1.3rem', md: '1.5rem' },
                         fontFamily: "'Poppins', sans-serif",
@@ -125,7 +123,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ features }) => {
                     <Typography
                       variant="body1"
                       sx={{
-                        color: '#5a6c7d',
+                        color: '#333333',
                         lineHeight: 1.6,
                         fontSize: { xs: '0.95rem', md: '1rem' },
                       }}

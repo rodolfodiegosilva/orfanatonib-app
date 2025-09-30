@@ -22,8 +22,8 @@ export default function CommentsManager() {
   const [toPublish, setToPublish] = React.useState<CommentData | null>(null);
   const [toEdit, setToEdit] = React.useState<CommentData | null>(null);
 
-  const [editValue, setEditValue] = React.useState<EditState>({ name: "", comment: "", shelterinho: "", neighborhood: "" });
-  const [editErrors, setEditErrors] = React.useState({ comment: false, shelterinho: false, neighborhood: false });
+  const [editValue, setEditValue] = React.useState<EditState>({ name: "", comment: "", shelter: "", neighborhood: "" });
+  const [editErrors, setEditErrors] = React.useState({ comment: false, shelter: false, neighborhood: false });
 
   const theme = useTheme();
 
@@ -32,17 +32,17 @@ export default function CommentsManager() {
     setEditValue({
       name: c.name || "",
       comment: c.comment || "",
-      shelterinho: c.shelterinho || "",
+      shelter: c.shelter || "",
       neighborhood: c.neighborhood || "",
     });
-    setEditErrors({ comment: false, shelterinho: false, neighborhood: false });
+    setEditErrors({ comment: false, shelter: false, neighborhood: false });
   };
 
   const onSaveEdit = async () => {
     if (!toEdit) return;
     const errs = {
       comment: !editValue.comment.trim(),
-      shelterinho: !editValue.shelterinho.trim(),
+      shelter: !editValue.shelter.trim(),
       neighborhood: !editValue.neighborhood.trim(),
     };
     setEditErrors(errs);

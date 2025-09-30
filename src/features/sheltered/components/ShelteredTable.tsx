@@ -85,7 +85,7 @@ function ShelteredTableDesktop(props: Props) {
     },
     {
       accessorKey: "joinedAt",
-      header: "No shelterinho desde",
+      header: "No shelter desde",
       cell: ({ getValue }) => formatDate(getValue() as any),
       meta: { width: 160 },
     },

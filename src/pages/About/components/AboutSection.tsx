@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import { Typography, useTheme, Fade, Box, Card, CardContent, Icon } from '@mui/material';
 import { AboutSection as AboutSectionType } from '../types';
 
@@ -63,8 +64,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({ section, index }) => {
             right: 0,
             height: '4px',
             background: section.isMain 
-              ? 'linear-gradient(90deg, #667eea, #764ba2, #f093fb)'
-              : 'linear-gradient(90deg, #667eea, #764ba2)',
+              ? gradients.special.full
+              : gradients.primary.horizontal,
           },
         }}
       >

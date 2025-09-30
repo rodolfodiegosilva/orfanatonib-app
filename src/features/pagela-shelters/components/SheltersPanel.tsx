@@ -80,7 +80,7 @@ export function SheltersPanel({
             setTotal(Number(data?.total ?? 0));
         } catch (e: any) {
             if (e?.name !== "CanceledError" && e?.name !== "AbortError") {
-                setError(e?.response?.data?.message || e?.message || "Erro ao listar shelterinhos");
+                setError(e?.response?.data?.message || e?.message || "Erro ao listar shelters");
             }
         } finally {
             if (abortRef.current === ctrl) abortRef.current = null;
@@ -100,7 +100,7 @@ export function SheltersPanel({
         <Stack sx={{ height: "100%" }} spacing={2}>
             <TextField
                 size="small"
-                placeholder="Endereço / nº do shelterinho.."
+                placeholder="Endereço / nº do shelter.."
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
@@ -134,7 +134,7 @@ export function SheltersPanel({
                     {!loading && error && <Alert severity="error">{error}</Alert>}
 
                     {!loading && !error && rows.length === 0 && (
-                        <EmptyState title="Nenhum shelterinho encontrado" subtitle="Ajuste a busca ou cadastre um novo." />
+                        <EmptyState title="Nenhum shelter encontrado" subtitle="Ajuste a busca ou cadastre um novo." />
                     )}
 
                     {!loading &&

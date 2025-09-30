@@ -61,7 +61,7 @@ export default function ShelteredFormDialog({
         const items = await apiFetchSheltersList();
         if (!cancelled) setShelterOptions(Array.isArray(items) ? items : []);
       } catch (e: any) {
-        if (!cancelled) setShelterDetailErr(e?.response?.data?.message || e?.message || "Falha ao carregar shelterinhos");
+        if (!cancelled) setShelterDetailErr(e?.response?.data?.message || e?.message || "Falha ao carregar shelters");
       } finally {
         if (!cancelled) setLoadingShelterDetail(false);
       }
@@ -168,7 +168,7 @@ export default function ShelteredFormDialog({
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="No shelterinho desde"
+              label="No shelter desde"
               type="date"
               InputLabelProps={{ shrink: true }}
               value={(value as any).joinedAt ?? ""}

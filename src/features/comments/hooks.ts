@@ -41,7 +41,7 @@ export function useCommentsFilter(comments: CommentData[] | null | undefined) {
       const q = term.toLowerCase();
       result = result.filter((c) =>
         (c.name || "").toLowerCase().includes(q) ||
-        (c.shelterinho || "").toLowerCase().includes(q) ||
+        (c.shelter || "").toLowerCase().includes(q) ||
         (c.neighborhood || "").toLowerCase().includes(q)
       );
     }
@@ -88,7 +88,7 @@ export function useCommentActions(fetchComments: () => Promise<void> | void) {
   }, [fetchComments]);
 
   const update = useCallback(async (c: CommentData, payload: {
-    name: string; comment: string; shelterinho: string; neighborhood: string; published?: boolean;
+    name: string; comment: string; shelter: string; neighborhood: string; published?: boolean;
   }) => {
     setActionLoading(true); setActionError("");
     try { await apiUpdateComment(c, payload); await fetchComments(); }

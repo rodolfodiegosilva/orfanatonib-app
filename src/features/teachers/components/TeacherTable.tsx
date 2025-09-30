@@ -92,7 +92,7 @@ const ActionsCell = memo(function ActionsCell({
         <IconButton
           size={isXs ? "small" : "medium"}
           onClick={() => onEditLinks(teacher)}
-          aria-label="vincular ou alterar shelterinho"
+          aria-label="vincular ou alterar shelter"
         >
           <LinkIcon fontSize="inherit" />
         </IconButton>
@@ -103,7 +103,7 @@ const ActionsCell = memo(function ActionsCell({
           <IconButton
             size={isXs ? "small" : "medium"}
             onClick={() => onClearShelter(teacher.id)}
-            aria-label="desvincular shelterinho"
+            aria-label="desvincular shelter"
           >
             <LinkOff fontSize="inherit" />
           </IconButton>

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { gradients } from '@/theme';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -26,7 +27,7 @@ import { UserRole } from 'store/slices/auth/authSlice';
 import ShelterSectionImageView from './ShelterSectionImageView';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import { FofinhoButton } from './../../TeacherArea/components';
+import ButtonSection from './../../TeacherArea/components/Buttons/FofinhoButton';
 import {
   setSectionData,
   appendSections,
@@ -82,9 +83,16 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { sections, loading, error, hasMore, currentPage, totalPages } = useSelector(
+  const { section } = useSelector(
     (state: RootState) => state.imageSectionPagination
   );
+  
+  const sections = section?.sections || [];
+  const loading = false; // Add loading state management if needed
+  const error = null; // Add error state management if needed
+  const hasMore = section ? section.sections.length < section.total : false;
+  const currentPage = 1; // Add pagination state management if needed
+  const totalPages = section ? Math.ceil(section.total / section.limit) : 0;
 
   const [initialLoading, setInitialLoading] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -103,12 +111,12 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
           },
         });
 
-        const { data, pagination } = response.data;
+        const responseData = response.data;
 
         if (reset || page === 1) {
-          dispatch(setSectionData({ sections: data, pagination }));
+          dispatch(setSectionData(responseData));
         } else {
-          dispatch(appendSections({ sections: data, pagination }));
+          dispatch(appendSections(responseData.sections));
         }
       } catch (err) {
         console.error('Erro ao carregar seções:', err);
@@ -175,7 +183,6 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: 'easeOut',
       },
     },
   };
@@ -210,7 +217,8 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+    <Box sx={{ background: gradients.subtle.greenWhite, minHeight: '100vh' }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -232,7 +240,7 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
             
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: gradients.primary.main,
                 borderRadius: 3,
                 p: { xs: 2, md: 3 },
                 color: 'white',
@@ -248,7 +256,7 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
                   textShadow: '0 2px 4px rgba(0,0,0,0.3)',
                 }}
               >
-                📰 Feed Abrigo
+                📰 Feed Orfanato
               </Typography>
             </Box>
           </Stack>
@@ -259,20 +267,7 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.4 }}
             >
-              <FofinhoButton
-                label={
-                  <Box
-                    component="span"
-                    sx={{
-                      display: { xs: 'none', sm: 'inline' }
-                    }}
-                  >
-                    📸 Envie fotos do seu Abrigo para todos verem
-                  </Box>
-                }
-                mobilelabel="📸 Enviar fotos"
-                navigateTo="/imagens-shelterinho"
-              />
+              <ButtonSection references={['photos']} />
             </motion.div>
           )}
         </Box>
@@ -364,7 +359,9 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
           )}
         </motion.div>
       )}
-    </Container>
+      </Container>
+    </Box>
   );
 }
+
 

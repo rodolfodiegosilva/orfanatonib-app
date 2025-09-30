@@ -44,7 +44,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/slices";
 import { UserRole } from "@/store/slices/auth/authSlice";
 
-type SectionId = "all" | "pages" | "conteudos" | "shelterinho" | "operacional";
+type SectionId = "all" | "pages" | "conteudos" | "shelter" | "operacional";
 
 interface CardData {
   title: string;
@@ -62,17 +62,17 @@ const cardData: CardData[] = [
 
   { title: "Páginas de Materiais", description: "Gerencie conteúdos semanais.", icon: <EventNote fontSize="large" color="primary" />, path: "/adm/paginas-materiais-semanais", section: "pages" },
   { title: "Páginas de Fotos", description: "Organize e edite galerias de imagens do site.", icon: <PhotoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-fotos", section: "pages" },
-  { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos Abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-shelterinhos", section: "pages" },
+  { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-shelters", section: "pages" },
   { title: "Ideias compartilhadas", description: "Gerencie Ideias compartilhadas pelos Abrigos", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/ideias-compartilhadas", section: "pages" },
   { title: "Páginas de Vídeos", description: "Adicione vídeos ou links do YouTube para o site.", icon: <VideoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-videos", section: "pages" },
   { title: "Páginas de Ideias", description: "Gerencie páginas de ideias para professores.", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/paginas-ideias", section: "pages" },
 
-  { title: "Usuários", description: "Gerencie usuários do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/usuarios", section: "shelterinho" },
-  { title: "Professores", description: "Gerencie professores do abrigo.", icon: <School fontSize="large" color="primary" />, path: "/adm/professores", section: "shelterinho" },
-  { title: "Líderes", description: "Gerencie líderes do abrigo.", icon: <SupervisorAccount fontSize="large" color="primary" />, path: "/adm/lideres", section: "shelterinho" },
-  { title: "Crianças", description: "Gerencie crianças do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/criancas", section: "shelterinho" },
-  { title: "Abrigos", description: "Gerencie abrigos.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/shelterinhos", section: "shelterinho" },
-  { title: "Pagelas", description: "Gerencie pagelas.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/pagelas", section: "shelterinho" },
+  { title: "Usuários", description: "Gerencie usuários do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/usuarios", section: "shelter" },
+  { title: "Professores", description: "Gerencie professores do abrigo.", icon: <School fontSize="large" color="primary" />, path: "/adm/professores", section: "shelter" },
+  { title: "Líderes", description: "Gerencie líderes do abrigo.", icon: <SupervisorAccount fontSize="large" color="primary" />, path: "/adm/lideres", section: "shelter" },
+  { title: "Crianças", description: "Gerencie crianças do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/criancas", section: "shelter" },
+  { title: "Abrigos", description: "Gerencie abrigos.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/shelters", section: "shelter" },
+  { title: "Pagelas", description: "Gerencie pagelas.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/pagelas", section: "shelter" },
 
   { title: "Comentários", description: "Gerencie comentários dos usuários.", icon: <Comment fontSize="large" color="primary" />, path: "/adm/comentarios", section: "operacional" },
   { title: "Contatos", description: "Gerencie contatos enviados para o Abrigo.", icon: <ContactPhone fontSize="large" color="primary" />, path: "/adm/contatos", section: "operacional" },
@@ -83,11 +83,11 @@ const sectionLabels: Record<SectionId, string> = {
   all: "tudo",
   pages: "pages",
   conteudos: "conteúdos",
-  shelterinho: "shelterinho",
+  shelter: "shelter",
   operacional: "operacional",
 };
 
-const order: Exclude<SectionId, "all">[] = ["pages", "conteudos", "shelterinho", "operacional"];
+const order: Exclude<SectionId, "all">[] = ["pages", "conteudos", "shelter", "operacional"];
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -115,7 +115,7 @@ export default function AdminDashboardPage() {
   const leaderAllowed = new Set<string>([
     "/adm/criancas",
     "/adm/professores",
-    "/adm/shelterinhos",
+    "/adm/shelters",
     "/adm/pagelas",
   ]);
 
@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
     const g: Record<Exclude<SectionId, "all">, CardData[]> = {
       pages: [],
       conteudos: [],
-      shelterinho: [],
+      shelter: [],
       operacional: [],
     };
     for (const c of visibleCards) {
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
   }, [section, normalizedQuery, visibleCards]);
 
   const hasResults =
-    grouped.pages.length + grouped.conteudos.length + grouped.shelterinho.length + grouped.operacional.length >
+    grouped.pages.length + grouped.conteudos.length + grouped.shelter.length + grouped.operacional.length >
     0;
 
   const MobileList: React.FC = () => {
@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
                 gap: 0.5,
               }}
             >
-              {(["all", "pages", "conteudos", "shelterinho", "operacional"] as SectionId[]).map((key) => (
+              {(["all", "pages", "conteudos", "shelter", "operacional"] as SectionId[]).map((key) => (
                 <Button
                   key={key}
                   size="small"
@@ -356,7 +356,7 @@ export default function AdminDashboardPage() {
               }}
               sx={{ maxWidth: 360, mr: 1 }}
             />
-            {(["all", "pages", "conteudos", "shelterinho", "operacional"] as SectionId[]).map((key) => (
+            {(["all", "pages", "conteudos", "shelter", "operacional"] as SectionId[]).map((key) => (
               <Button
                 key={key}
                 variant={section === key ? "contained" : "outlined"}

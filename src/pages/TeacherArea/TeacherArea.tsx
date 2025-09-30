@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import {
   Container,
   Typography,
@@ -26,7 +27,8 @@ const TeacherArea: React.FC = () => {
   const { loading, showWeek, showMeditation } = useTeacherArea();
 
   return (
-    <Container maxWidth={false} sx={CONTAINER_STYLES.main}>
+    <Box sx={{ background: gradients.subtle.greenWhite, minHeight: '100vh' }}>
+      <Container maxWidth={false} sx={CONTAINER_STYLES.main}>
       {/* Informative Banner */}
       <InformativeBanner />
 
@@ -48,7 +50,7 @@ const TeacherArea: React.FC = () => {
         <Typography
           variant="h4"
           fontWeight="bold"
-          color="#424242"
+          color="#000000"
           gutterBottom
           sx={{ fontSize: { xs: '1.3rem', md: '1.5rem' } }}
         >
@@ -66,12 +68,13 @@ const TeacherArea: React.FC = () => {
             <TeacherContent userName={user?.name} />
           )
         ) : (
-          <Typography variant="body1" color="#757575">
+            <Typography variant="body1" color="#333333">
             Você precisa estar logado para acessar esta área.
           </Typography>
         )}
       </Paper>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

@@ -116,7 +116,7 @@ export default function ImageSectionEditorAdmin() {
 
     try {
       await saveSection(formData);
-      navigate('/adm/fotos-shelterinhos');
+      navigate('/adm/fotos-shelters');
     } catch (error) {
       console.error('Erro ao salvar a seção:', error);
       showError('Falha ao publicar as imagens compartilhadas. Tente novamente.');
@@ -132,7 +132,7 @@ export default function ImageSectionEditorAdmin() {
   // Se não há dados para editar, redireciona para o manager
   useEffect(() => {
     if (!sectionData) {
-      navigate('/adm/fotos-shelterinhos');
+      navigate('/adm/fotos-shelters');
     }
   }, [sectionData, navigate]);
 
@@ -207,7 +207,7 @@ export default function ImageSectionEditorAdmin() {
               >
                 <Button
                   variant="outlined"
-                  onClick={() => navigate('/adm/fotos-shelterinhos')}
+                  onClick={() => navigate('/adm/fotos-shelters')}
                   disabled={isSaving}
                   size="small"
                   sx={{

@@ -14,7 +14,7 @@ export async function apiPublishComment(c: CommentData) {
   await api.put(`/comments/${c.id}`, {
     name: c.name,
     comment: c.comment,
-    shelterinho: c.shelterinho,
+    shelter: c.shelter,
     neighborhood: c.neighborhood,
     published: true,
   });
@@ -23,14 +23,14 @@ export async function apiPublishComment(c: CommentData) {
 export async function apiUpdateComment(c: CommentData, payload: {
   name: string;
   comment: string;
-  shelterinho: string;
+  shelter: string;
   neighborhood: string;
   published?: boolean; 
 }) {
   await api.put(`/comments/${c.id}`, {
     name: payload.name,
     comment: payload.comment,
-    shelterinho: payload.shelterinho,
+    shelter: payload.shelter,
     neighborhood: payload.neighborhood,
     published: payload.published ?? true,
   });

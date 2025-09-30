@@ -130,7 +130,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
               letterSpacing: '0.02em',
             }}
           >
-            Ministério de evangelismo que leva a palavra de Deus para as crianças que precisam conhecer o amor de Jesus
+            Ministério de evangelismo que leva a palavra de Deus para pessoas de todas as idades que precisam conhecer o amor de Jesus
           </Typography>
         </motion.div>
 

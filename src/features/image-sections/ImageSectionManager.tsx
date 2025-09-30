@@ -43,7 +43,7 @@ export default function ImageSectionManager() {
     // Define os dados da seção no Redux para o modo de edição
     dispatch(setData(section));
     // Redireciona para a página de edição de imagens
-    navigate('/adm/editar-imagens-shelterinho');
+    navigate('/adm/editar-imagens-shelter');
   };
 
   const handleDelete = async () => {
@@ -105,7 +105,7 @@ export default function ImageSectionManager() {
           </Box>
         ) : filteredSections.length === 0 ? (
           <Box textAlign="center" mt={10}>
-            <Alert severity="info">Sem imagens dos shelterinhos para mostrar.</Alert>
+            <Alert severity="info">Sem imagens dos shelters para mostrar.</Alert>
           </Box>
         ) : (
           <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">

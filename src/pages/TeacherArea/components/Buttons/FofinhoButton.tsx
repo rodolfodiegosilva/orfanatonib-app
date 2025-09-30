@@ -102,7 +102,7 @@ const buttonMap: Record<string, FofinhoButtonProps> = {
     color: 'primary',
   },
   photos: {
-    to: '/imagens-shelterinho',
+    to: '/imagens-abrigo',
     label: 'Envie fotos do seu Abrigo',
     icon: PhotoCameraIcon,
     color: 'success',

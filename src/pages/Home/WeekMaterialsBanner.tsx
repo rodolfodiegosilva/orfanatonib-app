@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/slices';
 import { Box, Typography, Button, Container } from '@mui/material';
@@ -15,12 +16,32 @@ const WeekMaterialsBanner: React.FC = () => {
   
   if (!currentWeekRoute) return null;
 
+  // Função para determinar a parte do mês
+  const getMonthPart = () => {
+    const today = new Date();
+    const dayOfMonth = today.getDate();
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    
+    const monthName = monthNames[today.getMonth()];
+    const isFirstHalf = dayOfMonth <= 15;
+    
+    return {
+      part: isFirstHalf ? 'primeira parte' : 'segunda parte',
+      month: monthName
+    };
+  };
+
+  const { part, month } = getMonthPart();
+
   return (
     <Box
       sx={{
         width: '100%',
         py: { xs: 6, md: 10 },
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+        background: gradients.special.banner,
         position: 'relative',
         overflow: 'hidden',
         borderRadius: { xs: 0, md: 0 },
@@ -95,14 +116,14 @@ const WeekMaterialsBanner: React.FC = () => {
           <Typography
             variant="h4"
             sx={{
-              color: '#ffffff',
+              color: '#FFFFFF',
               mb: 2,
               fontSize: { xs: '1.2rem', md: '1.5rem' },
               fontWeight: 400,
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             }}
           >
-            Olá {user?.name || 'Professor'}, estamos na:
+            Olá {user?.name || 'Professor'}, estamos na {part} do mês de:
           </Typography>
         </motion.div>
 
@@ -115,16 +136,16 @@ const WeekMaterialsBanner: React.FC = () => {
           <Typography
             variant="h1"
             sx={{
-              color: '#ffffff',
+              color: '#FFFFFF',
               mb: 3,
               fontSize: { xs: '2.2rem', md: '3.5rem', lg: '4rem' },
               fontWeight: 800,
-              textShadow: '0 4px 8px rgba(0,0,0,0.3)',
+              textShadow: '0 4px 8px rgba(0,0,0,0.8)',
               fontFamily: "'Poppins', sans-serif",
               lineHeight: 1.2,
             }}
           >
-            {currentWeekRoute.title}
+            {month}
           </Typography>
         </motion.div>
 
@@ -138,11 +159,11 @@ const WeekMaterialsBanner: React.FC = () => {
             <Typography
               variant="h5"
               sx={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: '#FFFFFF',
                 mb: 2,
                 fontSize: { xs: '1rem', md: '1.3rem' },
                 fontWeight: 400,
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
               Com o tema:
@@ -150,11 +171,11 @@ const WeekMaterialsBanner: React.FC = () => {
             <Typography
               variant="h5"
               sx={{
-                color: '#ffffff',
+                color: '#FFFFFF',
                 mb: 4,
                 fontSize: { xs: '1.1rem', md: '1.4rem' },
                 fontWeight: 600,
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
               {currentWeekRoute.subtitle}
@@ -183,12 +204,10 @@ const WeekMaterialsBanner: React.FC = () => {
                 fontSize: { xs: '1rem', md: '1.1rem' },
                 fontWeight: 700,
                 borderRadius: 3,
-                 background: 'linear-gradient(45deg, #F4D03F 30%, #F1C40F 90%)',
-                 color: '#2C3E50',
-                 boxShadow: '0 8px 20px rgba(244, 208, 63, 0.3)',
+                 background: '#009933',
+                 color: '#FFFFFF',
                  '&:hover': {
-                   background: 'linear-gradient(45deg, #F1C40F 30%, #D4AC0D 90%)',
-                   boxShadow: '0 12px 25px rgba(244, 208, 63, 0.4)',
+                   backgroundColor: '#007a29',
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.3s ease',

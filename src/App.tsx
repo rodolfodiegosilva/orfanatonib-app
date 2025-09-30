@@ -111,7 +111,7 @@ function App() {
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/area-do-professor" element={<TeacherArea />} />
-                <Route path="/imagens-shelterinho" element={<ImageSectionPage />} />
+                <Route path="/imagens-shelter" element={<ImageSectionPage />} />
                 <Route path="/lista-materias-semanais" element={<WeekMaterialsList />} />
                 <Route path="/avaliar-site" element={<SiteFeedbackForm />} />
                 <Route path="/area-das-criancas" element={<ShelteredBrowserPage />} />
@@ -130,7 +130,7 @@ function App() {
                   <Route path="contatos" element={<ContactsManager />} />
                   <Route path="paginas-materiais-semanais" element={<WeekMaterialManager />} />
                   <Route path="paginas-fotos" element={<ImagePageManager />} />
-                  <Route path="fotos-shelterinhos" element={<ImageSectionManager />} />
+                  <Route path="fotos-shelters" element={<ImageSectionManager />} />
                   <Route path="ideias-compartilhadas" element={<IdeasSectionManager  />} />
                   <Route path="paginas-videos" element={<VideosManager />} />
                   <Route path="paginas-ideias" element={<IdeasManager />} />
@@ -139,7 +139,7 @@ function App() {
                   <Route path="lideres" element={<LeaderProfilesManager />} />
                   <Route path="professores" element={<TeacherProfilesManager />} />
                   <Route path="criancas" element={<ShelteredManager />} />
-                  <Route path="shelterinhos" element={<SheltersManager />} />
+                  <Route path="shelters" element={<SheltersManager />} />
                   <Route path="pagelas" element={<PagelaSheltersManager />} />
 
                   <Route path="editar-meditacao" element={<MeditationPageCreator fromTemplatePage={false} />} />
@@ -147,7 +147,7 @@ function App() {
                   <Route path="editar-pagina-videos" element={<VideoPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-semana" element={<WeekMaterialPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-ideias" element={<IdeasMaterialPageCreator fromTemplatePage={false} />} />
-                  <Route path="editar-imagens-shelterinho" element={<ImageSectionEditorAdmin />} />
+                  <Route path="editar-imagens-shelter" element={<ImageSectionEditorAdmin />} />
                   <Route path="editar-ideias-compartilhadas" element={<IdeasSectionPage  />} />
                 </Route>
               </Route>

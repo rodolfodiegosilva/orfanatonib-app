@@ -28,7 +28,8 @@ const TeacherContent: React.FC<TeacherContentProps> = ({ userName }) => {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: 3,
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
           border: '2px solid #2196f320',
           position: 'relative',
           overflow: 'hidden',
@@ -121,7 +122,8 @@ const TeacherContent: React.FC<TeacherContentProps> = ({ userName }) => {
                   sx={{
                     height: isCompressed ? 'auto' : '100%',
                     borderRadius: 3,
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
                     border: `2px solid ${section.color}20`,
                     position: 'relative',
                     overflow: 'hidden',

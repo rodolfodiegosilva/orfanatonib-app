@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import {
   Box,
   TextField,
@@ -156,9 +157,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
             borderRadius: 2,
             fontSize: '1rem',
             fontWeight: 600,
-            background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+            backgroundColor: '#009933',
+            color: '#FFFFFF',
             '&:hover': {
-              background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
+              backgroundColor: '#FFFF00',
+              color: '#000000',
             },
           }}
           disabled={loading}

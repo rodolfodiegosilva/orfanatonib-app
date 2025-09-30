@@ -54,7 +54,7 @@ export default function ShelteredrenCards(props: Props) {
   const sortOptions = useMemo(() => ([
     { id: "name", label: "Nome" },
     { id: "birthDate", label: "Nascimento" },
-    { id: "joinedAt", label: "No shelterinho desde" },
+    { id: "joinedAt", label: "No abrigo desde" },
     { id: "updatedAt", label: "Atualizado em" },
     { id: "createdAt", label: "Criado em" },
   ]), []);
@@ -167,7 +167,7 @@ export default function ShelteredrenCards(props: Props) {
                       size="small"
                       color={c.shelter ? "primary" : "default"}
                       variant={c.shelter ? "filled" : "outlined"}
-                      label={c.shelter ? `Abrigo ${c.shelter.name}` : "Sem shelterinho"}
+                      label={c.shelter ? `Abrigo ${c.shelter.name}` : "Sem abrigo"}
                       sx={{
                         fontSize: "0.7rem",
                         height: 20,
@@ -386,7 +386,7 @@ export default function ShelteredrenCards(props: Props) {
                                 <Chip
                                   size="small"
                                   variant="outlined"
-                                  label={`Tempo no shelterinho: ${tenure}`}
+                                  label={`Tempo no shelter: ${tenure}`}
                                   color="warning"
                                   sx={{ fontWeight: 500 }}
                                 />
@@ -423,7 +423,7 @@ export default function ShelteredrenCards(props: Props) {
                               <Chip
                                 size="small"
                                 variant="outlined"
-                                label={`No shelterinho desde: ${formatDate(c.joinedAt)}`}
+                                label={`No abrigo desde: ${formatDate(c.joinedAt)}`}
                                 color="default"
                                 sx={{ fontWeight: 500 }}
                               />

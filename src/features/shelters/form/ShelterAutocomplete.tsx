@@ -58,7 +58,7 @@ export default function ShelterAutocomplete({
         onChange(safe[0].id, safe[0]);
       }
     } catch (e: any) {
-      setLoadError(e?.response?.data?.message || e?.message || "Falha ao carregar shelterinhos");
+      setLoadError(e?.response?.data?.message || e?.message || "Falha ao carregar shelters");
     } finally {
       setLoading(false);
     }

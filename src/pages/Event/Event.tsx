@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { gradients } from '@/theme';
 import {
   Box,
   Typography,
@@ -431,7 +432,7 @@ const Eventos: React.FC = () => {
                 backgroundImage: evento.media ? `url(${evento.media.url})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                backgroundColor: evento.media ? 'transparent' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundColor: evento.media ? 'transparent' : '#000000',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -471,7 +472,7 @@ const Eventos: React.FC = () => {
                   fontSize: { xs: '0.9rem', md: '1.25rem' },
                   mb: 2,
                   lineHeight: 1.3,
-                  color: '#1f2937',
+                  color: '#000000',
                 }}
               >
                 {evento.title}
@@ -489,9 +490,9 @@ const Eventos: React.FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <CalendarTodayIcon fontSize="small" sx={{ color: '#6b7280' }} />
+                    <CalendarTodayIcon fontSize="small" sx={{ color: '#333333' }} />
                   </Box>
-                  <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 500, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                  <Typography variant="body2" sx={{ color: '#333333', fontWeight: 500, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     {dataFormatada}
                   </Typography>
                 </Box>
@@ -507,9 +508,9 @@ const Eventos: React.FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <PlaceIcon fontSize="small" sx={{ color: '#6b7280' }} />
+                    <PlaceIcon fontSize="small" sx={{ color: '#333333' }} />
                   </Box>
-                  <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 500, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                  <Typography variant="body2" sx={{ color: '#333333', fontWeight: 500, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
                     {evento.location}
                   </Typography>
                 </Box>
@@ -529,11 +530,11 @@ const Eventos: React.FC = () => {
                   fontWeight: 600,
                   textTransform: 'none',
                   fontSize: { xs: '0.75rem', md: '0.95rem' },
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  boxShadow: '0 4px 14px rgba(102, 126, 234, 0.4)',
+                  backgroundColor: '#009933',
+                  color: '#FFFFFF',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+                    backgroundColor: '#007a29',
+                    transform: 'translateY(-1px)',
                   },
                 }}
               >
@@ -583,11 +584,11 @@ const Eventos: React.FC = () => {
                     fontWeight: 600,
                     textTransform: 'none',
                     fontSize: { xs: '0.75rem', md: '0.95rem' },
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    boxShadow: '0 4px 14px rgba(102, 126, 234, 0.4)',
+                    backgroundColor: '#009933',
+                    color: '#FFFFFF',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+                      backgroundColor: '#007a29',
+                      transform: 'translateY(-1px)',
                     },
                   }}
                 >
@@ -606,7 +607,7 @@ const Eventos: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #000000 0%, #FFFF00 100%)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -646,78 +647,94 @@ const Eventos: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+          background: gradients.subtle.greenWhite,
         }}
       >
-        {/* Header com gradiente */}
-        <Paper
-          elevation={0}
-          sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            borderRadius: 0,
-            py: { xs: 4, md: 6 },
-            px: { xs: 2, md: 4 },
-          }}
-        >
-          <Container maxWidth="lg">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+        {/* Título e Controles */}
+        <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'space-between',
+                alignItems: { xs: 'center', md: 'flex-start' },
+                gap: { xs: 3, md: 0 },
+                mb: 4,
+              }}
             >
+              <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                <Typography
+                  variant="h3"
+                  fontWeight={800}
+                  sx={{
+                    fontSize: { xs: '1.3rem', md: '2.5rem' },
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: { xs: 'center', md: 'flex-start' },
+                    gap: 2,
+                    color: '#000000',
+                  }}
+                >
+                  <EventIcon sx={{ fontSize: { xs: 24, md: 40 } }} />
+                  Eventos do Ministério de Ofanato
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: '#333333',
+                    fontSize: { xs: '0.8rem', md: '1.1rem' },
+                    fontWeight: 400,
+                  }}
+                >
+                  Participe das atividades e encontros do Ministério de Ofanato!
+                </Typography>
+              </Box>
+
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: { xs: 'column', md: 'row' },
-                  justifyContent: 'space-between',
-                  alignItems: { xs: 'center', md: 'flex-start' },
-                  gap: { xs: 3, md: 0 },
+                  gap: 2,
+                  alignItems: 'center',
                 }}
               >
-                <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-                  <Typography
-                    variant="h3"
-                    fontWeight={800}
-                    sx={{
-                      fontSize: { xs: '1.3rem', md: '2.5rem' },
-                      mb: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: { xs: 'center', md: 'flex-start' },
-                      gap: 2,
-                    }}
-                  >
-                    <EventIcon sx={{ fontSize: { xs: 24, md: 40 } }} />
-                    Eventos do Abrigo
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      opacity: 0.9,
-                      fontSize: { xs: '0.8rem', md: '1.1rem' },
-                      fontWeight: 400,
-                    }}
-                  >
-                    Participe das atividades e encontros do Abrigo!
-                  </Typography>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: 2,
-                    alignItems: 'center',
-                  }}
-                >
-                  {isAdmin && (
-                    <Fragment>
-                      {!editMode ? (
+                {isAdmin && (
+                  <Fragment>
+                    {!editMode ? (
+                      <Button
+                        variant="contained"
+                        startIcon={<EditCalendarIcon />}
+                        onClick={handleEnterEditMode}
+                        sx={{
+                          borderRadius: 3,
+                          py: { xs: 1, md: 1.5 },
+                          px: { xs: 2, md: 3 },
+                          fontWeight: 600,
+                          textTransform: 'none',
+                          fontSize: { xs: '0.8rem', md: '1rem' },
+                          backgroundColor: '#009933',
+                          color: '#FFFFFF',
+                          '&:hover': {
+                            backgroundColor: '#007a29',
+                            transform: 'translateY(-2px)',
+                          },
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        Editar Página
+                      </Button>
+                    ) : (
+                      <Fragment>
                         <Button
                           variant="contained"
-                          startIcon={<EditCalendarIcon />}
-                          onClick={handleEnterEditMode}
+                          startIcon={<AddIcon />}
+                          onClick={handleAddNewEvent}
                           sx={{
                             borderRadius: 3,
                             py: { xs: 1, md: 1.5 },
@@ -725,92 +742,69 @@ const Eventos: React.FC = () => {
                             fontWeight: 600,
                             textTransform: 'none',
                             fontSize: { xs: '0.8rem', md: '1rem' },
-                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            backgroundColor: '#009933',
+                            color: '#FFFFFF',
                             '&:hover': {
-                              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                              backgroundColor: '#007a29',
                               transform: 'translateY(-2px)',
                             },
                             transition: 'all 0.3s ease',
                           }}
                         >
-                          Editar Página
+                          Adicionar Evento
                         </Button>
-                      ) : (
-                        <Fragment>
-                          <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={handleAddNewEvent}
-                            sx={{
-                              borderRadius: 3,
-                              py: { xs: 1, md: 1.5 },
-                              px: { xs: 2, md: 3 },
-                              fontWeight: 600,
-                              textTransform: 'none',
-                              fontSize: { xs: '0.8rem', md: '1rem' },
-                              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                              border: '1px solid rgba(255, 255, 255, 0.3)',
-                              '&:hover': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                                transform: 'translateY(-2px)',
-                              },
-                              transition: 'all 0.3s ease',
-                            }}
-                          >
-                            Adicionar Evento
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            onClick={handleCancelEditMode}
-                            sx={{
-                              borderRadius: 3,
-                              py: { xs: 1, md: 1.5 },
-                              px: { xs: 2, md: 3 },
-                              fontWeight: 600,
-                              textTransform: 'none',
-                              fontSize: { xs: '0.8rem', md: '1rem' },
-                              color: 'white',
-                              borderColor: 'rgba(255, 255, 255, 0.5)',
-                              '&:hover': {
-                                borderColor: 'white',
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                transform: 'translateY(-2px)',
-                              },
-                              transition: 'all 0.3s ease',
-                            }}
-                          >
-                            Cancelar
-                          </Button>
-                        </Fragment>
-                      )}
-                    </Fragment>
-                  )}
+                        <Button
+                          variant="outlined"
+                          onClick={handleCancelEditMode}
+                          sx={{
+                            borderRadius: 3,
+                            py: { xs: 1, md: 1.5 },
+                            px: { xs: 2, md: 3 },
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            fontSize: { xs: '0.8rem', md: '1rem' },
+                            color: '#666666',
+                            borderColor: '#cccccc',
+                            backgroundColor: '#FFFFFF',
+                            '&:hover': {
+                              borderColor: '#999999',
+                              backgroundColor: '#f5f5f5',
+                              color: '#333333',
+                              transform: 'translateY(-2px)',
+                            },
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                      </Fragment>
+                    )}
+                  </Fragment>
+                )}
 
-                  {arrangement.eventosAntigosRestantes.length > 0 && (
-                    <Button
-                      variant="text"
-                      onClick={() => setMostrarAntigos(!mostrarAntigos)}
-                      sx={{
-                        color: 'white',
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        fontSize: { xs: '0.8rem', md: '0.95rem' },
-                        py: { xs: 0.5, md: 1 },
-                        px: { xs: 1, md: 2 },
-                        '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        },
-                      }}
-                    >
-                      {mostrarAntigos ? 'Esconder Eventos Antigos' : `Ver ${arrangement.eventosAntigosRestantes.length} Eventos Antigos`}
-                    </Button>
-                  )}
-                </Box>
+                {arrangement.eventosAntigosRestantes.length > 0 && (
+                  <Button
+                    variant="text"
+                    onClick={() => setMostrarAntigos(!mostrarAntigos)}
+                    sx={{
+                      color: '#333333',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      fontSize: { xs: '0.8rem', md: '0.95rem' },
+                      py: { xs: 0.5, md: 1 },
+                      px: { xs: 1, md: 2 },
+                      '&:hover': {
+                        backgroundColor: '#f5f5f5',
+                      },
+                    }}
+                  >
+                    {mostrarAntigos ? 'Esconder Eventos Antigos' : `Ver ${arrangement.eventosAntigosRestantes.length} Eventos Antigos`}
+                  </Button>
+                )}
               </Box>
-            </motion.div>
-          </Container>
-        </Paper>
+            </Box>
+          </motion.div>
+        </Container>
 
         <Box sx={{
           width: '95%',
@@ -866,11 +860,10 @@ const Eventos: React.FC = () => {
                           fontWeight: 600,
                           textTransform: 'none',
                           fontSize: { xs: '0.8rem', md: '1.1rem' },
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                      backgroundColor: '#009933',
+                      color: '#FFFFFF',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                        boxShadow: '0 12px 40px rgba(102, 126, 234, 0.4)',
+                        backgroundColor: '#007a29',
                         transform: 'translateY(-2px)',
                       },
                       transition: 'all 0.3s ease',
@@ -1436,7 +1429,7 @@ const Eventos: React.FC = () => {
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     sx={{
-                      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                      background: gradients.subtle.greenWhite,
                       '& .MuiAccordionSummary-content': {
                         alignItems: 'center',
                         gap: 2,

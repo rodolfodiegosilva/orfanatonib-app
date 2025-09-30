@@ -151,7 +151,7 @@ export function useSheltersIndex() {
       const list = await apiListSheltersSimple();
       setShelters(list || []);
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao listar shelterinhos");
+      setError(err?.response?.data?.message || err.message || "Erro ao listar shelters");
     } finally {
       setLoading(false);
     }

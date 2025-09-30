@@ -58,7 +58,7 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
 
   useEffect(() => {
     if (!imageData && !fromTemplatePage) {
-      navigate('/feed-shelterinho');
+      navigate('/feed-shelter');
       return;
     }
 

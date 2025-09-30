@@ -85,7 +85,7 @@ export function useShelterMutations(
         await apiCreateShelter(payload);
         await fetchShelters(page, limit, filters, sort);
       } catch (err: any) {
-        setDialogError(err?.response?.data?.message || err.message || "Erro ao criar shelterinho");
+        setDialogError(err?.response?.data?.message || err.message || "Erro ao criar shelter");
       } finally {
         setDialogLoading(false);
       }
@@ -108,7 +108,7 @@ export function useShelterMutations(
         await apiUpdateShelter(id, payload);
         await fetchShelters(page, limit, filters, sort);
       } catch (err: any) {
-        setDialogError(err?.response?.data?.message || err.message || "Erro ao atualizar shelterinho");
+        setDialogError(err?.response?.data?.message || err.message || "Erro ao atualizar shelter");
       } finally {
         setDialogLoading(false);
       }
@@ -124,7 +124,7 @@ export function useShelterMutations(
         await apiDeleteShelter(id);
         await fetchShelters(page, limit, filters, sort);
       } catch (err: any) {
-        setDialogError(err?.response?.data?.message || err.message || "Erro ao remover shelterinho");
+        setDialogError(err?.response?.data?.message || err.message || "Erro ao remover shelter");
       } finally {
         setDialogLoading(false);
       }

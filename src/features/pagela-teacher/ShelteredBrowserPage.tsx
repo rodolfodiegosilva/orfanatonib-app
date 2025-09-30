@@ -215,7 +215,7 @@ export default function ShelteredBrowserPage() {
       {!shelter ? (
         <Alert severity="warning" sx={{ mt: 4 }}>
           <Typography fontWeight="bold">
-            Você não está vinculado a nenhum shelterinho.
+            Você não está vinculado a nenhum shelter.
           </Typography>
           <Typography>
             Entre em contato com <strong>seu Líder</strong> ou envie uma mensagem para  <strong>(92) 99127-4881</strong> ou <strong>(92) 98155-3139</strong>.

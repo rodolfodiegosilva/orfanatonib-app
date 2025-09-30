@@ -453,7 +453,7 @@ export default function SheltersCards(props: Props) {
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Editar shelterinho">
+                    <Tooltip title="Editar abrigo">
                       <IconButton 
                         size="small" 
                         onClick={() => onStartEdit(c)}
@@ -466,7 +466,7 @@ export default function SheltersCards(props: Props) {
                       </IconButton>
                     </Tooltip>
                     {isAdmin && (
-                      <Tooltip title="Excluir shelterinho">
+                      <Tooltip title="Excluir abrigo">
                         <IconButton 
                           size="small" 
                           color="error" 

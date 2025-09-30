@@ -4,7 +4,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextFie
 export type EditState = {
   name: string;
   comment: string;
-  shelterinho: string;
+  shelter: string;
   neighborhood: string;
 };
 
@@ -12,7 +12,7 @@ type Props = {
   open: boolean;
   value: EditState;
   setValue: (v: EditState) => void;
-  errors: { comment: boolean; shelterinho: boolean; neighborhood: boolean; };
+  errors: { comment: boolean; shelter: boolean; neighborhood: boolean; };
   loading: boolean;
   error: string;
   onCancel: () => void;
@@ -28,7 +28,7 @@ export default function EditCommentDialog({
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box sx={{ mt: 2 }}>
-          {(["name", "comment", "shelterinho", "neighborhood"] as const).map((field) => (
+          {(["name", "comment", "shelter", "neighborhood"] as const).map((field) => (
             <TextField
               key={field}
               fullWidth

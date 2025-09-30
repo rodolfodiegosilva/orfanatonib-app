@@ -3,6 +3,7 @@ import { Box, Typography, Container, Card, CardContent, IconButton } from '@mui/
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, FormatQuote } from '@mui/icons-material';
 import { TestimonialsSectionProps } from '../types';
+import { gradients } from '@/theme';
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,7 +32,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
     <Box
       sx={{
         py: { xs: 6, md: 10 },
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+        background: gradients.special.banner,
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
@@ -110,7 +111,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
             sx={{
               fontSize: { xs: '1.5rem', sm: '2.5rem', md: '3rem' },
               fontWeight: 800,
-              color: '#ffffff',
+              color: '#000000',
               textAlign: 'center',
               mb: { xs: 4, md: 6 },
               fontFamily: "'Poppins', sans-serif",
@@ -165,7 +166,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
                     <FormatQuote
                       sx={{
                         fontSize: 60,
-                        color: '#667eea',
+                        color: '#333333',
                         mb: 2,
                         opacity: 0.3,
                       }}
@@ -175,7 +176,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
                   <Typography
                     variant="h6"
                     sx={{
-                      color: '#2c3e50',
+                      color: '#000000',
                       mb: 3,
                       fontSize: { xs: '1rem', md: '1.2rem' },
                       lineHeight: 1.6,
@@ -189,7 +190,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
                   <Typography
                     variant="h6"
                     sx={{
-                      color: '#667eea',
+                      color: '#333333',
                       fontWeight: 700,
                       mb: 1,
                       fontSize: { xs: '1.1rem', md: '1.3rem' },
@@ -202,11 +203,11 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ testimonials 
                   <Typography
                     variant="body2"
                     sx={{
-                      color: '#5a6c7d',
+                      color: '#666666',
                       fontSize: { xs: '0.9rem', md: '1rem' },
                     }}
                   >
-                    {testimonials[currentIndex].shelterinho} - {testimonials[currentIndex].neighborhood}
+                    {testimonials[currentIndex].shelter} - {testimonials[currentIndex].neighborhood}
                   </Typography>
                 </CardContent>
               </Card>

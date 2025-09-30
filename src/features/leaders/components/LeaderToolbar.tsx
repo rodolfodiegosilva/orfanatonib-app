@@ -73,8 +73,8 @@ export default function LeaderToolbar({
               }}
             >
               <MenuItem value="all">Todos</MenuItem>
-              <MenuItem value="yes">Com shelterinhos</MenuItem>
-              <MenuItem value="no">Sem shelterinhos</MenuItem>
+              <MenuItem value="yes">Com shelters</MenuItem>
+              <MenuItem value="no">Sem shelters</MenuItem>
             </Select>
           </FormControl>
         </Grid>

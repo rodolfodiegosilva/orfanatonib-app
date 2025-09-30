@@ -32,7 +32,7 @@ export default function CommentDetailsModal({ comment, open, onClose }: Props) {
                     </Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="body1"><strong>Abrigo:</strong> {comment.shelterinho || "Não informado"}</Typography>
+                    <Typography variant="body1"><strong>Abrigo:</strong> {comment.shelter || "Não informado"}</Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <Typography variant="body1"><strong>Bairro:</strong> {comment.neighborhood || "Não informado"}</Typography>

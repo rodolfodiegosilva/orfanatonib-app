@@ -117,7 +117,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                   color: "success.contrastText",
                   fontWeight: 700,
                 }}
-                aria-label="avatar do shelterinho"
+                aria-label="avatar do abrigo"
               >
                 {initials(`Abrigo ${shelter.name}`)}
               </Avatar>
@@ -155,7 +155,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
 
         {!shelter ? (
           <Typography variant="body1" color="text.secondary">
-            Nenhum shelterinho selecionado.
+            Nenhum abrigo selecionado.
           </Typography>
         ) : (
           <Stack spacing={2}>

@@ -22,8 +22,8 @@ const Footer: React.FC = () => {
       sx={{
         position: "relative",
         zIndex: 1220,
-        backgroundColor: "#81d742",
-        color: "white",
+        backgroundColor: "#000000",
+        color: "#FFFF00",
         px: { xs: 2, sm: 3 },
         py: { xs: 3, sm: 4 },
         textAlign: "center",

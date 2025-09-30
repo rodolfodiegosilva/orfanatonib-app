@@ -47,7 +47,7 @@ import { UserRole } from "@/store/slices/auth/authSlice";
 const drawerWidth = 240;
 
 type NavItem = { label: string; to: string; icon: ReactNode };
-type SectionId = "pages" | "conteudos" | "shelterinho" | "operacional";
+type SectionId = "pages" | "conteudos" | "shelter" | "operacional";
 type Section = { id: SectionId; title: string; items: NavItem[] };
 type MobileTab = "tudo" | SectionId;
 
@@ -80,7 +80,7 @@ function AdminLayout() {
         items: [
           { label: "Materiais semanais", to: "/adm/paginas-materiais-semanais", icon: <EventNote /> },
           { label: "Páginas de fotos", to: "/adm/paginas-fotos", icon: <PhotoLibrary /> },
-          { label: "Fotos dos shelterinhos", to: "/adm/fotos-shelterinhos", icon: <Collections /> },
+          { label: "Fotos dos abrigos", to: "/adm/fotos-shelters", icon: <Collections /> },
           { label: "Ideias compartilhadas", to: "/adm/ideias-compartilhadas", icon: <Lightbulb /> },
           { label: "Páginas de vídeos", to: "/adm/paginas-videos", icon: <VideoLibrary /> },
           { label: "Páginas de ideias", to: "/adm/paginas-ideias", icon: <Lightbulb /> },
@@ -97,10 +97,10 @@ function AdminLayout() {
         ],
       },
       {
-        id: "shelterinho",
+        id: "shelter",
         title: "Abrigo",
         items: [
-          { label: "Abrigos", to: "/adm/shelterinhos", icon: <Groups /> },
+          { label: "Abrigos", to: "/adm/shelters", icon: <Groups /> },
           { label: "Pagelas", to: "/adm/pagelas", icon: <Groups /> },
           { label: "Usuários", to: "/adm/usuarios", icon: <Group /> },
           { label: "Professores", to: "/adm/professores", icon: <School /> },
@@ -124,7 +124,7 @@ function AdminLayout() {
   const leaderAllowed = new Set<string>([
     "/adm/criancas",
     "/adm/professores",
-    "/adm/shelterinhos",
+    "/adm/shelters",
     "/adm/pagelas",
   ]);
 
@@ -153,13 +153,13 @@ function AdminLayout() {
     }
     if (
       path.startsWith("/adm/usuarios") ||
-      path.startsWith("/adm/shelterinhos") ||
+      path.startsWith("/adm/shelters") ||
       path.startsWith("/adm/pagelas") ||
       path.startsWith("/adm/professores") ||
       path.startsWith("/adm/lideres") ||
       path.startsWith("/adm/criancas")
     ) {
-      return "shelterinho";
+      return "shelter";
     }
     return "operacional";
   };
@@ -187,7 +187,7 @@ function AdminLayout() {
     tudo: "tudo",
     pages: "pages",
     conteudos: "conteúdos",
-    shelterinho: "shelterinho",
+    shelter: "shelter",
     operacional: "operacional",
   };
 
@@ -210,7 +210,7 @@ function AdminLayout() {
               gap: 0.5,
             }}
           >
-            {(["tudo", "pages", "conteudos", "shelterinho", "operacional"] as MobileTab[]).map((tab) => (
+            {(["tudo", "pages", "conteudos", "shelter", "operacional"] as MobileTab[]).map((tab) => (
               <Button
                 key={tab}
                 size="small"
