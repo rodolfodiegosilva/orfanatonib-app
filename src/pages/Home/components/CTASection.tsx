@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradients } from '@/theme';
 import { Box, Typography, Container, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -45,10 +46,7 @@ const CTASection: React.FC<CTASectionProps> = ({ isAuthenticated }) => {
             sx={{
               fontSize: { xs: '1.5rem', sm: '2.5rem', md: '3rem' },
               fontWeight: 800,
-              background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color: '#000000',
               mb: { xs: 3, md: 4 },
               fontFamily: "'Poppins', sans-serif",
             }}
@@ -66,7 +64,7 @@ const CTASection: React.FC<CTASectionProps> = ({ isAuthenticated }) => {
           <Typography
             variant="h5"
             sx={{
-              color: '#5a6c7d',
+              color: '#333333',
               mb: { xs: 4, md: 6 },
               fontSize: { xs: '1rem', md: '1.3rem' },
               fontWeight: 400,
@@ -102,12 +100,10 @@ const CTASection: React.FC<CTASectionProps> = ({ isAuthenticated }) => {
                     fontSize: { xs: '1rem', md: '1.1rem' },
                     fontWeight: 700,
                     borderRadius: 3,
-                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                    color: '#ffffff',
-                    boxShadow: '0 8px 20px rgba(102, 126, 234, 0.3)',
+                    background: '#009933',
+                    color: '#FFFFFF',
                     '&:hover': {
-                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
-                      boxShadow: '0 12px 25px rgba(102, 126, 234, 0.4)',
+                      backgroundColor: '#007a29',
                       transform: 'translateY(-2px)',
                     },
                     transition: 'all 0.3s ease',
@@ -132,12 +128,10 @@ const CTASection: React.FC<CTASectionProps> = ({ isAuthenticated }) => {
                     fontSize: { xs: '1rem', md: '1.1rem' },
                     fontWeight: 700,
                     borderRadius: 3,
-                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                    color: '#ffffff',
-                    boxShadow: '0 8px 20px rgba(102, 126, 234, 0.3)',
+                    background: '#009933',
+                    color: '#FFFFFF',
                     '&:hover': {
-                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
-                      boxShadow: '0 12px 25px rgba(102, 126, 234, 0.4)',
+                      backgroundColor: '#007a29',
                       transform: 'translateY(-2px)',
                     },
                     transition: 'all 0.3s ease',

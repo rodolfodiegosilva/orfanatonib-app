@@ -14,7 +14,13 @@ const MobileNavigation: React.FC = () => {
     <Box sx={{ display: { xs: 'block', md: 'none' } }}>
       <IconButton
         onClick={toggleDrawer}
-        sx={{ color: '#fff' }}
+        sx={{ 
+          color: '#FFFF00',
+          '&:hover': {
+            backgroundColor: 'rgba(255, 255, 0, 0.1)',
+            color: '#FFFFFF'
+          }
+        }}
         aria-label={open ? 'Fechar menu' : 'Abrir menu'}
       >
         {open ? <CloseIcon fontSize="large" /> : <MenuIcon fontSize="large" />}
@@ -30,7 +36,7 @@ const MobileNavigation: React.FC = () => {
             width: { xs: '100dvw', sm: 360 },
             maxWidth: '100dvw',
             height: { xs: '100dvh', sm: '100vh' },
-            bgcolor: '#81d742',
+            bgcolor: '#000000',
             boxSizing: 'border-box',
             pt: 'max(env(safe-area-inset-top), 16px)',
             pb: 'max(env(safe-area-inset-bottom), 16px)',

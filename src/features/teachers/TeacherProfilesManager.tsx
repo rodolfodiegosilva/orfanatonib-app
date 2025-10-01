@@ -8,15 +8,15 @@ import TeacherCards from "./components/TeacherCards";
 import TeacherViewDialog from "./components/TeacherViewDialog";
 import TeacherEditDialog from "./components/TeacherEditDialog";
 
-import { useClubsIndex, useTeacherMutations, useTeacherProfiles } from "./hooks";
+import { useSheltersIndex, useTeacherMutations, useTeacherProfiles } from "./hooks";
 import { TeacherProfile } from "./types";
 import BackHeader from "@/components/common/header/BackHeader";
 
 export type TeacherFilters = {
   q?: string;
   active?: boolean;
-  hasClub?: boolean;
-  clubNumber?: number;
+  hasShelter?: boolean;
+  shelterName?: string;
 };
 
 export default function TeacherProfilesManager() {
@@ -30,8 +30,8 @@ export default function TeacherProfilesManager() {
   const [filters, setFilters] = React.useState<TeacherFilters>({
     q: "",
     active: undefined,
-    hasClub: undefined,
-    clubNumber: undefined,
+    hasShelter: undefined,
+    shelterId: undefined,
   });
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
@@ -39,8 +39,8 @@ export default function TeacherProfilesManager() {
       q: filters.q || undefined,
       searchString: undefined,
       active: filters.active,
-      hasClub: filters.hasClub,
-      clubNumber: filters.clubNumber,
+      hasShelter: filters.hasShelter,
+      shelterName: filters.shelterName,
     });
 
   const doRefresh = React.useCallback(() => {
@@ -48,48 +48,44 @@ export default function TeacherProfilesManager() {
   }, [fetchPage]);
 
   const {
-    byNumber,
-    loading: clubsLoading,
-    error: clubsError,
-    refresh: refreshClubs,
-  } = useClubsIndex();
+    shelters,
+    byId,
+    loading: sheltersLoading,
+    error: sheltersError,
+    refresh: refreshShelters,
+  } = useSheltersIndex();
 
-  const { dialogLoading, dialogError, setDialogError, setClub, clearClub } =
+  const { dialogLoading, dialogError, setDialogError, setShelter, clearShelter } =
     useTeacherMutations(fetchPage, refreshOne);
 
   const [viewing, setViewing] = React.useState<TeacherProfile | null>(null);
   const [editing, setEditing] = React.useState<TeacherProfile | null>(null);
 
-  const onSetClub = React.useCallback(
-    async (teacher: TeacherProfile | null, clubNumberInput: number) => {
-      if (!teacher || !clubNumberInput) return;
-      const club = byNumber.get(clubNumberInput);
-      if (!club) {
-        setDialogError("Clubinho não encontrado pelo número informado.");
-        return;
-      }
+  const onSetShelter = React.useCallback(
+    async (teacher: TeacherProfile | null, shelterId: string) => {
+      if (!teacher || !shelterId) return;
       try {
-        await setClub(teacher.id, club.id);
+        await setShelter(teacher.id, shelterId);
         setEditing(null);
         setDialogError("");
-        await Promise.all([fetchPage(), refreshClubs()]);
+        await Promise.all([fetchPage(), refreshShelters()]);
       } catch {
       }
     },
-    [byNumber, setClub, fetchPage, refreshClubs, setDialogError]
+    [setShelter, fetchPage, refreshShelters, setDialogError]
   );
 
-  const onClearClub = React.useCallback(
+  const onClearShelter = React.useCallback(
     async (teacherId: string) => {
       try {
-        await clearClub(teacherId);
+        await clearShelter(teacherId);
         setEditing((e) => (e?.id === teacherId ? null : e));
         setDialogError("");
-        await Promise.all([fetchPage(), refreshClubs()]);
+        await Promise.all([fetchPage(), refreshShelters()]);
       } catch {
       }
     },
-    [clearClub, fetchPage, refreshClubs, setDialogError]
+    [clearShelter, fetchPage, refreshShelters, setDialogError]
   );
 
   const handleFiltersChange = React.useCallback(
@@ -106,8 +102,8 @@ export default function TeacherProfilesManager() {
   }, [total, pageSize, pageIndex]);
 
   React.useEffect(() => {
-    refreshClubs();
-  }, [refreshClubs]);
+    refreshShelters();
+  }, [refreshShelters]);
 
   return (
     <Box
@@ -127,13 +123,13 @@ export default function TeacherProfilesManager() {
         isXs={isXs}
       />
 
-      {(loading && !rows.length) || clubsLoading ? (
+      {(loading && !rows.length) || sheltersLoading ? (
         <Box textAlign="center" my={6}>
           <CircularProgress />
         </Box>
       ) : null}
 
-      {(error || clubsError) && !(loading || clubsLoading) && (
+      {(error || sheltersError) && !(loading || sheltersLoading) && (
         <Alert
           severity="error"
           sx={{ mb: 2 }}
@@ -142,7 +138,7 @@ export default function TeacherProfilesManager() {
             setDialogError("");
           }}
         >
-          {error || clubsError}
+          {error || sheltersError}
         </Alert>
       )}
 
@@ -158,7 +154,7 @@ export default function TeacherProfilesManager() {
           setSorting={setSorting as any}
           onView={(t) => setViewing(t)}
           onEditLinks={(t) => setEditing(t)}
-          onClearClub={(teacherId) => onClearClub(teacherId)}
+          onClearShelter={(teacherId) => onClearShelter(teacherId)}
         />
       ) : (
         <TeacherTable
@@ -172,7 +168,7 @@ export default function TeacherProfilesManager() {
           setSorting={setSorting as any}
           onView={(t) => setViewing(t)}
           onEditLinks={(t) => setEditing(t)}
-          onClearClub={(teacherId) => onClearClub(teacherId)}
+          onClearShelter={(teacherId) => onClearShelter(teacherId)}
         />
       )}
 
@@ -187,8 +183,9 @@ export default function TeacherProfilesManager() {
         teacher={editing}
         loading={dialogLoading}
         error={dialogError}
-        onSetClub={(num) => onSetClub(editing, num)}
-        onClearClub={() => editing && onClearClub(editing.id)}
+        shelters={shelters}
+        onSetShelter={(shelterId) => onSetShelter(editing, shelterId)}
+        onClearShelter={() => editing && onClearShelter(editing.id)}
         onClose={() => {
           setEditing(null);
           setDialogError("");

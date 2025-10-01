@@ -41,7 +41,6 @@ import type { TeacherProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
 import { RootState } from "@/store/slices";
 import { buildWhatsappLink } from "@/utils/whatsapp";
-import { weekdayLabel } from "@/utils/dateUtils";
 import { CopyButton, initials } from "@/utils/components";
 
 
@@ -57,7 +56,7 @@ type Props = {
   setSorting: (s: SortingState) => void;
   onView: (row: TeacherProfile) => void;
   onEditLinks: (row: TeacherProfile) => void;
-  onClearClub: (teacherId: string) => void;
+  onClearShelter: (teacherId: string) => void;
 };
 
 export default function TeacherCards({
@@ -71,7 +70,7 @@ export default function TeacherCards({
   setSorting,
   onView,
   onEditLinks,
-  onClearClub,
+  onClearShelter,
 }: Props) {
   const [open, setOpen] = useState<Set<string>>(new Set());
   const { user: loggedUser } = useSelector((state: RootState) => state.auth);
@@ -90,7 +89,7 @@ export default function TeacherCards({
   const sortOptions = useMemo(
     () => [
       { id: "teacher", label: "Nome" },
-      { id: "club", label: "Nº do Clubinho" },
+      { id: "shelter", label: "Nº do Abrigo" },
       { id: "updatedAt", label: "Atualizado em" },
       { id: "createdAt", label: "Criado em" },
     ],
@@ -138,8 +137,8 @@ export default function TeacherCards({
       <Grid container spacing={{ xs: 1, sm: 1.25 }}>
         {rows.map((t) => {
           const expanded = open.has(t.id);
-          const club = t.club || null;
-          const coordUser = club?.coordinator?.user || null;
+          const shelter = t.shelter || null;
+          const coordUser = shelter?.leader?.user || null;
           const wa = buildWhatsappLink(t.user?.name, loggedUser?.name, t.user?.phone);
 
           return (
@@ -279,9 +278,9 @@ export default function TeacherCards({
                           overflow: "hidden",
                           textOverflow: "ellipsis"
                         }}
-                        title={club ? `Clubinho #${club.number ?? "?"}` : "Sem Clubinho"}
+                        title={shelter ? `Abrigo ${shelter.name ?? "?"}` : "Sem Abrigo"}
                       >
-                        {club ? `Clubinho #${club.number ?? "?"}` : "Sem Clubinho"}
+                        {shelter ? `Abrigo ${shelter.name ?? "?"}` : "Sem Abrigo"}
                       </Typography>
                     </Box>
                   </Stack>
@@ -305,7 +304,7 @@ export default function TeacherCards({
                             ? coordUser.name
                             : coordUser?.email
                               ? coordUser.email
-                              : "Sem coordenador"
+                              : "Sem líder"
                         }
                         color="info"
                         sx={{
@@ -391,8 +390,8 @@ export default function TeacherCards({
                           </Stack>
                         </Paper>
 
-                        {/* Clubinho */}
-                        {club && (
+                        {/* Abrigo */}
+                        {shelter && (
                           <Paper
                             variant="outlined"
                             sx={{
@@ -407,26 +406,20 @@ export default function TeacherCards({
                               <Stack direction="row" spacing={0.75} alignItems="center">
                                 <SchoolOutlined fontSize="small" color="primary" />
                                 <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                  Clubinho #{club.number ?? "?"}
+                                  Abrigo {shelter.name ?? "?"}
                                 </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap rowGap={1}>
                                 <Chip
                                   size="small"
                                   color="primary"
-                                  label={`#${club.number ?? "?"}`}
+                                  label={shelter.name ?? "?"}
                                   sx={{ fontWeight: 500 }}
                                 />
                                 <Chip
                                   size="small"
                                   variant="outlined"
-                                  label={weekdayLabel(club.weekday)}
-                                  sx={{ fontWeight: 500 }}
-                                />
-                                <Chip
-                                  size="small"
-                                  variant="outlined"
-                                  label={coordUser?.name || coordUser?.email || "Sem coordenador"}
+                                  label={coordUser?.name || coordUser?.email || "Sem líder"}
                                   sx={{ fontWeight: 500 }}
                                 />
                               </Stack>
@@ -497,7 +490,7 @@ export default function TeacherCards({
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Vincular / Alterar Clubinho">
+                    <Tooltip title="Vincular / Alterar Abrigo">
                       <IconButton
                         size="small"
                         onClick={() => onEditLinks(t)}
@@ -509,11 +502,11 @@ export default function TeacherCards({
                         <LinkIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Desvincular Clubinho">
+                    <Tooltip title="Desvincular Abrigo">
                       <IconButton
                         size="small"
                         color="error"
-                        onClick={() => onClearClub(t.id)}
+                        onClick={() => onClearShelter(t.id)}
                         sx={{
                           "&:hover": { bgcolor: "error.50" }
                         }}

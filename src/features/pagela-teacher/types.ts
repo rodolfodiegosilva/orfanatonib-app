@@ -1,6 +1,6 @@
 export type Pagela = {
   id: string;
-  childId: string;
+  shelteredId: string;
   teacherProfileId: string | null;
   referenceDate: string;
   year: number;
@@ -17,7 +17,7 @@ export type PageDto<T> = { items: T[]; total: number; page: number; limit: numbe
 
 
 export type CreatePagelaPayload = {
-  childId: string;
+  shelteredId: string;
   teacherProfileId?: string | null;
   referenceDate: string;
   week: number;
@@ -28,6 +28,6 @@ export type CreatePagelaPayload = {
   notes?: string | null;
 };
 
-export type UpdatePagelaPayload = Partial<Omit<CreatePagelaPayload, "childId">> & {
+export type UpdatePagelaPayload = Partial<Omit<CreatePagelaPayload, "shelteredId">> & {
   teacherProfileId?: string | null;
 };
