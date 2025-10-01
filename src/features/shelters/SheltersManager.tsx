@@ -25,9 +25,24 @@ export default function SheltersManager() {
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [filters, setFilters] = useState<ShelterFilters>({
-    addressSearchString: "",
-    userSearchString: "",
-    shelterSearchString: "",
+    // Filtros principais
+    shelterName: undefined,
+    staffFilters: undefined,
+    addressFilter: undefined,
+    
+    // Filtros legados para compatibilidade (mantidos temporariamente)
+    addressSearchString: undefined,
+    userSearchString: undefined,
+    shelterSearchString: undefined,
+    searchString: undefined,
+    city: undefined,
+    state: undefined,
+    leaderId: undefined,
+    teacherId: undefined,
+    hasLeaders: undefined,
+    hasTeachers: undefined,
+    leaderIds: undefined,
+    teacherIds: undefined,
   });
 
   const [pageSize, setPageSize] = useState<number>(12);
@@ -47,7 +62,7 @@ export default function SheltersManager() {
     fetchShelter(shelter.id);
   };
 
-  const { leaders, teachers, reloadOptions } = useOptions();
+  const { leaders, teachers, loading: optionsLoading, reloadOptions, loadRefs } = useOptions();
 
   const {
     dialogLoading,
@@ -56,9 +71,10 @@ export default function SheltersManager() {
     createShelter,
     updateShelter,
     deleteShelter,
-  } = useShelterMutations(async (page, limit) => {
-    await apiFetchShelters({ page, limit, filters, sort: sorting });
+  } = useShelterMutations(async () => {
+    // Recarregar dados após operações CRUD
     await fetchPage();
+    await reloadOptions();
   });
 
   const sanitizeIds = (arr?: Array<string | null | undefined>) =>
@@ -71,7 +87,8 @@ export default function SheltersManager() {
     );
 
   const [creating, setCreating] = useState<CreateShelterForm | null>(null);
-  const openCreate = () =>
+  const openCreate = async () => {
+    await loadRefs(); // Carrega opções apenas quando necessário
     setCreating({
       name: "",
       address: {
@@ -81,40 +98,36 @@ export default function SheltersManager() {
         state: "",
         postalCode: "",
       } as any,
-      leaderProfileId: null,
+      leaderProfileIds: [], // Mudou de leaderProfileId para leaderProfileIds[]
       teacherProfileIds: [],
     });
+  };
 
   const submitCreate = async () => {
     if (!creating) return;
 
     const payload: CreateShelterForm = {
       ...creating,
+      leaderProfileIds: sanitizeIds(creating.leaderProfileIds), // Mudou para leaderProfileIds
       teacherProfileIds: sanitizeIds(creating.teacherProfileIds),
     };
 
     if (!payload.teacherProfileIds?.length) delete (payload as any).teacherProfileIds;
+    if (!payload.leaderProfileIds?.length) delete (payload as any).leaderProfileIds; // Mudou para leaderProfileIds
 
-    if (
-      payload.leaderProfileId === undefined ||
-      payload.leaderProfileId === null
-    ) {
-      delete (payload as any).leaderProfileId;
-    }
-
-    await createShelter(payload, pageIndex + 1, pageSize, filters, sorting);
-    await reloadOptions();
+    await createShelter(payload);
     setCreating(null);
   };
 
   const [editing, setEditing] = useState<EditShelterForm | null>(null);
 
-  const startEdit = (c: ShelterResponseDto) => {
+  const startEdit = async (c: ShelterResponseDto) => {
+    await loadRefs(); // Carrega opções apenas quando necessário
     setEditing({
       id: c.id,
       name: c.name,
       address: c.address,
-      leaderProfileId: c.leader?.id ?? null,
+      leaderProfileIds: (c.leaders ?? []).map((l) => l.id), // Mudou de leader?.id para leaders.map
       teacherProfileIds: (c.teachers ?? []).map((t) => t.id),
     });
   };
@@ -123,19 +136,19 @@ export default function SheltersManager() {
     if (!editing) return;
 
     const { id, ...rest } = editing;
+    const leaderIds = sanitizeIds(rest.leaderProfileIds) ?? []; // Mudou para leaderProfileIds
     const teacherIds = sanitizeIds(rest.teacherProfileIds) ?? [];
 
-    const payload: Omit<EditShelterForm, "id"> & { teacherProfileIds: string[] } = {
+    const payload: Omit<EditShelterForm, "id"> & { 
+      leaderProfileIds: string[];
+      teacherProfileIds: string[] 
+    } = {
       ...rest,
+      leaderProfileIds: leaderIds, // Mudou para leaderProfileIds
       teacherProfileIds: teacherIds,
     };
 
-    if (rest.leaderProfileId === undefined) {
-      delete (payload as any).leaderProfileId;
-    }
-
-    await updateShelter(id, payload, pageIndex + 1, pageSize, filters, sorting);
-    await reloadOptions();
+    await updateShelter(id, payload);
     setEditing(null);
   };
 
@@ -144,14 +157,11 @@ export default function SheltersManager() {
 
   const submitDelete = async () => {
     if (!confirmDelete) return;
-    await deleteShelter(confirmDelete.id, pageIndex + 1, pageSize, filters, sorting);
-    await reloadOptions();
+    await deleteShelter(confirmDelete.id);
     setConfirmDelete(null);
   };
 
-  React.useEffect(() => {
-    doRefresh();
-  }, [doRefresh]);
+  // Removido o useEffect duplicado - o useShelters já gerencia as requests automaticamente
 
   return (
     <Box
@@ -170,7 +180,7 @@ export default function SheltersManager() {
           setFilters(updater);
           setPageIndex(0);
         }}
-        onCreateClick={openCreate}
+        onCreateClick={() => openCreate()}
         onRefreshClick={doRefresh}
         isXs={isXs}
       />
@@ -199,7 +209,7 @@ export default function SheltersManager() {
           setSorting(Array.isArray(s) ? (s[0] ?? null) : (s as any))
         }
         onOpenView={handleOpenView}
-        onStartEdit={startEdit}
+        onStartEdit={(shelter) => startEdit(shelter)}
         onAskDelete={askDelete}
       />
 

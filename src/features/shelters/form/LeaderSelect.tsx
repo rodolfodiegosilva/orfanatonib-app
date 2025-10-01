@@ -17,10 +17,11 @@ import {
 import { LeaderOption } from "../../types";
 
 type Props = {
-  value?: string | null;
+  value?: string | string[] | null;
   options: LeaderOption[];
-  onChange: (val: string | null) => void;
+  onChange: (val: string | string[] | null) => void;
   label?: string;
+  multiple?: boolean;
 };
 
 function normalize(s?: string | null) {
@@ -34,10 +35,14 @@ export default function LeaderSelect({
   value,
   options,
   onChange,
-  label = "Líder (opcional)",
+  label,
+  multiple = false,
 }: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Definir o label baseado no parâmetro multiple
+  const displayLabel = label || (multiple ? "Líderes (opcional)" : "Líder (opcional)");
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -54,13 +59,17 @@ export default function LeaderSelect({
 
   const handleChange = useCallback(
     (e: any) => {
-      const v = e.target.value as string;
-      onChange(v ? v : null);
+      const v = e.target.value;
+      if (multiple) {
+        onChange(Array.isArray(v) ? v : []);
+      } else {
+        onChange(v ? v : null);
+      }
     },
-    [onChange]
+    [onChange, multiple]
   );
 
-  const clearSelection = () => onChange(null);
+  const clearSelection = () => onChange(multiple ? [] : null);
   const stop = (e: any) => e.stopPropagation();
 
   const actionStackProps = isXs
@@ -74,18 +83,26 @@ export default function LeaderSelect({
 
   return (
     <FormControl fullWidth>
-      <InputLabel>{label}</InputLabel>
+      <InputLabel>{displayLabel}</InputLabel>
       <Select
-        label={label}
+        label={displayLabel}
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
-        value={value ?? ""}
+        value={multiple ? (value as string[] ?? []) : (value ?? "")}
         onChange={handleChange}
+        multiple={multiple}
         renderValue={(selected) => {
-          if (!selected) return "—";
-          const opt = options.find((o) => o.leaderProfileId === selected);
-          return opt?.name || selected;
+          if (multiple) {
+            const selectedArray = selected as string[];
+            if (!selectedArray.length) return "—";
+            const opts = options.filter((o) => selectedArray.includes(o.leaderProfileId));
+            return opts.map(o => o.name || o.leaderProfileId).join(", ");
+          } else {
+            if (!selected) return "—";
+            const opt = options.find((o) => o.leaderProfileId === selected);
+            return opt?.name || selected;
+          }
         }}
         MenuProps={{
           PaperProps: { sx: { width: menuWidth, maxHeight: menuMaxH } },

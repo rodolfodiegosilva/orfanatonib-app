@@ -55,12 +55,34 @@ function SheltersTableDesktop(props: Props) {
         meta: { width: 200 },
       },
       {
-        id: "leader",
-        header: "Líder",
+        id: "leaders",
+        header: "Líderes",
         cell: ({ row }) => {
-          const c = row.original.leader;
-          const label = c?.user?.name || c?.user?.email || "—";
-          return <Typography noWrap>{label}</Typography>;
+          const leaders = row.original.leaders ?? [];
+          if (leaders.length === 0) {
+            return <Typography noWrap color="text.secondary">—</Typography>;
+          }
+          if (leaders.length === 1) {
+            const leader = leaders[0];
+            const label = leader?.user?.name || leader?.user?.email || "—";
+            return <Typography noWrap>{label}</Typography>;
+          }
+          return (
+            <Box>
+              {leaders.map((leader, index) => {
+                const label = leader?.user?.name || leader?.user?.email || "—";
+                return (
+                  <Chip
+                    key={leader.id}
+                    label={label}
+                    size="small"
+                    variant="outlined"
+                    sx={{ mr: 0.5, mb: 0.5 }}
+                  />
+                );
+              })}
+            </Box>
+          );
         },
         meta: { width: 240 },
       },

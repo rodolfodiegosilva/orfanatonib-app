@@ -37,14 +37,42 @@ export default function SheltersToolbar({
     key: K,
     value: ShelterFilters[K]
   ) => {
-    onChange((prev) => ({ ...prev, [key]: value }));
+    onChange((prev) => {
+      const newFilters = { ...prev, [key]: value };
+      
+      // Mapear filtros legados para novos filtros (sempre, mesmo quando undefined)
+      if (key === 'shelterSearchString') {
+        newFilters.shelterName = value as string | undefined;
+      } else if (key === 'userSearchString') {
+        newFilters.staffFilters = value as string | undefined;
+      } else if (key === 'city' || key === 'addressSearchString') {
+        newFilters.addressFilter = value as string | undefined;
+      }
+      
+      return newFilters;
+    });
   };
 
   const handleClear = () => {
     onChange(() => ({
-      shelterSearchString: "",
-      userSearchString: "",
-      addressSearchString: "",
+      // Filtros principais
+      shelterName: undefined,
+      staffFilters: undefined,
+      addressFilter: undefined,
+      
+      // Filtros legados para compatibilidade (estes são os que aparecem nos campos)
+      addressSearchString: undefined,
+      userSearchString: undefined,
+      shelterSearchString: undefined,
+      searchString: undefined,
+      city: undefined,
+      state: undefined,
+      leaderId: undefined,
+      teacherId: undefined,
+      hasLeaders: undefined,
+      hasTeachers: undefined,
+      leaderIds: undefined,
+      teacherIds: undefined,
     }));
   };
 
@@ -70,10 +98,10 @@ export default function SheltersToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Abrigo"
+            label="Nome do Abrigo"
             value={filters.shelterSearchString ?? ""}
-            onChange={(e) => handleChange("shelterSearchString", e.target.value)}
-            placeholder="Número, dia ou horário (ex.: 14:30)"
+            onChange={(e) => handleChange("shelterSearchString", e.target.value || undefined)}
+            placeholder="Nome do abrigo"
           />
         </Grid>
 
@@ -81,10 +109,10 @@ export default function SheltersToolbar({
           <TextField
             fullWidth
             size="small"
-            label="Professor/Líder"
+            label="Staff (Líderes e Professores)"
             value={filters.userSearchString ?? ""}
-            onChange={(e) => handleChange("userSearchString", e.target.value)}
-            placeholder="Nome, e-mail ou telefone"
+            onChange={(e) => handleChange("userSearchString", e.target.value || undefined)}
+            placeholder="Nome, email ou telefone"
           />
         </Grid>
 
@@ -93,9 +121,9 @@ export default function SheltersToolbar({
             fullWidth
             size="small"
             label="Endereço"
-            value={filters.addressSearchString ?? ""}
-            onChange={(e) => handleChange("addressSearchString", e.target.value)}
-            placeholder="Rua, bairro ou cidade"
+            value={filters.city ?? ""}
+            onChange={(e) => handleChange("city", e.target.value || undefined)}
+            placeholder="Rua, bairro, cidade, estado ou CEP"
           />
         </Grid>
 

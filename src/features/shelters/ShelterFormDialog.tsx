@@ -45,7 +45,7 @@ export default function ShelterFormDialog({
   if (!value) return null;
 
   const teachers = (value as any).teacherProfileIds ?? [];
-  const coord = (value as any).leaderProfileId ?? null;
+  const leaders = (value as any).leaderProfileIds ?? []; // Mudou de leaderProfileId para leaderProfileIds
   const name = (value as any).name ?? "";
 
   return (
@@ -82,11 +82,12 @@ export default function ShelterFormDialog({
           {isAdmin && (
             <Grid item xs={12} md={12}>
               <LeaderSelect
-                value={coord}
+                value={leaders}
                 options={leaderOptions}
                 onChange={(val) =>
-                  onChange({ ...value, leaderProfileId: val } as any)
+                  onChange({ ...value, leaderProfileIds: val } as any)
                 }
+                multiple={true} // Adicionado para suportar múltiplos líderes
               />
             </Grid>
           )}

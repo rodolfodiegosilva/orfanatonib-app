@@ -86,7 +86,7 @@ export default function SheltersCards(props: Props) {
       <Grid container spacing={{ xs: 1, sm: 1.25 }}>
         {rows.map((c) => {
           const expanded = open.has(c.id);
-          const coordName = c.leader?.user?.name || c.leader?.user?.email || "—";
+          const leaders = c.leaders ?? [];
           const teachers = c.teachers ?? [];
           const addrPreview = c.address ? `${c.address.city} / ${c.address.state}` : "—";
 
@@ -231,19 +231,21 @@ export default function SheltersCards(props: Props) {
                           overflow: "hidden", 
                           textOverflow: "ellipsis"
                         }}
-                        title={coordName}
+                        title={leaders.length > 0 ? leaders.map(l => l.user?.name || l.user?.email || "—").join(", ") : "—"}
                       >
-                        {coordName}
+                        {leaders.length === 0 ? "—" : 
+                         leaders.length === 1 ? (leaders[0]?.user?.name || leaders[0]?.user?.email || "—") :
+                         `${leaders.length} líderes`}
                       </Typography>
                     </Box>
-                    {c.leader?.user?.phone && (
+                    {leaders.length === 1 && leaders[0]?.user?.phone && (
                       <Stack direction="row" spacing={0.25}>
                         <Tooltip title="Ligar">
-                          <IconButton size="small" href={`tel:${c.leader.user.phone}`} sx={{ p: 0.5 }}>
+                          <IconButton size="small" href={`tel:${leaders[0].user.phone}`} sx={{ p: 0.5 }}>
                             <PhoneIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                        <CopyButton value={c.leader.user.phone} title="Copiar telefone" />
+                        <CopyButton value={leaders[0].user.phone} title="Copiar telefone" />
                       </Stack>
                     )}
                   </Stack>
