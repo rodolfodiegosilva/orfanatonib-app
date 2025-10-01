@@ -11,6 +11,8 @@ import {
   Link as MuiLink,
   IconButton,
   Grid,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
@@ -22,9 +24,9 @@ import { SectionHeader } from "./components/SectionHeader";
 import { SheltersPanel } from "./components/SheltersPanel";
 import { PagelasPanel } from "./components/PagelasPanel";
 import { ShelteredPanel } from "./components/ShelteredPanel";
+import { usePagelaSheltersManager } from "./hooks";
 
-import type { ShelterResponseDto } from "@/features/shelters/types";
-import type { ShelteredResponseDto } from "@/features/sheltered/types";
+import type { ShelterDto } from "./types";
 import BackHeader from "@/components/common/header/BackHeader";
 
 type MobileStep = "shelters" | "sheltered" | "pagelas";
@@ -33,9 +35,18 @@ export default function PagelaSheltersManager() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [selectedShelter, setSelectedShelter] = useState<ShelterResponseDto | null>(null);
-  const [selectedSheltered, setSelectedSheltered] = useState<ShelteredResponseDto | null>(null);
   const [mobileStep, setMobileStep] = useState<MobileStep>("shelters");
+
+  const {
+    selectedShelter,
+    selectedSheltered,
+    shelters,
+    sheltered,
+    pagelas,
+    handleShelterSelect,
+    handleShelteredSelect,
+    handleBack,
+  } = usePagelaSheltersManager();
 
   useEffect(() => {
     if (!isMobile) return;
@@ -44,227 +55,198 @@ export default function PagelaSheltersManager() {
     else setMobileStep("pagelas");
   }, [isMobile, selectedShelter, selectedSheltered]);
 
-  const handleBack = () => {
+  const handleMobileBack = () => {
     if (!isMobile) return;
     if (mobileStep === "pagelas") {
-      setSelectedSheltered(null);
+      handleShelteredSelect(null as any);
       setMobileStep("sheltered");
     } else if (mobileStep === "sheltered") {
-      setSelectedShelter(null);
+      handleShelterSelect(null as any);
       setMobileStep("shelters");
     }
   };
 
+  const renderMobileContent = () => {
+    switch (mobileStep) {
+      case "shelters":
+        return (
+          <SheltersPanel
+            shelters={shelters.data?.items || []}
+            loading={shelters.loading}
+            error={shelters.error}
+            onShelterSelect={handleShelterSelect}
+            selectedShelter={selectedShelter}
+            currentPage={shelters.currentPage}
+            totalPages={shelters.totalPages}
+            onPageChange={shelters.handlePageChange}
+          />
+        );
+      case "sheltered":
+        return (
+          <ShelteredPanel
+            sheltered={sheltered.data?.data || []}
+            loading={sheltered.loading}
+            error={sheltered.error}
+            onShelteredSelect={handleShelteredSelect}
+            selectedSheltered={selectedSheltered}
+            shelterName={selectedShelter?.name || ""}
+            currentPage={sheltered.currentPage}
+            totalPages={sheltered.totalPages}
+            onPageChange={sheltered.handlePageChange}
+          />
+        );
+      case "pagelas":
+        return (
+          <PagelasPanel
+            pagelas={pagelas.data?.items || []}
+            loading={pagelas.loading}
+            error={pagelas.error}
+            shelteredName={selectedSheltered?.name || ""}
+            shelterName={selectedShelter?.name || ""}
+            currentPage={pagelas.currentPage}
+            totalPages={pagelas.totalPages}
+            onPageChange={pagelas.handlePageChange}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderDesktopContent = () => (
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={4}>
+        <SheltersPanel
+          shelters={shelters.data?.items || []}
+          loading={shelters.loading}
+          error={shelters.error}
+          onShelterSelect={handleShelterSelect}
+          selectedShelter={selectedShelter}
+          currentPage={shelters.currentPage}
+          totalPages={shelters.totalPages}
+          onPageChange={shelters.handlePageChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <ShelteredPanel
+          sheltered={sheltered.data?.data || []}
+          loading={sheltered.loading}
+          error={sheltered.error}
+          onShelteredSelect={handleShelteredSelect}
+          selectedSheltered={selectedSheltered}
+          shelterName={selectedShelter?.name || ""}
+          currentPage={sheltered.currentPage}
+          totalPages={sheltered.totalPages}
+          onPageChange={sheltered.handlePageChange}
+        />
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <PagelasPanel
+          pagelas={pagelas.data?.items || []}
+          loading={pagelas.loading}
+          error={pagelas.error}
+          shelteredName={selectedSheltered?.name || ""}
+          shelterName={selectedShelter?.name || ""}
+          currentPage={pagelas.currentPage}
+          totalPages={pagelas.totalPages}
+          onPageChange={pagelas.handlePageChange}
+        />
+      </Grid>
+    </Grid>
+  );
+
   return (
     <Box
       sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        minHeight: 0,
+        minHeight: "100vh",
+        pb: 4,
       }}
     >
-      <AppBar position="static" color="default" elevation={0}>
-        <Toolbar sx={{ gap: 2 }}>
-          {isMobile && mobileStep !== "shelters" ? (
-            <>
-              <IconButton aria-label="voltar" onClick={handleBack} edge="start">
+      <BackHeader
+        title="Gerenciar Pagelas"
+      />
+
+      <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
+        {isMobile ? (
+          <Box>
+            {/* Mobile Header */}
+            <Card
+              sx={{
+                mb: 2,
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(0, 153, 51, 0.2)",
+              }}
+            >
+              <CardContent sx={{ py: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <IconButton onClick={handleMobileBack} size="small">
                 <ArrowBackIcon />
               </IconButton>
+                  <Typography variant="h6" fontWeight="bold" color="#000000">
+                    {mobileStep === "shelters" && "Abrigos"}
+                    {mobileStep === "sheltered" && selectedShelter ? `${selectedShelter.name} - Abrigados` : "Abrigados"}
+                    {mobileStep === "pagelas" && selectedSheltered ? `${selectedSheltered.name} - Pagelas` : "Pagelas"}
+                  </Typography>
+                </Stack>
+              </CardContent>
+            </Card>
 
-              <Typography
-                component="h1"
+            {renderMobileContent()}
+          </Box>
+        ) : (
+          <Box>
+            {/* Desktop Breadcrumbs */}
+            <Card
                 sx={{
-                  flexGrow: 1,
-                  fontWeight: 700,
-                  lineHeight: 1.2,
-                  fontSize: { xs: "1rem", sm: "1.125rem", md: "1.25rem" },
-                  letterSpacing: { xs: 0.2, md: 0.3 },
-                }}
-              >
-                Abrigos ▸ Crianças ▸ Pagelas
-              </Typography>
-            </>
-          ) : (
-            <>
-              {isMobile && (
-                <BackHeader title="Abrigos▸Crianças▸Pagelas" mobileFontSize="1rem" />
-              )}
-            </>
-          )}
-
-          {!isMobile && (
-            <Breadcrumbs separator={<ChevronRightIcon fontSize="small" />} aria-label="breadcrumb" maxItems={3}>
+                mb: 3,
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(0, 153, 51, 0.2)",
+              }}
+            >
+              <CardContent sx={{ py: 2 }}>
+                <Breadcrumbs separator={<ChevronRightIcon fontSize="small" />}>
               <MuiLink
                 component="button"
                 onClick={() => {
-                  setSelectedShelter(null);
-                  setSelectedSheltered(null);
+                      handleShelterSelect(null as any);
+                      handleShelteredSelect(null as any);
+                    }}
+                    sx={{
+                      color: "#009933",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      "&:hover": { textDecoration: "underline" },
                 }}
               >
                 Abrigos
               </MuiLink>
               {selectedShelter && (
-                <MuiLink component="button" onClick={() => setSelectedSheltered(null)}>
-                  Abrigo #{selectedShelter.number}
-                </MuiLink>
-              )}
-              {selectedSheltered && <Typography color="text.primary">{selectedSheltered.name}</Typography>}
-            </Breadcrumbs>
-          )}
-        </Toolbar>
-      </AppBar>
-
-      <Box
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          overflow: "hidden",
-          p: 2,
-        }}
-      >
-        {!isMobile && (
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              height: "100%",
-              minHeight: 0,
-            }}
-          >
-            <Grid item xs={12} md={4} sx={{ height: "100%", minHeight: 0 }}>
-              <Card sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
-                <CardContent
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    p: 2,
-                    minHeight: 0,
-                  }}
-                >
-                  <SectionHeader context="shelters" title="Abrigos" subtitle="Selecione um abrigo para ver as crianças" />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <SheltersPanel
-                      onSelect={(shelter) => {
-                        setSelectedShelter(shelter);
-                        setSelectedSheltered(null);
-                      }}
-                      selectedId={selectedShelter?.id || null}
-                    />
-                  </Box>
+                      <MuiLink
+                        component="button"
+                        onClick={() => handleShelteredSelect(null as any)}
+                        sx={{
+                          color: selectedSheltered ? "#009933" : "#000000",
+                          fontWeight: selectedSheltered ? 600 : 400,
+                          textDecoration: "none",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        {selectedShelter.name}
+                      </MuiLink>
+                  )}
+              {selectedSheltered && (
+                        <Typography color="#000000" fontWeight={600}>
+                          {selectedSheltered.name}
+                        </Typography>
+                      )}
+                </Breadcrumbs>
                 </CardContent>
               </Card>
-            </Grid>
 
-            <Grid item xs={12} md={4} sx={{ height: "100%", minHeight: 0 }}>
-              <Card sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
-                <CardContent
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    p: 2,
-                    minHeight: 0,
-                  }}
-                >
-                  <SectionHeader
-                    context="sheltered"
-                    title="Crianças"
-                    subtitle={selectedShelter ? `Abrigo #${selectedShelter.number}` : "Escolha um Abrigo"}
-                  />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <ShelteredPanel
-                      shelter={selectedShelter}
-                      onSelect={(sheltered) => setSelectedSheltered(sheltered)}
-                      selectedId={selectedSheltered?.id || null}
-                    />
+            {renderDesktopContent()}
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} md={4} sx={{ height: "100%", minHeight: 0 }}>
-              <Card sx={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
-                <CardContent
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    p: 2,
-                    minHeight: 0,
-                  }}
-                >
-                  <SectionHeader
-                    context="pagelas"
-                    title="Pagelas"
-                    subtitle={selectedSheltered ? selectedSheltered.name : "Escolha uma criança"}
-                  />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <PagelasPanel sheltered={selectedSheltered} />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        )}
-
-        {isMobile && (
-          <Stack spacing={2} sx={{ height: "100%", minHeight: 0 }}>
-            {mobileStep === "shelters" && (
-              <Card sx={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex" }}>
-                <CardContent sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", gap: 2, minHeight: 0 }}>
-                  <SectionHeader context="shelters" title="Abrigos" subtitle="Toque em um abrigo para avançar" />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <SheltersPanel
-                      onSelect={(shelter) => {
-                        setSelectedShelter(shelter);
-                        setSelectedSheltered(null);
-                        setMobileStep("sheltered");
-                      }}
-                      selectedId={selectedShelter?.id || null}
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
-
-            {mobileStep === "sheltered" && (
-              <Card sx={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex" }}>
-                <CardContent sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", gap: 2, minHeight: 0 }}>
-                  <SectionHeader
-                    context="sheltered"
-                    title="Crianças"
-                    subtitle={selectedShelter ? `Abrigo #${selectedShelter.number}` : undefined}
-                  />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <ShelteredPanel
-                      shelter={selectedShelter}
-                      onSelect={(sheltered) => {
-                        setSelectedSheltered(sheltered);
-                        setMobileStep("pagelas");
-                      }}
-                      selectedId={selectedSheltered?.id || null}
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
-
-            {mobileStep === "pagelas" && (
-              <Card sx={{ flex: 1, overflow: "hidden", minHeight: 0, display: "flex" }}>
-                <CardContent sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", gap: 2, minHeight: 0 }}>
-                  <SectionHeader context="pagelas" title="Pagelas" subtitle={selectedSheltered ? selectedSheltered.name : undefined} />
-                  <Box sx={{ flex: 1, minHeight: 0 }}>
-                    <PagelasPanel sheltered={selectedSheltered} />
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
-          </Stack>
         )}
       </Box>
     </Box>

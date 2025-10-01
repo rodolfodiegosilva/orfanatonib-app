@@ -1,251 +1,219 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import {
-  Box, Stack, Typography, Chip, Skeleton, Alert, Card, CardContent, Avatar,
-  Divider, Pagination, IconButton, Tooltip
+  Box, 
+  Stack, 
+  Typography, 
+  Chip, 
+  Skeleton, 
+  Alert, 
+  Card, 
+  CardContent, 
+  Avatar,
+  Divider,
+  Pagination,
 } from "@mui/material";
-import PaginationItem from "@mui/material/PaginationItem";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
-import { useTheme, alpha } from "@mui/material/styles";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import type { ShelteredResponseDto } from "@/features/sheltered/types";
-import { apiListPagelasPaginated } from "@/features/pagela-teacher/api";
-import type { Pagela } from "@/features/pagela-teacher/types";
+import type { PagelaDto } from "../types";
 import { EmptyState } from "./common/EmptyState";
-import { PlaceholderCard } from "./common/PlaceholderCard";
 import { fmtDate } from "../utils";
 
-export function PagelasPanel({ sheltered }: { sheltered: ShelteredResponseDto | null }) {
+interface PagelasPanelProps {
+  pagelas: PagelaDto[];
+  loading: boolean;
+  error: string | null;
+  shelteredName: string;
+  shelterName: string;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+export function PagelasPanel({
+  pagelas,
+  loading,
+  error,
+  shelteredName,
+  shelterName,
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PagelasPanelProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const touchMin = isMobile ? 56 : 48;
 
-  const [rows, setRows] = useState<Pagela[]>([]);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const sortedPagelas = useMemo(() => {
+    return [...pagelas].sort((a, b) => {
+      // Ordenar por ano DESC, depois por visita DESC
+      if (a.year !== b.year) return b.year - a.year;
+      return b.visit - a.visit;
+    });
+  }, [pagelas]);
 
-  const hasFetchedRef = useRef<Record<string, boolean>>({});
-  const lastKeyRef = useRef<string>("");
-  const abortRef = useRef<AbortController | null>(null);
-
-  const shelteredId = sheltered?.id ?? null;
-
-  const query = useMemo(() => {
-    if (!shelteredId) return null;
-    return { shelteredId, page, limit };
-  }, [shelteredId, page, limit]);
-
-  const fetchPagelas = useCallback(async () => {
-    if (!query) return;
-
-    const key = JSON.stringify(query);
-    if (key === lastKeyRef.current) return;
-    lastKeyRef.current = key;
-
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-
-    setLoading(true);
-    setError("");
-    try {
-      const data = await apiListPagelasPaginated(query, { signal: ctrl.signal });
-      setRows(Array.isArray(data?.items) ? data.items : []);
-      setTotal(Number(data?.total ?? 0));
-      hasFetchedRef.current[query.shelteredId] = true;
-    } catch (e: any) {
-      if (e?.name !== "CanceledError" && e?.name !== "AbortError") {
-        setError(e?.response?.data?.message || e?.message || "Erro ao listar pagelas");
-      }
-    } finally {
-      if (abortRef.current === ctrl) abortRef.current = null;
-      setLoading(false);
-    }
-  }, [query]);
-
-  useEffect(() => {
-    setPage(1);
-    lastKeyRef.current = "";
-  }, [shelteredId]);
-
-  useEffect(() => {
-    fetchPagelas();
-    return () => abortRef.current?.abort();
-  }, [fetchPagelas]);
-
-  if (!shelteredId) {
-    return <PlaceholderCard title="Escolha uma criança" subtitle="Clique em uma criança para ver suas pagelas." />;
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ mb: 2 }}>
+        {error}
+      </Alert>
+    );
   }
 
-  const hasFetched = !!hasFetchedRef.current[shelteredId];
-
   return (
-    <Stack sx={{ height: "100%" }} spacing={2}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-        <Chip label={`Total: ${total}`} color="info" variant="outlined" />
-        <Chip label={`Abrigo ${sheltered?.shelter?.name ?? "-"}`} color="secondary" variant="outlined" />
+    <Card
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        background: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(0, 153, 51, 0.2)",
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+        <Typography variant="h6" fontWeight="bold" color="#000000" sx={{ mb: 1 }}>
+          Pagelas
+        </Typography>
+        {shelteredName && (
+          <Typography variant="body2" color="#333333" sx={{ mb: 1 }}>
+            Abrigado: {shelteredName}
+          </Typography>
+        )}
+        {shelterName && (
+          <Typography variant="body2" color="#333333">
+            Abrigo: {shelterName}
+          </Typography>
+        )}
       </Box>
 
-      <Box sx={{ flex: 1, overflow: "auto", pr: 1 }}>
+      <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+        {loading ? (
+          <Stack spacing={2}>
+            {[...Array(6)].map((_, index) => (
+              <Skeleton key={index} variant="rectangular" height={80} />
+            ))}
+          </Stack>
+        ) : sortedPagelas.length === 0 ? (
+          <EmptyState
+            icon={<BookmarksIcon />}
+            title="Nenhuma pagela encontrada"
+            description="Não há registros de pagelas para este abrigado"
+          />
+        ) : (
         <Stack spacing={1}>
-          {loading && Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} variant="rounded" height={72} />)}
-          {!loading && error && <Alert severity="error">{error}</Alert>}
-
-          {!loading && !error && hasFetched && rows.length === 0 && (
-            <EmptyState title="Sem pagelas" subtitle="Crie a primeira pagela desta criança." />
-          )}
-
-          {!loading && !error && rows.length > 0 && rows.map((p) => (
+            {sortedPagelas.map((pagela) => (
             <Card
-              key={p.id}
-              variant="outlined"
+                key={pagela.id}
               sx={{
-                borderRadius: 2,
-                borderColor: alpha(theme.palette.info.main, 0.3),
-                backgroundColor: alpha(theme.palette.info.main, 0.02),
-              }}
-            >
-              <CardContent sx={{ p: isMobile ? 1 : 1.25 }}>
-                {isMobile ? (
-                  <Stack spacing={1}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ minHeight: touchMin }}
+                  border: "1px solid rgba(0, 153, 51, 0.2)",
+                  backgroundColor: pagela.present 
+                    ? "rgba(0, 153, 51, 0.05)" 
+                    : "rgba(255, 0, 0, 0.05)",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    backgroundColor: pagela.present 
+                      ? "rgba(0, 153, 51, 0.1)" 
+                      : "rgba(255, 0, 0, 0.1)",
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 2 }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar
+                      sx={{
+                        bgcolor: pagela.present ? "#009933" : "#FF0000",
+                        width: 40,
+                        height: 40,
+                      }}
                     >
-                      <Avatar sx={{ width: 42, height: 42, bgcolor: alpha(theme.palette.info.main, 0.15), color: theme.palette.info.main }}>
-                        <BookmarksIcon />
+                      {pagela.present ? (
+                        <CheckCircleIcon sx={{ color: "white" }} />
+                      ) : (
+                        <CancelIcon sx={{ color: "white" }} />
+                      )}
                       </Avatar>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                        Semana {p.week} · {p.year}
+                    
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight="bold"
+                          color="#000000"
+                        >
+                          Ano {pagela.year} - Visita {pagela.visit}
                       </Typography>
-                    </Stack>
-
-                    <Stack direction="row" spacing={0.75}>
                       <Chip
+                          label={pagela.present ? "Presente" : "Ausente"}
                         size="small"
-                        color={p.present ? "success" : "default"}
-                        label={p.present ? "Presente" : "Ausente"}
-                        variant={p.present ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                      />
-                      <Chip
-                        size="small"
-                        color={p.didMeditation ? "info" : "default"}
-                        label={p.didMeditation ? "Meditação" : "Sem Med."}
-                        variant={p.didMeditation ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                      />
-                      <Chip
-                        size="small"
-                        color={p.recitedVerse ? "secondary" : "default"}
-                        label={p.recitedVerse ? "Verso" : "Sem Verso"}
-                        variant={p.recitedVerse ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
+                          sx={{
+                            backgroundColor: pagela.present 
+                              ? "rgba(0, 153, 51, 0.1)" 
+                              : "rgba(255, 0, 0, 0.1)",
+                            color: pagela.present ? "#009933" : "#FF0000",
+                            fontWeight: 500,
+                          }}
                       />
                     </Stack>
 
-                    {p.notes && p.notes.trim() !== "" && (
-                      <Typography variant="body2">{p.notes}</Typography>
-                    )}
-                  </Stack>
-                ) : (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    spacing={1.5}
-                    sx={{ minHeight: touchMin }}
-                  >
-                    <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
-                      <Avatar sx={{ width: 40, height: 40, bgcolor: alpha(theme.palette.info.main, 0.15), color: theme.palette.info.main }}>
-                        <BookmarksIcon />
-                      </Avatar>
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.1 }} noWrap>
-                          Semana {p.week} · {p.year}
+                      <Typography
+                        variant="body2"
+                        color="#333333"
+                        sx={{ mb: 0.5 }}
+                      >
+                        Data: {fmtDate(pagela.referenceDate)}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" noWrap>
-                          Ref.: {fmtDate(p.referenceDate)}
+                      
+                      {pagela.notes && (
+                        <Typography
+                          variant="caption"
+                          color="#666666"
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {pagela.notes}
                         </Typography>
+                      )}
                       </Box>
-                    </Stack>
-
-                    <Stack direction="row" spacing={0.75} sx={{ flexShrink: 0 }}>
-                      <Chip
-                        size="small"
-                        color={p.present ? "success" : "default"}
-                        label={p.present ? "Presente" : "Ausente"}
-                        variant={p.present ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                      />
-                      <Chip
-                        size="small"
-                        color={p.didMeditation ? "info" : "default"}
-                        label={p.didMeditation ? "Meditação" : "Sem Med."}
-                        variant={p.didMeditation ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                      />
-                      <Chip
-                        size="small"
-                        color={p.recitedVerse ? "secondary" : "default"}
-                        label={p.recitedVerse ? "Verso" : "Sem Verso"}
-                        variant={p.recitedVerse ? "filled" : "outlined"}
-                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                      />
-                    </Stack>
                   </Stack>
-                )}
-
-                {!isMobile && p.notes && p.notes.trim() !== "" && (
-                  <>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="body2">{p.notes}</Typography>
-                  </>
-                )}
               </CardContent>
             </Card>
           ))}
         </Stack>
+                )}
       </Box>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title="- por página">
-            <IconButton onClick={() => setLimit((l) => Math.max(6, l - 6))}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Tooltip>
-          <Typography variant="body2">{limit}/pág.</Typography>
-          <Tooltip title="+ por página">
-            <IconButton onClick={() => setLimit((l) => Math.min(48, l + 6))}>
-              <ChevronRightIcon />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-
+            {/* Paginação no rodapé */}
+            {totalPages > 1 && (
+                <Box sx={{ p: 2, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
         <Pagination
+                        count={totalPages}
+                        page={currentPage}
+                        onChange={(_, page) => onPageChange(page)}
+                        color="primary"
           size="small"
-          count={Math.max(1, Math.ceil(total / limit))}
-          page={page}
-          onChange={(_, p) => setPage(p)}
-          renderItem={(item) => (
-            <PaginationItem
-              {...item}
-              slots={{
-                previous: ChevronLeftIcon,
-                next: ChevronRightIcon,
-              }}
-            />
-          )}
-        />
-      </Stack>
-    </Stack>
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            "& .MuiPaginationItem-root": {
+                                color: "#009933",
+                                "&.Mui-selected": {
+                                    backgroundColor: "#009933",
+                                    color: "white",
+                                },
+                            },
+                        }}
+                    />
+                </Box>
+            )}
+        </Card>
   );
 }

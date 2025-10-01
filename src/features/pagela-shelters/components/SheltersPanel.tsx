@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     Box,
     Stack,
@@ -12,336 +12,242 @@ import {
     Avatar,
     Typography,
     Chip,
-    Tooltip,
     Pagination,
-    Divider,
 } from "@mui/material";
-import PaginationItem from "@mui/material/PaginationItem";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useTheme, alpha } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { apiFetchShelters } from "@/features/shelters/api";
-import type { ShelterResponseDto, ShelterFilters, ShelterSort, Weekday } from "@/features/shelters/types";
+import type { ShelterDto } from "../types";
 import { EmptyState } from "./common/EmptyState";
-import { WEEKDAY_PT, useDebounced } from "../utils";
+import { useDebounced } from "../utils";
+
+interface SheltersPanelProps {
+    shelters: ShelterDto[];
+    loading: boolean;
+    error: string | null;
+    onShelterSelect: (shelter: ShelterDto) => void;
+    selectedShelter: ShelterDto | null;
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+}
 
 export function SheltersPanel({
-    onSelect,
-    selectedId,
-}: {
-    onSelect: (shelter: ShelterResponseDto) => void;
-    selectedId: string | null;
-}) {
+    shelters,
+    loading,
+    error,
+    onShelterSelect,
+    selectedShelter,
+    currentPage,
+    totalPages,
+    onPageChange,
+}: SheltersPanelProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const touchMin = isMobile ? 56 : 48;
 
     const [search, setSearch] = useState("");
     const dq = useDebounced(search);
 
-    const [page, setPage] = useState(1);
-    const [limit] = useState(12);
-    const [rows, setRows] = useState<ShelterResponseDto[]>([]);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string>("");
+    const filteredShelters = useMemo(() => {
+        if (!dq) return shelters;
+        return shelters.filter(shelter =>
+            shelter.name.toLowerCase().includes(dq.toLowerCase()) ||
+            shelter.address.city.toLowerCase().includes(dq.toLowerCase()) ||
+            shelter.address.state.toLowerCase().includes(dq.toLowerCase())
+        );
+    }, [shelters, dq]);
 
-    const sort = useMemo<ShelterSort>(() => ({ id: "updatedAt", desc: true }), []);
-    const filters: ShelterFilters = useMemo(
-        () => ({
-            addressSearchString: dq || undefined,
-            shelterSearchString: dq || undefined,
-        }),
-        [dq]
-    );
+    const handleSearchClear = () => {
+        setSearch("");
+    };
 
-    const lastKeyRef = useRef<string>("");
-    const abortRef = useRef<AbortController | null>(null);
-
-    const fetchShelters = useCallback(async () => {
-        const key = JSON.stringify({ page, limit, filters, sort });
-        if (key === lastKeyRef.current) return;
-        lastKeyRef.current = key;
-
-        abortRef.current?.abort();
-        const ctrl = new AbortController();
-        abortRef.current = ctrl;
-
-        setLoading(true);
-        setError("");
-        try {
-            const data = await apiFetchShelters({ page, limit, filters, sort });
-            setRows(Array.isArray(data?.data) ? data.data : []);
-            setTotal(Number(data?.total ?? 0));
-        } catch (e: any) {
-            if (e?.name !== "CanceledError" && e?.name !== "AbortError") {
-                setError(e?.response?.data?.message || e?.message || "Erro ao listar shelters");
-            }
-        } finally {
-            if (abortRef.current === ctrl) abortRef.current = null;
-            setLoading(false);
-        }
-    }, [page, limit, filters, sort]);
-
-    useEffect(() => {
-        fetchShelters();
-        return () => abortRef.current?.abort();
-    }, [fetchShelters]);
-
-    const weekdayLong = (w: Weekday | undefined) => (w ? WEEKDAY_PT[w] : "-");
-    const diaDe = (w: Weekday | undefined) => (w ? `Dia de ${weekdayLong(w)}` : "Dia não informado");
+    if (error) {
+        return (
+            <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+            </Alert>
+        );
+    }
 
     return (
-        <Stack sx={{ height: "100%" }} spacing={2}>
+        <Card
+            sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(0, 153, 51, 0.2)",
+            }}
+        >
+            <Box sx={{ p: 2, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Typography variant="h6" fontWeight="bold" color="#000000" sx={{ mb: 2 }}>
+                    Abrigos
+                </Typography>
+                
             <TextField
+                    fullWidth
                 size="small"
-                placeholder="Endereço / nº do shelter.."
+                    placeholder="Buscar abrigos..."
                 value={search}
-                onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                }}
+                    onChange={(e) => setSearch(e.target.value)}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <SearchIcon />
+                                <SearchIcon sx={{ color: "#009933" }} />
                         </InputAdornment>
                     ),
-                    endAdornment: (
+                        endAdornment: search && (
                         <InputAdornment position="end">
-                            {search && (
-                                <IconButton aria-label="limpar" onClick={() => setSearch("")}>
+                                <IconButton size="small" onClick={handleSearchClear}>
                                     <ClearIcon />
                                 </IconButton>
-                            )}
                         </InputAdornment>
                     ),
                 }}
-            />
+                    sx={{
+                        "& .MuiOutlinedInput-root": {
+                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            "&:hover": {
+                                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            },
+                        },
+                    }}
+                />
+            </Box>
 
-            <Box sx={{ flex: 1, overflow: "auto", pr: 1 }}>
-                <Stack spacing={1}>
-                    {loading &&
-                        Array.from({ length: 6 }).map((_, i) => (
-                            <Skeleton key={i} variant="rounded" height={72} />
+            <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+                {loading ? (
+                    <Stack spacing={2}>
+                        {[...Array(6)].map((_, index) => (
+                            <Skeleton key={index} variant="rectangular" height={80} />
                         ))}
-
-                    {!loading && error && <Alert severity="error">{error}</Alert>}
-
-                    {!loading && !error && rows.length === 0 && (
-                        <EmptyState title="Nenhum shelter encontrado" subtitle="Ajuste a busca ou cadastre um novo." />
-                    )}
-
-                    {!loading &&
-                        !error &&
-                        rows.map((c) => {
-                            const teacherNames = (c.teachers ?? [])
-                                .map((t) => t.user?.name || t.user?.email || "Prof.")
-                                .filter(Boolean);
-
-                            const shown = teacherNames.slice(0, isMobile ? 2 : 3);
-                            const extra = Math.max(0, teacherNames.length - shown.length);
-                            const selected = selectedId === c.id;
-
-                            return (
+                    </Stack>
+                ) : filteredShelters.length === 0 ? (
+                    <EmptyState
+                        icon={<SearchIcon />}
+                        title="Nenhum abrigo encontrado"
+                        description={search ? "Tente ajustar os filtros de busca" : "Não há abrigos cadastrados"}
+                    />
+                ) : (
+                    <Stack spacing={1}>
+                        {filteredShelters.map((shelter) => (
                                 <Card
-                                    key={c.id}
-                                    variant={selected ? "elevation" : "outlined"}
+                                key={shelter.id}
                                     sx={{
-                                        borderRadius: 2,
-                                        borderColor: selected ? "primary.main" : "divider",
-                                        backgroundColor: selected ? alpha(theme.palette.primary.main, 0.06) : "background.paper",
-                                        transition: "background-color .2s, border-color .2s",
+                                    border: selectedShelter?.id === shelter.id 
+                                        ? "2px solid #009933" 
+                                        : "1px solid rgba(0, 153, 51, 0.2)",
+                                    backgroundColor: selectedShelter?.id === shelter.id 
+                                        ? "rgba(0, 153, 51, 0.1)" 
+                                        : "rgba(255, 255, 255, 0.8)",
+                                    transition: "all 0.2s ease",
                                         "&:hover": {
-                                            backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                                        backgroundColor: "rgba(0, 153, 51, 0.05)",
+                                        transform: "translateY(-1px)",
+                                        boxShadow: "0 4px 8px rgba(0, 153, 51, 0.2)",
                                         },
                                     }}
                                 >
-                                    <CardActionArea onClick={() => onSelect(c)}>
-                                        {isMobile ? (
-                                            <Stack spacing={0.75} sx={{ p: 1.25, minHeight: touchMin }}>
-                                                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                                                        Abrigo #{c.number}
+                                <CardActionArea onClick={() => onShelterSelect(shelter)}>
+                                    <Box sx={{ p: 2 }}>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: "#009933",
+                                                    width: 48,
+                                                    height: 48,
+                                                }}
+                                            >
+                                                <Typography variant="h6" color="white" fontWeight="bold">
+                                                    {shelter.name.charAt(0).toUpperCase()}
                                                     </Typography>
-                                                    <Chip
-                                                        size="small"
-                                                        label={diaDe(c.weekday)}
-                                                        color="info"
-                                                        variant="outlined"
-                                                        sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                    />
-                                                </Stack>
-
-                                                <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap" }}>
-                                                    {shown.length === 0 ? (
-                                                        <Chip
-                                                            size="small"
-                                                            variant="outlined"
-                                                            color="warning"
-                                                            label="Sem professores"
-                                                            sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                        />
-                                                    ) : (
-                                                        <>
-                                                            {shown.map((name, idx) => (
-                                                                <Chip
-                                                                    key={idx}
-                                                                    size="small"
-                                                                    color="secondary"
-                                                                    label={name}
-                                                                    variant="outlined"
-                                                                    sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                                />
-                                                            ))}
-                                                            {extra > 0 && (
-                                                                <Chip
-                                                                    size="small"
-                                                                    color="primary"
-                                                                    label={`+${extra}`}
-                                                                    sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                                />
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </Stack>
+                                            </Avatar>
+                                            
+                                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                                                <Typography
+                                                    variant="subtitle1"
+                                                    fontWeight="bold"
+                                                    color="#000000"
+                                                    sx={{
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        whiteSpace: "nowrap",
+                                                    }}
+                                                >
+                                                    {shelter.name}
+                                                </Typography>
 
                                                 <Typography
                                                     variant="body2"
-                                                    color="text.secondary"
-                                                    noWrap
-                                                    title={`${c.address?.street ?? ""}${c.address?.district ? `, ${c.address?.district}` : ""}`}
+                                                    color="#333333"
+                                                    sx={{
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        whiteSpace: "nowrap",
+                                                    }}
                                                 >
-                                                    {(c.address?.street ?? "Rua não informada")},{" "}
-                                                    {c.address?.district ?? "Bairro não informado"}
+                                                    {shelter.address.city}, {shelter.address.state}
                                                 </Typography>
-                                            </Stack>
-                                        ) : (
-                                            <>
-                                                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ p: 1.25, minHeight: touchMin }}>
-                                                    <Avatar
-                                                        sx={{
-                                                            bgcolor: alpha(theme.palette.primary.main, 0.12),
-                                                            color: theme.palette.primary.main,
-                                                            width: 40,
-                                                            height: 40,
-                                                            fontSize: 13,
-                                                            fontWeight: 700,
-                                                        }}
-                                                    >
-                                                        #{c.number}
-                                                    </Avatar>
-
-                                                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                                                        <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.1 }} noWrap>
-                                                            {WEEKDAY_PT[c.weekday as Weekday]} · #{c.number}
-                                                        </Typography>
-
-                                                        <Stack direction="row" spacing={0.75} sx={{ mt: 0.5, flexWrap: "wrap" }}>
-                                                            {shown.length === 0 ? (
-                                                                <Chip
-                                                                    size="small"
-                                                                    variant="outlined"
-                                                                    color="warning"
-                                                                    label="Sem professores"
-                                                                    sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                    {shown.map((name, idx) => (
-                                                                        <Chip
-                                                                            key={idx}
-                                                                            size="small"
-                                                                            color="secondary"
-                                                                            label={name}
-                                                                            variant="outlined"
-                                                                            sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                                        />
-                                                                    ))}
-                                                                    {extra > 0 && (
-                                                                        <Chip
-                                                                            size="small"
-                                                                            color="primary"
-                                                                            label={`+${extra}`}
-                                                                            sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                                        />
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </Stack>
-
-                                                        <Typography
-                                                            variant="body2"
-                                                            color="text.secondary"
-                                                            noWrap
-                                                            sx={{ opacity: 0.9, mt: 0.5 }}
-                                                            title={`${c.address?.street}, ${c.address?.district} – ${c.address?.city}/${c.address?.state}`}
-                                                        >
-                                                            {c.address?.street}, {c.address?.district} – {c.address?.city}/{c.address?.state}
-                                                        </Typography>
-                                                    </Box>
-
-                                                    <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", ml: 0.5 }}>
-                                                        <Chip
-                                                            size="small"
-                                                            label={`Prof.: ${c.teachers?.length ?? 0}`}
-                                                            color="secondary"
-                                                            variant="outlined"
-                                                            sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                        />
-                                                        <Chip
-                                                            size="small"
-                                                            color={c.leader ? "success" : "default"}
-                                                            label={c.leader ? "Coord." : "Sem Coord."}
-                                                            variant={c.leader ? "filled" : "outlined"}
-                                                            sx={{ borderRadius: 999, height: 22, ".MuiChip-label": { px: 1, fontSize: 12 } }}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-
-                                                <Divider sx={{ mx: 1.25 }} />
+                                                
                                                 <Typography
                                                     variant="caption"
-                                                    sx={{ p: 1, pt: 0.75, display: "block", color: "text.secondary" }}
+                                                    color="#666666"
+                                                    sx={{
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        whiteSpace: "nowrap",
+                                                    }}
                                                 >
-                                                    Atualizado em {new Date(c.updatedAt).toLocaleDateString("pt-BR")}
+                                                    {shelter.address.district}
                                                 </Typography>
-                                            </>
-                                        )}
-                                    </CardActionArea>
-                                </Card>
-                            );
-                        })}
-                </Stack>
             </Box>
 
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <Tooltip title="Recarregar">
-                    <IconButton onClick={() => fetchShelters()}>
-                        <RefreshIcon />
-                    </IconButton>
-                </Tooltip>
-                <Pagination
+                                            <Box sx={{ textAlign: "right" }}>
+                                                <Chip
+                                                    label={`${shelter.teachers.length} professores`}
                     size="small"
-                    count={Math.max(1, Math.ceil(total / limit))}
-                    page={page}
-                    onChange={(_, p) => setPage(p)}
-                    renderItem={(item) => (
-                        <PaginationItem
-                            {...item}
-                            slots={{
-                                previous: ChevronLeftIcon,
-                                next: ChevronRightIcon,
-                            }}
-                        />
-                    )}
-                />
+                                                    sx={{
+                                                        backgroundColor: "rgba(0, 153, 51, 0.1)",
+                                                        color: "#009933",
+                                                        fontWeight: 500,
+                                                    }}
+                                                />
+                                            </Box>
             </Stack>
+                                    </Box>
+                                </CardActionArea>
+                            </Card>
+                        ))}
         </Stack>
+                )}
+            </Box>
+            
+            {/* Paginação no rodapé */}
+            {totalPages > 1 && (
+                <Box sx={{ p: 2, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                    <Pagination
+                        count={totalPages}
+                        page={currentPage}
+                        onChange={(_, page) => onPageChange(page)}
+                        color="primary"
+                        size="small"
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            "& .MuiPaginationItem-root": {
+                                color: "#009933",
+                                "&.Mui-selected": {
+                                    backgroundColor: "#009933",
+                                    color: "white",
+                                },
+                            },
+                        }}
+                    />
+                </Box>
+            )}
+        </Card>
     );
 }
