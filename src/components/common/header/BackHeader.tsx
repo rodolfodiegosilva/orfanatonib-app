@@ -28,10 +28,12 @@ const BackHeader: React.FC<BackHeaderProps> = ({
   return isXs ? (
     <Box
       sx={{
-        mb: 3,
+        mb: 2,
         display: "flex",
         alignItems: "center",
         gap: 1,
+        backgroundColor: "#f5f5f5", // Background consistente
+        p: 1,
       }}
     >
       <Tooltip title="Voltar">

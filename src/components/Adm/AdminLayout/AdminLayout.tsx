@@ -359,12 +359,12 @@ function AdminLayout() {
         sx={{
           flexGrow: 1,
           width: "100%",
-          px: { xs: 0, md: 4 },
-          py: { xs: 0, md: 6 },
-          mt: isMobile ? 2 : 0,
+          px: { xs: 0, md: 4 }, // Sem padding lateral no mobile
+          pt: { xs: 2, md: 6 }, // 16px padding-top no mobile
+          pb: { xs: "var(--app-footer-h)", md: "var(--app-footer-h)" },
+          mt: 0, // Remove margin-top no mobile
           bgcolor: "#f5f7fa",
           minHeight: `calc(100vh - var(--app-header-h))`,
-          pb: { xs: "var(--app-footer-h)", md: "var(--app-footer-h)" },
         }}
       >
         {isMobile && <Toolbar sx={{ minHeight: 0, p: 0 }} />}

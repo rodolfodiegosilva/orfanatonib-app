@@ -166,13 +166,18 @@ export default function PagelaSheltersManager() {
       sx={{
         minHeight: "100vh",
         pb: 4,
+        backgroundColor: "#f5f5f5", // Background consistente
       }}
     >
       <BackHeader
         title="Gerenciar Pagelas"
       />
 
-      <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, pt: { xs: 1, sm: 2 } }}>
+      <Box sx={{ 
+        px: { xs: 1, sm: 2, md: 3 }, 
+        pt: { xs: 0, sm: 2 }, // Remove padding top no mobile
+        backgroundColor: "#f5f5f5" // Background consistente
+      }}>
         {isMobile ? (
           <Box>
             {/* Mobile Header */}
