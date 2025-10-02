@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     Box,
     Stack,
@@ -32,6 +32,7 @@ interface SheltersPanelProps {
     currentPage: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    onSearchChange?: (searchString: string) => void;
 }
 
 export function SheltersPanel({
@@ -43,6 +44,7 @@ export function SheltersPanel({
     currentPage,
     totalPages,
     onPageChange,
+    onSearchChange,
 }: SheltersPanelProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -50,18 +52,16 @@ export function SheltersPanel({
     const [search, setSearch] = useState("");
     const dq = useDebounced(search);
 
-    const filteredShelters = useMemo(() => {
-        if (!dq) return shelters;
-        return shelters.filter(shelter =>
-            shelter.name.toLowerCase().includes(dq.toLowerCase()) ||
-            shelter.address.city.toLowerCase().includes(dq.toLowerCase()) ||
-            shelter.address.state.toLowerCase().includes(dq.toLowerCase())
-        );
-    }, [shelters, dq]);
+    // Chama a API quando o debounced search muda
+    useEffect(() => {
+        if (onSearchChange) {
+            onSearchChange(dq);
+        }
+    }, [dq]);
 
-    const handleSearchClear = () => {
+    const handleSearchClear = useCallback(() => {
         setSearch("");
-    };
+    }, []);
 
     if (error) {
         return (
@@ -82,12 +82,21 @@ export function SheltersPanel({
                 border: "1px solid rgba(0, 153, 51, 0.2)",
             }}
         >
-            <Box sx={{ p: 2, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
-                <Typography variant="h6" fontWeight="bold" color="#000000" sx={{ mb: 2 }}>
+            <Box sx={{ p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Typography 
+                    variant="h6" 
+                    fontWeight="bold" 
+                    color="#000000" 
+                    sx={{ 
+                        mb: { xs: 1.5, sm: 2 },
+                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                        display: { xs: 'none', sm: 'block' } // Esconde no mobile
+                    }}
+                >
                     Abrigos
                 </Typography>
                 
-            <TextField
+                <TextField
                     fullWidth
                 size="small"
                     placeholder="Buscar abrigos..."
@@ -118,22 +127,22 @@ export function SheltersPanel({
                 />
             </Box>
 
-            <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+            <Box sx={{ flex: 1, overflow: "auto", p: { xs: 1.5, sm: 2 } }}>
                 {loading ? (
                     <Stack spacing={2}>
                         {[...Array(6)].map((_, index) => (
                             <Skeleton key={index} variant="rectangular" height={80} />
                         ))}
                     </Stack>
-                ) : filteredShelters.length === 0 ? (
+                ) : shelters.length === 0 ? (
                     <EmptyState
                         icon={<SearchIcon />}
                         title="Nenhum abrigo encontrado"
                         description={search ? "Tente ajustar os filtros de busca" : "Não há abrigos cadastrados"}
                     />
                 ) : (
-                    <Stack spacing={1}>
-                        {filteredShelters.map((shelter) => (
+                    <Stack spacing={{ xs: 1, sm: 1.5 }}>
+                        {shelters.map((shelter) => (
                                 <Card
                                 key={shelter.id}
                                     sx={{
@@ -152,71 +161,103 @@ export function SheltersPanel({
                                     }}
                                 >
                                 <CardActionArea onClick={() => onShelterSelect(shelter)}>
-                                    <Box sx={{ p: 2 }}>
-                                        <Stack direction="row" spacing={2} alignItems="center">
-                                            <Avatar
+                                    <Box sx={{ p: { xs: 2, sm: 2 }, minHeight: { xs: 120, sm: 110 } }}>
+                                        <Stack spacing={1}>
+                                            {/* Primeira linha: Iniciais (esquerda) + Quantidade de professores (direita) */}
+                                            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                <Avatar
+                                                    sx={{
+                                                        bgcolor: "#009933",
+                                                        width: { xs: 32, sm: 36 },
+                                                        height: { xs: 32, sm: 36 },
+                                                    }}
+                                                >
+                                                    <Typography 
+                                                        variant="caption" 
+                                                        color="white" 
+                                                        fontWeight="bold"
+                                                        sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                                                    >
+                                                        {shelter.name.charAt(0).toUpperCase()}
+                                                    </Typography>
+                                                </Avatar>
+                                                
+                                                <Typography
+                                                    variant="caption"
+                                                    color="#009933"
+                                                    fontWeight="500"
+                                                    sx={{
+                                                        fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                                                        textAlign: 'right'
+                                                    }}
+                                                >
+                                                    {shelter.teachers.length} professores
+                                                </Typography>
+                                            </Stack>
+
+                                            {/* Segunda linha: Nome do abrigo */}
+                                            <Typography
+                                                variant="subtitle2"
+                                                fontWeight="bold"
+                                                color="#000000"
                                                 sx={{
-                                                    bgcolor: "#009933",
-                                                    width: 48,
-                                                    height: 48,
+                                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                                    lineHeight: 1.3,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap'
                                                 }}
                                             >
-                                                <Typography variant="h6" color="white" fontWeight="bold">
-                                                    {shelter.name.charAt(0).toUpperCase()}
-                                                    </Typography>
-                                            </Avatar>
-                                            
-                                            <Box sx={{ flex: 1, minWidth: 0 }}>
-                                                <Typography
-                                                    variant="subtitle1"
-                                                    fontWeight="bold"
-                                                    color="#000000"
-                                                    sx={{
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        whiteSpace: "nowrap",
-                                                    }}
-                                                >
-                                                    {shelter.name}
-                                                </Typography>
+                                                {shelter.name}
+                                            </Typography>
 
-                                                <Typography
-                                                    variant="body2"
-                                                    color="#333333"
-                                                    sx={{
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        whiteSpace: "nowrap",
-                                                    }}
-                                                >
-                                                    {shelter.address.city}, {shelter.address.state}
-                                                </Typography>
-                                                
+                                            {/* Terceira linha: Cidade, Estado */}
+                                            <Typography
+                                                variant="caption"
+                                                color="#333333"
+                                                sx={{
+                                                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                                    lineHeight: 1.3,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                {shelter.address.city}, {shelter.address.state}
+                                            </Typography>
+
+                                            {/* Quarta linha: Bairro */}
+                                            <Typography
+                                                variant="caption"
+                                                color="#666666"
+                                                sx={{
+                                                    fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                                                    lineHeight: 1.3,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                {shelter.address.district}
+                                            </Typography>
+
+                                            {/* Quinta linha: Líderes */}
+                                            {shelter.leaders && shelter.leaders.length > 0 && (
                                                 <Typography
                                                     variant="caption"
                                                     color="#666666"
                                                     sx={{
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        whiteSpace: "nowrap",
+                                                        fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                                                        lineHeight: 1.3,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap'
                                                     }}
                                                 >
-                                                    {shelter.address.district}
+                                                    Líderes: {shelter.leaders.map(leader => leader.user.name).join(', ')}
                                                 </Typography>
-            </Box>
-
-                                            <Box sx={{ textAlign: "right" }}>
-                                                <Chip
-                                                    label={`${shelter.teachers.length} professores`}
-                    size="small"
-                                                    sx={{
-                                                        backgroundColor: "rgba(0, 153, 51, 0.1)",
-                                                        color: "#009933",
-                                                        fontWeight: 500,
-                                                    }}
-                                                />
-                                            </Box>
-            </Stack>
+                                            )}
+                                        </Stack>
                                     </Box>
                                 </CardActionArea>
                             </Card>
@@ -227,7 +268,7 @@ export function SheltersPanel({
             
             {/* Paginação no rodapé */}
             {totalPages > 1 && (
-                <Box sx={{ p: 2, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
                     <Pagination
                         count={totalPages}
                         page={currentPage}
@@ -239,6 +280,9 @@ export function SheltersPanel({
                             justifyContent: "center",
                             "& .MuiPaginationItem-root": {
                                 color: "#009933",
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                minWidth: { xs: 28, sm: 32 },
+                                height: { xs: 28, sm: 32 },
                                 "&.Mui-selected": {
                                     backgroundColor: "#009933",
                                     color: "white",

@@ -131,6 +131,7 @@ export interface ShelteredFilters {
   searchString?: string;
   shelterId?: string;
   shelterName?: string;
+  shelteredName?: string;
   city?: string;
   state?: string;
   gender?: string;

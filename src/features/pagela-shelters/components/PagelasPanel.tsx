@@ -73,23 +73,45 @@ export function PagelasPanel({
         border: "1px solid rgba(0, 153, 51, 0.2)",
       }}
     >
-      <Box sx={{ p: 2, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
-        <Typography variant="h6" fontWeight="bold" color="#000000" sx={{ mb: 1 }}>
+      <Box sx={{ p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+        <Typography 
+          variant="h6" 
+          fontWeight="bold" 
+          color="#000000" 
+          sx={{ 
+            mb: { xs: 1, sm: 1.5 },
+            fontSize: { xs: '1rem', sm: '1.25rem' },
+            display: { xs: 'none', sm: 'block' } // Esconde no mobile
+          }}
+        >
           Pagelas
         </Typography>
         {shelteredName && (
-          <Typography variant="body2" color="#333333" sx={{ mb: 1 }}>
+          <Typography 
+            variant="body2" 
+            color="#333333" 
+            sx={{ 
+              mb: { xs: 0.5, sm: 1 },
+              fontSize: { xs: '0.75rem', sm: '0.875rem' }
+            }}
+          >
             Abrigado: {shelteredName}
           </Typography>
         )}
         {shelterName && (
-          <Typography variant="body2" color="#333333">
+          <Typography 
+            variant="body2" 
+            color="#333333"
+            sx={{ 
+              fontSize: { xs: '0.75rem', sm: '0.875rem' }
+            }}
+          >
             Abrigo: {shelterName}
           </Typography>
         )}
       </Box>
 
-      <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+      <Box sx={{ flex: 1, overflow: "auto", p: { xs: 1.5, sm: 2 } }}>
         {loading ? (
           <Stack spacing={2}>
             {[...Array(6)].map((_, index) => (
@@ -103,7 +125,7 @@ export function PagelasPanel({
             description="Não há registros de pagelas para este abrigado"
           />
         ) : (
-        <Stack spacing={1}>
+        <Stack spacing={{ xs: 1, sm: 1.5 }}>
             {sortedPagelas.map((pagela) => (
             <Card
                 key={pagela.id}
@@ -122,19 +144,19 @@ export function PagelasPanel({
                   },
                 }}
               >
-                <CardContent sx={{ p: 2 }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
+                <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
+                  <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} alignItems="center">
                     <Avatar
                       sx={{
                         bgcolor: pagela.present ? "#009933" : "#FF0000",
-                        width: 40,
-                        height: 40,
+                        width: { xs: 36, sm: 40 },
+                        height: { xs: 36, sm: 40 },
                       }}
                     >
                       {pagela.present ? (
-                        <CheckCircleIcon sx={{ color: "white" }} />
+                        <CheckCircleIcon sx={{ color: "white", fontSize: { xs: '1rem', sm: '1.25rem' } }} />
                       ) : (
-                        <CancelIcon sx={{ color: "white" }} />
+                        <CancelIcon sx={{ color: "white", fontSize: { xs: '1rem', sm: '1.25rem' } }} />
                       )}
                       </Avatar>
                     
@@ -144,6 +166,7 @@ export function PagelasPanel({
                           variant="subtitle2"
                           fontWeight="bold"
                           color="#000000"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                         >
                           Ano {pagela.year} - Visita {pagela.visit}
                       </Typography>
@@ -156,6 +179,8 @@ export function PagelasPanel({
                               : "rgba(255, 0, 0, 0.1)",
                             color: pagela.present ? "#009933" : "#FF0000",
                             fontWeight: 500,
+                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                            height: { xs: 18, sm: 20 }
                           }}
                       />
                     </Stack>
@@ -163,7 +188,10 @@ export function PagelasPanel({
                       <Typography
                         variant="body2"
                         color="#333333"
-                        sx={{ mb: 0.5 }}
+                        sx={{ 
+                          mb: 0.5,
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                        }}
                       >
                         Data: {fmtDate(pagela.referenceDate)}
                         </Typography>
@@ -177,6 +205,7 @@ export function PagelasPanel({
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: "vertical",
                             overflow: "hidden",
+                            fontSize: { xs: '0.625rem', sm: '0.75rem' }
                           }}
                         >
                           {pagela.notes}
@@ -193,7 +222,7 @@ export function PagelasPanel({
 
             {/* Paginação no rodapé */}
             {totalPages > 1 && (
-                <Box sx={{ p: 2, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
         <Pagination
                         count={totalPages}
                         page={currentPage}
@@ -205,6 +234,9 @@ export function PagelasPanel({
                             justifyContent: "center",
                             "& .MuiPaginationItem-root": {
                                 color: "#009933",
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                minWidth: { xs: 28, sm: 32 },
+                                height: { xs: 28, sm: 32 },
                                 "&.Mui-selected": {
                                     backgroundColor: "#009933",
                                     color: "white",

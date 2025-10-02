@@ -33,7 +33,7 @@ type MobileStep = "shelters" | "sheltered" | "pagelas";
 
 export default function PagelaSheltersManager() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   const [mobileStep, setMobileStep] = useState<MobileStep>("shelters");
 
@@ -46,6 +46,8 @@ export default function PagelaSheltersManager() {
     handleShelterSelect,
     handleShelteredSelect,
     handleBack,
+    handleSheltersSearchChange,
+    handleShelteredSearchChange,
   } = usePagelaSheltersManager();
 
   useEffect(() => {
@@ -79,6 +81,7 @@ export default function PagelaSheltersManager() {
             currentPage={shelters.currentPage}
             totalPages={shelters.totalPages}
             onPageChange={shelters.handlePageChange}
+            onSearchChange={handleSheltersSearchChange}
           />
         );
       case "sheltered":
@@ -93,6 +96,7 @@ export default function PagelaSheltersManager() {
             currentPage={sheltered.currentPage}
             totalPages={sheltered.totalPages}
             onPageChange={sheltered.handlePageChange}
+            onSearchChange={handleShelteredSearchChange}
           />
         );
       case "pagelas":
@@ -125,6 +129,7 @@ export default function PagelaSheltersManager() {
           currentPage={shelters.currentPage}
           totalPages={shelters.totalPages}
           onPageChange={shelters.handlePageChange}
+          onSearchChange={handleSheltersSearchChange}
         />
       </Grid>
       <Grid item xs={12} md={4}>
@@ -138,6 +143,7 @@ export default function PagelaSheltersManager() {
           currentPage={sheltered.currentPage}
           totalPages={sheltered.totalPages}
           onPageChange={sheltered.handlePageChange}
+          onSearchChange={handleShelteredSearchChange}
         />
       </Grid>
       <Grid item xs={12} md={4}>
@@ -166,27 +172,46 @@ export default function PagelaSheltersManager() {
         title="Gerenciar Pagelas"
       />
 
-      <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
+      <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, pt: { xs: 1, sm: 2 } }}>
         {isMobile ? (
           <Box>
             {/* Mobile Header */}
             <Card
               sx={{
-                mb: 2,
+                mb: { xs: 1, sm: 2 },
                 background: "rgba(255, 255, 255, 0.9)",
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(0, 153, 51, 0.2)",
               }}
             >
-              <CardContent sx={{ py: 2 }}>
+              <CardContent sx={{ py: { xs: 1.5, sm: 2 } }}>
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <IconButton onClick={handleMobileBack} size="small">
-                <ArrowBackIcon />
-              </IconButton>
-                  <Typography variant="h6" fontWeight="bold" color="#000000">
+                  
+                  {/* Só mostra a arrow back quando não está na primeira tela */}
+                  {mobileStep !== "shelters" && (
+                    <IconButton onClick={handleMobileBack} size="small">
+                      <ArrowBackIcon />
+                    </IconButton>
+                  )}
+                  
+                  {/* Espaçamento quando não há arrow back */}
+                  {mobileStep === "shelters" && <Box sx={{ width: 40 }} />}
+                  
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="bold" 
+                    color="#000000"
+                    sx={{ 
+                      fontSize: { xs: '1rem', sm: '1.25rem' },
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      flex: 1
+                    }}
+                  >
                     {mobileStep === "shelters" && "Abrigos"}
-                    {mobileStep === "sheltered" && selectedShelter ? `${selectedShelter.name} - Abrigados` : "Abrigados"}
-                    {mobileStep === "pagelas" && selectedSheltered ? `${selectedSheltered.name} - Pagelas` : "Pagelas"}
+                    {mobileStep === "sheltered" && "Abrigados"}
+                    {mobileStep === "pagelas" && "Pagelas"}
                   </Typography>
                 </Stack>
               </CardContent>

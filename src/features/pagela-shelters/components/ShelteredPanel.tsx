@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box, 
   Stack, 
@@ -42,6 +42,7 @@ interface ShelteredPanelProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onSearchChange?: (searchString: string) => void;
 }
 
 export function ShelteredPanel({
@@ -54,6 +55,7 @@ export function ShelteredPanel({
   currentPage,
   totalPages,
   onPageChange,
+  onSearchChange,
 }: ShelteredPanelProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -61,18 +63,16 @@ export function ShelteredPanel({
   const [search, setSearch] = useState("");
   const dq = useDebounced(search);
 
-  const filteredSheltered = useMemo(() => {
-    if (!dq) return sheltered;
-    return sheltered.filter(sheltered =>
-      sheltered.name.toLowerCase().includes(dq.toLowerCase()) ||
-      (sheltered.guardianName && sheltered.guardianName.toLowerCase().includes(dq.toLowerCase())) ||
-      (sheltered.guardianPhone && sheltered.guardianPhone.includes(dq))
-    );
-  }, [sheltered, dq]);
+  // Chama a API quando o debounced search muda
+  useEffect(() => {
+    if (onSearchChange) {
+      onSearchChange(dq);
+    }
+  }, [dq]);
 
-  const handleSearchClear = () => {
+  const handleSearchClear = useCallback(() => {
     setSearch("");
-  };
+  }, []);
 
   if (error) {
     return (
@@ -93,12 +93,28 @@ export function ShelteredPanel({
         border: "1px solid rgba(0, 153, 51, 0.2)",
       }}
     >
-      <Box sx={{ p: 2, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
-        <Typography variant="h6" fontWeight="bold" color="#000000" sx={{ mb: 1 }}>
+      <Box sx={{ p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+        <Typography 
+          variant="h6" 
+          fontWeight="bold" 
+          color="#000000" 
+          sx={{ 
+            mb: { xs: 1, sm: 1.5 },
+            fontSize: { xs: '1rem', sm: '1.25rem' },
+            display: { xs: 'none', sm: 'block' } // Esconde no mobile
+          }}
+        >
           Abrigados
         </Typography>
         {shelterName && (
-          <Typography variant="body2" color="#333333" sx={{ mb: 2 }}>
+          <Typography 
+            variant="body2" 
+            color="#333333" 
+            sx={{ 
+              mb: { xs: 1.5, sm: 2 },
+              fontSize: { xs: '0.75rem', sm: '0.875rem' }
+            }}
+          >
             Abrigo: {shelterName}
           </Typography>
         )}
@@ -134,22 +150,22 @@ export function ShelteredPanel({
         />
       </Box>
 
-      <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+      <Box sx={{ flex: 1, overflow: "auto", p: { xs: 1.5, sm: 2 } }}>
         {loading ? (
           <Stack spacing={2}>
             {[...Array(6)].map((_, index) => (
               <Skeleton key={index} variant="rectangular" height={100} />
             ))}
           </Stack>
-        ) : filteredSheltered.length === 0 ? (
+        ) : sheltered.length === 0 ? (
           <EmptyState
             icon={<SearchIcon />}
             title="Nenhum abrigado encontrado"
             description={search ? "Tente ajustar os filtros de busca" : "Não há abrigados cadastrados neste abrigo"}
           />
         ) : (
-          <Stack spacing={1}>
-            {filteredSheltered.map((sheltered) => (
+          <Stack spacing={{ xs: 1.5, sm: 1.5 }}>
+            {sheltered.map((sheltered) => (
               <Card
                 key={sheltered.id}
                 sx={{
@@ -168,78 +184,91 @@ export function ShelteredPanel({
                 }}
               >
                 <CardActionArea onClick={() => onShelteredSelect(sheltered)}>
-                  <Box sx={{ p: 2 }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Avatar
+                  <Box sx={{ p: { xs: 2, sm: 2 }, minHeight: { xs: 100, sm: 90 } }}>
+                    <Stack spacing={1}>
+                      {/* Primeira linha: Iniciais (esquerda) + Nome do abrigo (direita) */}
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Avatar
+                          sx={{
+                            bgcolor: "#009933",
+                            width: { xs: 32, sm: 36 },
+                            height: { xs: 32, sm: 36 },
+                          }}
+                        >
+                          <Typography 
+                            variant="caption" 
+                            color="white" 
+                            fontWeight="bold"
+                            sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                          >
+                            {initialsFromName(sheltered.name)}
+                          </Typography>
+                        </Avatar>
+                        
+                        <Typography
+                          variant="caption"
+                          color="#009933"
+                          fontWeight="500"
+                          sx={{
+                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                            textAlign: 'right',
+                            maxWidth: '60%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {sheltered.shelter.name}
+                        </Typography>
+                      </Stack>
+
+                      {/* Segunda linha: Nome do abrigado */}
+                      <Typography
+                        variant="subtitle2"
+                        fontWeight="bold"
+                        color="#000000"
                         sx={{
-                          bgcolor: "#009933",
-                          width: 48,
-                          height: 48,
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
+                          lineHeight: 1.3,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        <Typography variant="h6" color="white" fontWeight="bold">
-                          {initialsFromName(sheltered.name)}
-                        </Typography>
-                      </Avatar>
-                      
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        {sheltered.name}
+                      </Typography>
+
+                      {/* Terceira linha: Responsável */}
+                      {sheltered.guardianName && (
                         <Typography
-                          variant="subtitle1"
-                          fontWeight="bold"
-                          color="#000000"
-                          sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {sheltered.name}
-                        </Typography>
-                        
-                        <Typography
-                          variant="body2"
+                          variant="caption"
                           color="#333333"
                           sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                            lineHeight: 1.3,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
                           }}
                         >
-                          {sheltered.gender} • {fmtDate(sheltered.birthDate)}
+                          {sheltered.guardianName}
                         </Typography>
-                        
-                        {sheltered.guardianName && (
-                          <Typography
-                            variant="caption"
-                            color="#666666"
-                            sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            Responsável: {sheltered.guardianName}
-                          </Typography>
-                        )}
-                      </Box>
+                      )}
 
-                      <Box sx={{ textAlign: "right" }}>
-                          <Chip
-                          label={sheltered.shelter.name}
-                            size="small"
+                      {/* Quarta linha: Número do responsável */}
+                      {sheltered.guardianPhone && (
+                        <Typography
+                          variant="caption"
+                          color="#666666"
                           sx={{
-                            backgroundColor: "rgba(0, 153, 51, 0.1)",
-                            color: "#009933",
-                            fontWeight: 500,
-                            mb: 1,
+                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                            lineHeight: 1.3,
+                            wordBreak: 'break-all'
                           }}
-                        />
-                        {sheltered.guardianPhone && (
-                          <Typography variant="caption" color="#666666" display="block">
-                            {formatPhone(sheltered.guardianPhone)}
-                          </Typography>
-                        )}
-                      </Box>
+                        >
+                          {formatPhone(sheltered.guardianPhone)}
+                        </Typography>
+                      )}
                     </Stack>
                   </Box>
                 </CardActionArea>
@@ -251,7 +280,7 @@ export function ShelteredPanel({
             
             {/* Paginação no rodapé */}
             {totalPages > 1 && (
-                <Box sx={{ p: 2, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
                     <Pagination
                         count={totalPages}
                         page={currentPage}
@@ -263,6 +292,9 @@ export function ShelteredPanel({
                             justifyContent: "center",
                             "& .MuiPaginationItem-root": {
                                 color: "#009933",
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                minWidth: { xs: 28, sm: 32 },
+                                height: { xs: 28, sm: 32 },
                                 "&.Mui-selected": {
                                     backgroundColor: "#009933",
                                     color: "white",
