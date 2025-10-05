@@ -24,7 +24,7 @@ export function useSheltered(pageIndex: number, pageSize: number, sorting: Shelt
       setRows(Array.isArray((data as any)?.data) ? (data as any).data : []);
       setTotal(Number(meta?.totalItems ?? (data as any)?.total ?? 0));
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao listar crianças");
+      setError(err?.response?.data?.message || err.message || "Erro ao listar abrigados");
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export function useShelteredMutations(refetch: (page: number, limit: number, fil
       await apiCreateSheltered(payload);
       await refetch(page, limit, filters, sort);
     } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao criar criança");
+      setDialogError(err?.response?.data?.message || err.message || "Erro ao criar abrigado");
     } finally {
       setDialogLoading(false);
     }
@@ -75,7 +75,7 @@ export function useShelteredMutations(refetch: (page: number, limit: number, fil
       await apiUpdateSheltered(id, payload);
       await refetch(page, limit, filters, sort);
     } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao atualizar criança");
+      setDialogError(err?.response?.data?.message || err.message || "Erro ao atualizar abrigado");
     } finally {
       setDialogLoading(false);
     }
@@ -88,7 +88,7 @@ export function useShelteredMutations(refetch: (page: number, limit: number, fil
       await apiDeleteSheltered(id);
       await refetch(page, limit, filters, sort);
     } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao remover criança");
+      setDialogError(err?.response?.data?.message || err.message || "Erro ao remover abrigado");
     } finally {
       setDialogLoading(false);
     }

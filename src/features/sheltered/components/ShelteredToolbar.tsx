@@ -1,7 +1,8 @@
 import React from "react";
 import {
   Paper, Grid, TextField, Stack, Button, Tooltip, IconButton,
-  InputAdornment, Popover, ToggleButtonGroup, ToggleButton, Box, Typography, Fab
+  InputAdornment, Popover, ToggleButtonGroup, ToggleButton, Box, Typography, Fab,
+  FormControl, InputLabel, Select, MenuItem
 } from "@mui/material";
 import { CleaningServices, Refresh, Add, Event, Close } from "@mui/icons-material";
 import { ShelteredFilters } from "../types";
@@ -167,8 +168,10 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
 
   const clear = () =>
     onChange(() => ({
-      searchString: "",
-      shelterNumber: undefined,
+      shelteredSearchingString: "",
+      shelterSearchingString: "",
+      addressFilter: "",
+      gender: undefined,
       birthDateFrom: "",
       birthDateTo: "",
       joinedFrom: "",
@@ -182,10 +185,10 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
           <TextField
             fullWidth
             size="small"
-            label="Nome/Responsável"
-            value={filters.searchString ?? ""}
-            onChange={e => set("searchString", e.target.value)}
-            placeholder="Ex.: Maria, João"
+            label="Busca Geral"
+            value={filters.shelteredSearchingString ?? ""}
+            onChange={e => set("shelteredSearchingString", e.target.value)}
+            placeholder="Nome do abrigado, responsável ou telefone"
           />
         </Grid>
 
@@ -193,11 +196,40 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
           <TextField
             fullWidth
             size="small"
-            label="Nº Abrigo"
-            type="number"
-            value={filters.shelterNumber ?? ""}
-            onChange={e => set("shelterNumber", e.target.value ? Number(e.target.value) : undefined)}
+            label="Busca por Abrigo"
+            value={filters.shelterSearchingString ?? ""}
+            onChange={e => set("shelterSearchingString", e.target.value)}
+            placeholder="Nome, endereço, cidade, estado"
           />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Endereço"
+            value={filters.addressFilter ?? ""}
+            onChange={e => set("addressFilter", e.target.value)}
+            placeholder="Rua, bairro, cidade"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth size="small">
+            <InputLabel>Gênero</InputLabel>
+            <Select
+              label="Gênero"
+              value={filters.gender ?? ""}
+              onChange={e => {
+                const value = e.target.value;
+                set("gender", value === "M" || value === "F" ? value : undefined);
+              }}
+            >
+              <MenuItem value="">Todos</MenuItem>
+              <MenuItem value="M">Masculino</MenuItem>
+              <MenuItem value="F">Feminino</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
 
         <Grid item xs={12} md={3}>

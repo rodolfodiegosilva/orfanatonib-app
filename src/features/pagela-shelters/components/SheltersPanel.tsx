@@ -96,7 +96,7 @@ export function SheltersPanel({
                     Abrigos
                 </Typography>
                 
-                <TextField
+            <TextField
                     fullWidth
                 size="small"
                     placeholder="Buscar abrigos..."
@@ -165,9 +165,9 @@ export function SheltersPanel({
                                         <Stack spacing={1}>
                                             {/* Primeira linha: Iniciais (esquerda) + Quantidade de professores (direita) */}
                                             <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                                <Avatar
-                                                    sx={{
-                                                        bgcolor: "#009933",
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: "#009933",
                                                         width: { xs: 32, sm: 36 },
                                                         height: { xs: 32, sm: 36 },
                                                     }}
@@ -178,10 +178,10 @@ export function SheltersPanel({
                                                         fontWeight="bold"
                                                         sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                                                     >
-                                                        {shelter.name.charAt(0).toUpperCase()}
+                                                    {shelter.name.charAt(0).toUpperCase()}
                                                     </Typography>
-                                                </Avatar>
-                                                
+                                            </Avatar>
+                                            
                                                 <Typography
                                                     variant="caption"
                                                     color="#009933"
@@ -209,23 +209,23 @@ export function SheltersPanel({
                                                 }}
                                             >
                                                 {shelter.name}
-                                            </Typography>
+                                                </Typography>
 
                                             {/* Terceira linha: Cidade, Estado */}
-                                            <Typography
+                                                <Typography
                                                 variant="caption"
-                                                color="#333333"
-                                                sx={{
+                                                    color="#333333"
+                                                    sx={{
                                                     fontSize: { xs: '0.75rem', sm: '0.875rem' },
                                                     lineHeight: 1.3,
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap'
-                                                }}
-                                            >
-                                                {shelter.address.city}, {shelter.address.state}
-                                            </Typography>
-
+                                                    }}
+                                                >
+                                                    {shelter.address.city}, {shelter.address.state}
+                                                </Typography>
+                                                
                                             {/* Quarta linha: Bairro */}
                                             <Typography
                                                 variant="caption"
@@ -257,7 +257,7 @@ export function SheltersPanel({
                                                     Líderes: {shelter.leaders.map(leader => leader.user.name).join(', ')}
                                                 </Typography>
                                             )}
-                                        </Stack>
+            </Stack>
                                     </Box>
                                 </CardActionArea>
                             </Card>

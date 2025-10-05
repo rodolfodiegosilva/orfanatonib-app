@@ -188,9 +188,9 @@ export function ShelteredPanel({
                     <Stack spacing={1}>
                       {/* Primeira linha: Iniciais (esquerda) + Nome do abrigo (direita) */}
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Avatar
-                          sx={{
-                            bgcolor: "#009933",
+                      <Avatar
+                        sx={{
+                          bgcolor: "#009933",
                             width: { xs: 32, sm: 36 },
                             height: { xs: 32, sm: 36 },
                           }}
@@ -201,10 +201,10 @@ export function ShelteredPanel({
                             fontWeight="bold"
                             sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                           >
-                            {initialsFromName(sheltered.name)}
-                          </Typography>
-                        </Avatar>
-                        
+                          {initialsFromName(sheltered.name)}
+                        </Typography>
+                      </Avatar>
+                      
                         <Typography
                           variant="caption"
                           color="#009933"
@@ -236,8 +236,8 @@ export function ShelteredPanel({
                         }}
                       >
                         {sheltered.name}
-                      </Typography>
-
+                        </Typography>
+                        
                       {/* Terceira linha: Responsável */}
                       {sheltered.guardianName && (
                         <Typography
@@ -254,21 +254,21 @@ export function ShelteredPanel({
                           {sheltered.guardianName}
                         </Typography>
                       )}
-
+                        
                       {/* Quarta linha: Número do responsável */}
                       {sheltered.guardianPhone && (
-                        <Typography
-                          variant="caption"
-                          color="#666666"
+                          <Typography
+                            variant="caption"
+                            color="#666666"
                           sx={{
                             fontSize: { xs: '0.625rem', sm: '0.75rem' },
                             lineHeight: 1.3,
                             wordBreak: 'break-all'
                           }}
                         >
-                          {formatPhone(sheltered.guardianPhone)}
-                        </Typography>
-                      )}
+                            {formatPhone(sheltered.guardianPhone)}
+                          </Typography>
+                        )}
                     </Stack>
                   </Box>
                 </CardActionArea>

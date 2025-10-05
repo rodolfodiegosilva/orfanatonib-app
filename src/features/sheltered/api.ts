@@ -12,17 +12,16 @@ export async function apiFetchShelteredren(args: {
   const order = sort?.desc ? 'DESC' : 'ASC';
 
   const params: Record<string, any> = {
-    page,
-    limit,
-    orderBy,
-    order,
+      page,
+      limit,
+      orderBy,
+      order,
   };
 
   // Filtros agrupados (novos)
-  if (filters?.shelteredName?.trim()) params.shelteredName = filters.shelteredName;
-  if (filters?.shelterFilters?.trim()) params.shelterFilters = filters.shelterFilters;
+  if (filters?.shelteredSearchingString?.trim()) params.shelteredSearchingString = filters.shelteredSearchingString;
+  if (filters?.shelterSearchingString?.trim()) params.shelterSearchingString = filters.shelterSearchingString;
   if (filters?.addressFilter?.trim()) params.addressFilter = filters.addressFilter;
-  if (filters?.geographicSearchString?.trim()) params.geographicSearchString = filters.geographicSearchString;
   if (filters?.gender) params.gender = filters.gender;
   if (filters?.birthDateFrom) params.birthDateFrom = filters.birthDateFrom;
   if (filters?.birthDateTo) params.birthDateTo = filters.birthDateTo;

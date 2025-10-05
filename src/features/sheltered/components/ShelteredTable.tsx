@@ -85,7 +85,7 @@ function ShelteredTableDesktop(props: Props) {
     },
     {
       accessorKey: "joinedAt",
-      header: "No shelter desde",
+      header: "No abrigo desde",
       cell: ({ getValue }) => formatDate(getValue() as any),
       meta: { width: 160 },
     },
@@ -172,7 +172,7 @@ function ShelteredTableDesktop(props: Props) {
             {table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
-                  <Typography variant="body2" color="text.secondary">Nenhuma criança encontrada.</Typography>
+                  <Typography variant="body2" color="text.secondary">Nenhum abrigado encontrado.</Typography>
                 </TableCell>
               </TableRow>
             ) : (

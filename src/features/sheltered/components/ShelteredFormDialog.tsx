@@ -120,17 +120,11 @@ export default function ShelteredFormDialog({
               <InputLabel>Gênero (obrigatório)</InputLabel>
               <Select
                 label="Gênero (obrigatório)"
-                value={(() => {
-                  const gender = (value as any).gender ?? "";
-                  // Normalize gender value to match expected format
-                  if (gender === "M" || gender === "Masculino") return "masculino";
-                  if (gender === "F" || gender === "Feminino") return "feminino";
-                  return gender;
-                })()}
+                value={(value as any).gender ?? ""}
                 onChange={(e) => setField("gender", e.target.value)}
               >
-                <MenuItem value="masculino">Masculino</MenuItem>
-                <MenuItem value="feminino">Feminino</MenuItem>
+                <MenuItem value="M">Masculino</MenuItem>
+                <MenuItem value="F">Feminino</MenuItem>
               </Select>
               {showErrors && !req.gender && <FormHelperText>Selecione o gênero</FormHelperText>}
             </FormControl>
@@ -171,7 +165,7 @@ export default function ShelteredFormDialog({
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="No shelter desde"
+              label="No abrigo desde"
               type="date"
               InputLabelProps={{ shrink: true }}
               value={(value as any).joinedAt ?? ""}

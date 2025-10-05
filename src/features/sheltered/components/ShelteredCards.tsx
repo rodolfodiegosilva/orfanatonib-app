@@ -148,7 +148,7 @@ export default function ShelteredrenCards(props: Props) {
                       transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                       flexShrink: 0,
                     }}
-                    aria-label={`Avatar da criança ${c.name}`}
+                    aria-label={`Avatar do abrigado ${c.name}`}
                   >
                     {initials(c.name)}
                   </Avatar>
@@ -521,7 +521,7 @@ export default function ShelteredrenCards(props: Props) {
                         </IconButton>
                       </Tooltip>
                     )}
-                    <Tooltip title="Editar criança">
+                    <Tooltip title="Editar abrigado">
                       <IconButton
                         size="small"
                         onClick={() => onStartEdit(c)}
@@ -533,7 +533,7 @@ export default function ShelteredrenCards(props: Props) {
                         <Edit fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Excluir criança">
+                    <Tooltip title="Excluir abrigado">
                       <IconButton
                         size="small"
                         color="error"

@@ -26,8 +26,10 @@ export default function ShelteredManager() {
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [filters, setFilters] = useState<ShelteredFilters>({
-    searchString: "",
-    shelterNumber: undefined,
+    shelteredSearchingString: "",
+    shelterSearchingString: "",
+    addressFilter: "",
+    gender: undefined,
     birthDateFrom: "",
     birthDateTo: "",
     joinedFrom: "",
@@ -77,7 +79,7 @@ export default function ShelteredManager() {
   const openCreate = () =>
     setCreating({
       name: "",
-      gender: "masculino",
+      gender: "M",
       guardianName: "",
       guardianPhone: "",
       birthDate: "",
@@ -136,10 +138,6 @@ export default function ShelteredManager() {
     );
     setConfirmDelete(null);
   };
-
-  React.useEffect(() => {
-    doRefresh();
-  }, [doRefresh]);
 
   return (
     <Box
