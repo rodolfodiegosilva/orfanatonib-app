@@ -13,10 +13,9 @@ import { TeacherProfile } from "./types";
 import BackHeader from "@/components/common/header/BackHeader";
 
 export type TeacherFilters = {
-  q?: string;
-  active?: boolean;
+  teacherSearchString?: string;
+  shelterSearchString?: string;
   hasShelter?: boolean;
-  shelterName?: string;
 };
 
 export default function TeacherProfilesManager() {
@@ -28,19 +27,16 @@ export default function TeacherProfilesManager() {
   const [sorting, setSorting] = React.useState([{ id: "updatedAt", desc: true }]);
 
   const [filters, setFilters] = React.useState<TeacherFilters>({
-    q: "",
-    active: undefined,
+    teacherSearchString: "",
+    shelterSearchString: "",
     hasShelter: undefined,
-    shelterId: undefined,
   });
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
     useTeacherProfiles(pageIndex, pageSize, sorting as any, {
-      q: filters.q || undefined,
-      searchString: undefined,
-      active: filters.active,
+      teacherSearchString: filters.teacherSearchString || undefined,
+      shelterSearchString: filters.shelterSearchString || undefined,
       hasShelter: filters.hasShelter,
-      shelterName: filters.shelterName,
     });
 
   const doRefresh = React.useCallback(() => {

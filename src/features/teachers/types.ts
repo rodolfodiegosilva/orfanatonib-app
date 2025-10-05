@@ -38,11 +38,9 @@ export type Page<T> = {
 };
 
 export type TeacherQuery = {
-  searchString?: string; 
-  q?: string;
-  active?: boolean;
+  teacherSearchString?: string;
+  shelterSearchString?: string;
   hasShelter?: boolean;
-  shelterName?: string;
   page?: number;
   limit?: number;
   sort?: "updatedAt" | "createdAt" | "name";

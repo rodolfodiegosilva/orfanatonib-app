@@ -43,7 +43,7 @@ export type LeaderProfile = {
   id: string;
   active: boolean;
   user: MinimalUser;
-  shelter?: ShelterSimple | null;
+  shelter?: ShelterWithTeachers | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -53,9 +53,14 @@ export type PageDto<T> = {
   total: number;
   page: number;
   limit: number;
+  pageCount: number;
 };
 
 export type LeaderFilters = {
+  leaderSearchString?: string;
+  shelterSearchString?: string;
+  hasShelter?: boolean;
+  // Filtros legados (compatibilidade)
   searchString?: string;
   q?: string;
   active?: boolean;

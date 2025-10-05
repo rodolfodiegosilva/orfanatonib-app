@@ -17,7 +17,7 @@ export default function LeaderViewDialog({ open, loading, leader, onClose }: Pro
 
   const teachers = React.useMemo(() => {
     if (!leader?.shelter) return [];
-    return leader.shelter?.teachers ?? [];
+    return leader.shelter.teachers ?? [];
   }, [leader]);
 
   return (
@@ -35,7 +35,10 @@ export default function LeaderViewDialog({ open, loading, leader, onClose }: Pro
             <Grid item xs={12}><strong>Abrigos</strong></Grid>
             <Grid item xs={12}>
               <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                {leader.shelter ? <Chip label={leader.shelter.name ?? leader.shelter.id} /> : <Typography variant="body2">—</Typography>}
+                {leader.shelter ? 
+                  <Chip label={leader.shelter.name ?? leader.shelter.id} /> : 
+                  <Typography variant="body2">—</Typography>
+                }
               </Box>
             </Grid>
 

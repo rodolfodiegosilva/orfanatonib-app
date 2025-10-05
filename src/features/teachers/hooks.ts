@@ -13,7 +13,7 @@ export function useTeacherProfiles(
   pageIndex: number,  
   pageSize: number,
   sorting: SortingState,
-  filters: Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterName">,
+  filters: Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter">,
 ) {
   const [rows, setRows] = useState<TeacherProfile[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -23,13 +23,11 @@ export function useTeacherProfiles(
   const filtersKey = useMemo(
     () =>
       JSON.stringify({
-        q: filters.q ?? undefined,
-        searchString: filters.searchString ?? undefined,
-        active: filters.active ?? undefined,
+        teacherSearchString: filters.teacherSearchString ?? undefined,
+        shelterSearchString: filters.shelterSearchString ?? undefined,
         hasShelter: filters.hasShelter ?? undefined,
-        shelterName: filters.shelterName ?? undefined,
       }),
-    [filters.q, filters.searchString, filters.active, filters.hasShelter, filters.shelterName]
+    [filters.teacherSearchString, filters.shelterSearchString, filters.hasShelter]
   );
 
   const sortParam = useMemo<Pick<TeacherQuery, "sort" | "order">>(() => {
@@ -57,7 +55,7 @@ export function useTeacherProfiles(
     setError("");
     try {
       const data: Page<TeacherProfile> = await apiListTeachers({
-        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "searchString" | "q" | "active" | "hasShelter" | "shelterName">),
+        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter">),
         page: pageIndex + 1, 
         limit: pageSize,
         sort: sortParam.sort,

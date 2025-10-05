@@ -67,11 +67,11 @@ export default function LeaderTable({
       header: "Professores",
       cell: ({ row }) => {
         const shelter = row.original.shelter;
-        const list = shelter?.teachers ?? [];
-        if (!list.length) return <Chip size="small" label="—" />;
+        const teachers = shelter?.teachers ?? [];
+        if (!teachers.length) return <Chip size="small" label="—" />;
         return (
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            {list.map((t) => <Chip key={t.id} size="small" label={t.user?.name || t.user?.email || t.id} />)}
+            {teachers.map((t) => <Chip key={t.id} size="small" label={t.user?.name || t.user?.email || t.id} />)}
           </Box>
         );
       },

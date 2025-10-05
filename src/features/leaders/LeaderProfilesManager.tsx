@@ -31,7 +31,11 @@ export default function LeaderProfilesManager() {
     { id: "updatedAt", desc: true },
   ]);
 
-  const [filters, setFilters] = React.useState<LeaderFilters>({});
+  const [filters, setFilters] = React.useState<LeaderFilters>({
+    leaderSearchString: "",
+    shelterSearchString: "",
+    hasShelter: undefined,
+  });
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
     useLeaderProfiles(pageIndex, pageSize, sorting, filters);
@@ -110,9 +114,6 @@ export default function LeaderProfilesManager() {
     [unassignShelter, closeLinkDialog, showSnack]
   );
 
-  React.useEffect(() => {
-    doRefresh();
-  }, [doRefresh]);
   React.useEffect(() => {
     refreshShelters();
   }, [refreshShelters]);

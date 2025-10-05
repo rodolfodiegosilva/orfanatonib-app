@@ -14,10 +14,9 @@ import {
 import { Refresh, Clear } from "@mui/icons-material";
 
 export type TeacherFilters = {
-  q?: string;
-  active?: boolean;
+  teacherSearchString?: string;
+  shelterSearchString?: string;
   hasShelter?: boolean;
-  shelterName?: string;
 };
 
 type Props = {
@@ -38,123 +37,187 @@ export default function TeacherToolbar({
     value: TeacherFilters[K]
   ) => onChange((prev) => ({ ...prev, [key]: value }));
 
-  const handleHasShelterChange = (v: string) =>
-    handleChange("hasShelter", v === "" ? undefined : (v === "true") as any);
-
-  const handleShelterName = (v: string) => {
-    set("shelterName", v === "" ? undefined : v);
-  };
-
   const handleClear = () => {
     onChange(() => ({
-      q: "",
-      active: undefined,
+      teacherSearchString: "",
+      shelterSearchString: "",
       hasShelter: undefined,
-      shelterName: undefined,
     }));
   };
 
   return (
-    <Paper sx={{ p: { xs: 1.5, md: 2 }, mb: 2 }}>
-      <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems="center">
-        <Grid item xs={12} md={4}>
+    <Paper 
+      elevation={0}
+      sx={{ 
+        p: { xs: 2, md: 3 }, 
+        mb: 2, 
+        borderRadius: 3,
+        border: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper"
+      }}
+    >
+      <Grid container spacing={{ xs: 2, md: 2.5 }} alignItems="flex-end">
+        {/* Busca por Professor */}
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
             size="small"
-            label="Buscar (nome, e-mail ou telefone)"
-            value={filters.q ?? ""}
-            onChange={(e) => handleChange("q", e.target.value)}
-            placeholder="Ex.: Maria, maria@ex.com, (92) 9...."
+            label="Busca por Professor"
+            value={filters.teacherSearchString ?? ""}
+            onChange={(e) => handleChange("teacherSearchString", e.target.value || undefined)}
+            placeholder="Nome, email, telefone do professor"
+            inputProps={{ "aria-label": "Campo de busca por professor" }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              }
+            }}
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        {/* Busca por Abrigo */}
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Busca por Abrigo"
+            value={filters.shelterSearchString ?? ""}
+            onChange={(e) => handleChange("shelterSearchString", e.target.value || undefined)}
+            placeholder="Todos os campos do abrigo"
+            inputProps={{ "aria-label": "Campo de busca por abrigo" }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              }
+            }}
+          />
+        </Grid>
+
+        {/* Filtro de Vínculo */}
+        <Grid item xs={12} sm={6} md={2}>
           <TextField
             select
             fullWidth
             size="small"
-            label="Com Abrigo?"
+            label="Vínculo"
             value={
               filters.hasShelter === undefined ? "" : filters.hasShelter ? "true" : "false"
             }
-            onChange={(e) => handleHasShelterChange(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "") {
+                handleChange("hasShelter", undefined);
+              } else {
+                handleChange("hasShelter", value === "true");
+              }
+            }}
+            sx={{
+              borderRadius: 2,
+            }}
           >
             <MenuItem value="">Todos</MenuItem>
-            <MenuItem value="true">Somente com Abrigo</MenuItem>
-            <MenuItem value="false">Somente sem Abrigo</MenuItem>
+            <MenuItem value="true">Com abrigo</MenuItem>
+            <MenuItem value="false">Sem abrigo</MenuItem>
           </TextField>
         </Grid>
 
-        <Grid item xs={12} md={2}>
-          <TextField
-            fullWidth
-            size="small"
-            label="Nome do Abrigo"
-            type="text"
-            value={filters.shelterName ?? ""}
-            onChange={(e) => handleShelterName(e.target.value)}
-            inputProps={{}}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={3}>
+        {/* Botões de Ação */}
+        <Grid item xs={12} sm={6} md={2}>
           {isXs ? (
-            <>
-              <Fab
-                color="secondary"
-                aria-label="Limpar filtros"
-                onClick={handleClear}
-                sx={{
-                  position: "fixed",
-                  bottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
-                  right: "calc(env(safe-area-inset-right, 0px) + 16px)",
-                  zIndex: 9999,
-                  boxShadow: 6,
-                }}
-              >
-                <Clear />
-              </Fab>
-
-              <Fab
-                aria-label="Recarregar"
-                onClick={onRefreshClick}
-                sx={{
-                  position: "fixed",
-                  bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
-                  right: "calc(env(safe-area-inset-right, 0px) + 16px)",
-                  zIndex: 9999,
-                  bgcolor: "white",
-                  boxShadow: 6,
-                  "&:hover": { bgcolor: "grey.100" },
-                }}
-              >
-                <Refresh />
-              </Fab>
-            </>
+            <Box sx={{ height: 40 }} />
           ) : (
-            <Stack
-              direction="row"
-              spacing={1.5}
-              justifyContent="flex-end"
-              alignItems="center"
-            >
+            <Stack direction="row" spacing={1} justifyContent="flex-end">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
                 startIcon={<Clear />}
                 onClick={handleClear}
+                size="small"
+                sx={{ 
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  px: 2
+                }}
               >
                 Limpar
               </Button>
-              <Tooltip title="Recarregar">
-                <IconButton onClick={onRefreshClick}>
-                  <Refresh />
+              <Tooltip title="Recarregar dados">
+                <IconButton 
+                  onClick={onRefreshClick} 
+                  aria-label="Recarregar"
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: "primary.main",
+                    color: "white",
+                    "&:hover": { 
+                      bgcolor: "primary.dark",
+                      transform: "scale(1.05)"
+                    },
+                    transition: "all 0.2s ease-in-out"
+                  }}
+                >
+                  <Refresh fontSize="small" />
                 </IconButton>
               </Tooltip>
             </Stack>
           )}
         </Grid>
       </Grid>
+
+      {/* FABs para Mobile */}
+      {isXs && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
+            right: "calc(env(safe-area-inset-right, 0px) + 16px)",
+            zIndex: 1300,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+          }}
+        >
+          <Tooltip title="Recarregar dados" placement="left">
+            <Fab
+              size="medium"
+              aria-label="Recarregar"
+              onClick={onRefreshClick}
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                boxShadow: 4,
+                "&:hover": { 
+                  bgcolor: "primary.dark",
+                  transform: "scale(1.05)"
+                },
+                transition: "all 0.2s ease-in-out"
+              }}
+            >
+              <Refresh />
+            </Fab>
+          </Tooltip>
+          
+          <Tooltip title="Limpar filtros" placement="left">
+            <Fab
+              size="medium"
+              color="secondary"
+              aria-label="Limpar filtros"
+              onClick={handleClear}
+              sx={{
+                boxShadow: 4,
+                "&:hover": { 
+                  transform: "scale(1.05)"
+                },
+                transition: "all 0.2s ease-in-out"
+              }}
+            >
+              <Clear />
+            </Fab>
+          </Tooltip>
+        </Box>
+      )}
     </Paper>
   );
 }

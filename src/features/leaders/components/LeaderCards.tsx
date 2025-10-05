@@ -103,7 +103,7 @@ export default function LeaderCards(props: Props) {
                   },
                   bgcolor: "background.paper",
                   position: "relative",
-                  maxHeight: !expanded ? { xs: 150, sm: 150 } : "none",
+                  maxHeight: !expanded ? { xs: 200, sm: 150 } : "none",
                   "&::before": {
                     content: '""',
                     position: "absolute",

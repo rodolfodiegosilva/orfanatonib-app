@@ -49,7 +49,19 @@ export default function LeaderLinkDialog({
   }, [onClearShelter]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      sx={{
+        "& .MuiDialog-paper": {
+          width: { xs: "98%", sm: "auto" },
+          maxWidth: { xs: "98%", sm: "600px" },
+          margin: { xs: "8px", sm: "32px" },
+        }
+      }}
+    >
       <DialogTitle>
         {hasShelter ? "Desvincular Abrigo" : "Vincular Abrigo"}
       </DialogTitle>

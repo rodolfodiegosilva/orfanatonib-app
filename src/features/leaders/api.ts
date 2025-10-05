@@ -6,6 +6,10 @@ export type ListLeadersParams = {
   limit: number;
   sort?: "updatedAt" | "createdAt" | "name";
   order?: "asc" | "desc";
+  leaderSearchString?: string;
+  shelterSearchString?: string;
+  hasShelter?: boolean;
+  // Filtros legados (compatibilidade)
   q?: string;
   active?: boolean;
   hasShelters?: boolean;

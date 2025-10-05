@@ -26,6 +26,11 @@ function mapSortingToServer(sorting: SortingState) {
 
 function mapFiltersToServer(filters: LeaderFilters) {
   return {
+    // Filtros agrupados (novos)
+    leaderSearchString: filters.leaderSearchString?.trim() || undefined,
+    shelterSearchString: filters.shelterSearchString?.trim() || undefined,
+    hasShelter: filters.hasShelter,
+    // Filtros legados (compatibilidade)
     searchString: filters.searchString?.trim() || undefined,
     q: filters.q?.trim() || undefined,
     active: filters.active,
