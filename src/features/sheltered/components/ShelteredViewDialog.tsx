@@ -137,7 +137,7 @@ export default function ShelteredViewDialog({ open, loading, sheltered, onClose,
         }}
       >
         {!sheltered ? (
-          <Typography variant="h6">Detalhes da Criança</Typography>
+          <Typography variant="h6">Detalhes do Abrigado</Typography>
         ) : (
           <Stack spacing={1.25}>
             <Stack direction="row" spacing={1.25} alignItems="center">

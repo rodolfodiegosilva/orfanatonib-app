@@ -360,7 +360,7 @@ export default function ShelteredrenCards(props: Props) {
                             <Stack direction="row" spacing={0.75} alignItems="center">
                               <ChildCare fontSize="small" color="primary" />
                               <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                Informações da Criança
+                                Informações do Abrigado
                               </Typography>
                             </Stack>
                             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap rowGap={1}>

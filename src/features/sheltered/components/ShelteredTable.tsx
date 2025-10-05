@@ -49,7 +49,7 @@ function ShelteredTableDesktop(props: Props) {
   const columns = useMemo<ColumnDef<ShelteredResponseDto>[]>(() => ([
     {
       accessorKey: "name",
-      header: "Nome da Criança",
+      header: "Nome do Abrigado",
       cell: ({ getValue }) => <Typography fontWeight={700}>{String(getValue())}</Typography>,
       meta: { width: 220 },
     },

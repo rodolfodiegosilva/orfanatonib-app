@@ -11,26 +11,34 @@ export async function apiFetchShelteredren(args: {
   const orderBy = sort?.id ?? 'name';
   const order = sort?.desc ? 'DESC' : 'ASC';
 
-  const { data } = await api.get<Paginated<ShelteredResponseDto>>("/sheltered", {
-    params: {
-      page,
-      limit,
-      orderBy,
-      order,
-      searchString: filters?.searchString || undefined,
-      shelterId: filters?.shelterId || undefined,
-      shelterName: filters?.shelterName || undefined,
-      city: filters?.city || undefined,
-      state: filters?.state || undefined,
-      gender: filters?.gender || undefined,
-      birthDate: filters?.birthDate || undefined,
-      birthDateFrom: filters?.birthDateFrom || undefined,
-      birthDateTo: filters?.birthDateTo || undefined,
-      joinedAt: filters?.joinedAt || undefined,
-      joinedFrom: filters?.joinedFrom || undefined,
-      joinedTo: filters?.joinedTo || undefined,
-    },
-  });
+  const params: Record<string, any> = {
+    page,
+    limit,
+    orderBy,
+    order,
+  };
+
+  // Filtros agrupados (novos)
+  if (filters?.shelteredName?.trim()) params.shelteredName = filters.shelteredName;
+  if (filters?.shelterFilters?.trim()) params.shelterFilters = filters.shelterFilters;
+  if (filters?.addressFilter?.trim()) params.addressFilter = filters.addressFilter;
+  if (filters?.geographicSearchString?.trim()) params.geographicSearchString = filters.geographicSearchString;
+  if (filters?.gender) params.gender = filters.gender;
+  if (filters?.birthDateFrom) params.birthDateFrom = filters.birthDateFrom;
+  if (filters?.birthDateTo) params.birthDateTo = filters.birthDateTo;
+  if (filters?.joinedFrom) params.joinedFrom = filters.joinedFrom;
+  if (filters?.joinedTo) params.joinedTo = filters.joinedTo;
+
+  // Filtros legados (compatibilidade)
+  if (filters?.searchString?.trim()) params.searchString = filters.searchString;
+  if (filters?.shelterId) params.shelterId = filters.shelterId;
+  if (filters?.shelterName?.trim()) params.shelterName = filters.shelterName;
+  if (filters?.city?.trim()) params.city = filters.city;
+  if (filters?.state?.trim()) params.state = filters.state;
+  if (filters?.birthDate) params.birthDate = filters.birthDate;
+  if (filters?.joinedAt) params.joinedAt = filters.joinedAt;
+
+  const { data } = await api.get<Paginated<ShelteredResponseDto>>("/sheltered", { params });
   return data;
 }
 

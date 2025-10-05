@@ -29,11 +29,12 @@ function genderPastel(seed: string, gender?: string) {
   const hash = Array.from(seed).reduce((a, ch) => (a * 33 + ch.charCodeAt(0)) % 1000, 7);
   const t = hash / 1000;
   const g = (gender || "").toUpperCase();
-  const h = g === "F" ? (310 + t * 70) % 360 : 190 + t * 40;
-  const s = 70, l = 85;
+  // Cores mais neutras e profissionais
+  const h = g === "F" ? (200 + t * 40) % 360 : (220 + t * 30) % 360;
+  const s = 45, l = 75;
   return {
-    solid: `hsl(${h} ${s}% ${l - 15}%)`,
-    soft: `hsl(${(h + 12) % 360} ${s}% ${l}%)`,
+    solid: `hsl(${h} ${s}% ${l - 10}%)`,
+    soft: `hsl(${(h + 8) % 360} ${s}% ${l + 5}%)`,
   };
 }
 
@@ -76,8 +77,8 @@ export default function ShelteredPagelasPage() {
   const [formInitial, setFormInitial] = React.useState<Pagela | null>(null);
 
   const findPagela = React.useCallback(
-    (y: number, w: number) =>
-      list.rows.find((r) => r.shelteredId === shelteredId && r.year === y && r.week === w) ?? null,
+    (y: number, v: number) =>
+      list.rows.find((r) => r.sheltered.id === shelteredId && r.year === y && r.visit === v) ?? null,
     [list.rows, shelteredId]
   );
 
@@ -103,7 +104,7 @@ export default function ShelteredPagelasPage() {
         pt: { xs: 3, md: 5 },
         pb: 6,
         minHeight: "100vh",
-        bgcolor: "#f6f7f9",
+        bgcolor: "#f8f9fa",
       }}
     >
       <Paper
@@ -165,7 +166,7 @@ export default function ShelteredPagelasPage() {
                 sx={{
                   fontWeight: 900,
                   lineHeight: 1.15,
-                  color: "#143a2b",
+                  color: "#2c3e50",
                   display: "-webkit-box",
                   WebkitLineClamp: 1,
                   WebkitBoxOrient: "vertical",
@@ -173,7 +174,7 @@ export default function ShelteredPagelasPage() {
                 }}
                 title={sheltered?.name}
               >
-                {sheltered?.name || "Criança"}
+                {sheltered?.name || "Abrigado"}
               </Typography>
 
               <Stack direction="row" spacing={0.75} alignItems="center" sx={{ color: "rgba(0,0,0,.75)" }}>
@@ -246,7 +247,7 @@ export default function ShelteredPagelasPage() {
                   <Typography
                     variant="h6"
                     sx={{
-                      color: "#143a2b",
+                      color: "#2c3e50",
                       lineHeight: 1.1,
                       display: "-webkit-box",
                       WebkitLineClamp: 1,
@@ -257,7 +258,7 @@ export default function ShelteredPagelasPage() {
                   >
                     Pagela {((sheltered as any)?.gender === "F" ? "da" : "do")}{" "}
                     <Box component="span" sx={{ fontWeight: 900 }}>
-                      {sheltered?.name || "Criança"}
+                      {sheltered?.name || "Abrigado"}
                     </Box>
                   </Typography>
 
@@ -323,7 +324,7 @@ export default function ShelteredPagelasPage() {
                 shelteredName={sheltered?.name || ""}
                 shelteredGender={sheltered?.gender || ""}
                 defaultYear={0}
-                defaultWeek={0}
+                defaultVisit={0}
                 teacherProfileId={TEACHER_PROFILE_ID}
                 findPagela={findPagela}
                 onCreate={async (p) => {
@@ -404,7 +405,7 @@ export default function ShelteredPagelasPage() {
               shelteredName={sheltered?.name || ""}
               shelteredGender={sheltered?.gender || ""}
               defaultYear={0}
-              defaultWeek={0}
+              defaultVisit={0}
               teacherProfileId={TEACHER_PROFILE_ID}
               findPagela={findPagela}
               onCreate={async (p) => {

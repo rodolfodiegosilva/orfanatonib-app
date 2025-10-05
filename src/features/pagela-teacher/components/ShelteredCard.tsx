@@ -4,7 +4,7 @@ import {
   Box, Avatar, Tooltip, IconButton, useTheme
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import ChildCareIcon from "@mui/icons-material/ChildCare";
+import PersonIcon from "@mui/icons-material/Person";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
@@ -17,11 +17,12 @@ function genderPastel(seed: string, gender: string | undefined) {
   const hash = Array.from(seed).reduce((acc, ch) => (acc * 33 + ch.charCodeAt(0)) % 1000, 7);
   const t = hash / 1000;
   const g = (gender || "").toUpperCase();
-  const h = g === "F" ? (310 + t * 70) % 360 : 190 + t * 40;
-  const s = 70, l = 85;
+  // Cores mais neutras e profissionais
+  const h = g === "F" ? (200 + t * 40) % 360 : (220 + t * 30) % 360;
+  const s = 45, l = 75;
   return {
-    solid: `hsl(${h} ${s}% ${l - 15}%)`,
-    soft: `hsl(${(h + 12) % 360} ${s}% ${l}%)`,
+    solid: `hsl(${h} ${s}% ${l - 10}%)`,
+    soft: `hsl(${(h + 8) % 360} ${s}% ${l + 5}%)`,
   };
 }
 
@@ -88,7 +89,7 @@ export default function ShelteredCard({
         </Tooltip>
 
         {!!onEdit && (
-          <Tooltip title="Editar criança">
+          <Tooltip title="Editar abrigado">
             <IconButton
               size="small"
               onClick={(e) => { e.stopPropagation(); onEdit(sheltered); }}
@@ -131,14 +132,14 @@ export default function ShelteredCard({
               fontWeight: 900,
             }}
           >
-            {initials || <ChildCareIcon />}
+            {initials || <PersonIcon />}
           </Avatar>
         </Box>
 
         <CardActionArea onClick={() => onClick(sheltered)} sx={{ display: "flex" }}>
           <CardContent sx={{ pt: 3.5, pb: 2.25, px: { xs: 1.5, sm: 2 } }}>
             <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.5 }}>
-              <ChildCareIcon fontSize="small" sx={{ opacity: 0.7 }} />
+              <PersonIcon fontSize="small" sx={{ opacity: 0.7 }} />
               <Typography
                 variant="subtitle1"
                 fontWeight={900}
@@ -172,7 +173,7 @@ export default function ShelteredCard({
             <Stack direction="row" spacing={0.5} sx={{ mt: 1.25 }} alignItems="center" flexWrap="wrap">
               <EmojiEmotionsIcon fontSize="small" sx={{ opacity: 0.65 }} />
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: 0.15 }}>
-                toque para abrir a caderneta
+                toque para abrir as pagelas
               </Typography>
               <FavoriteIcon fontSize="inherit" sx={{ opacity: 0.5, ml: 0.25 }} />
             </Stack>

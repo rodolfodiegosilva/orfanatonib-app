@@ -70,7 +70,7 @@ const cardData: CardData[] = [
   { title: "Usuários", description: "Gerencie usuários do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/usuarios", section: "shelter" },
   { title: "Professores", description: "Gerencie professores do abrigo.", icon: <School fontSize="large" color="primary" />, path: "/adm/professores", section: "shelter" },
   { title: "Líderes", description: "Gerencie líderes do abrigo.", icon: <SupervisorAccount fontSize="large" color="primary" />, path: "/adm/lideres", section: "shelter" },
-  { title: "Crianças", description: "Gerencie crianças do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/criancas", section: "shelter" },
+  { title: "Abrigados", description: "Gerencie crianças do abrigo.", icon: <Group fontSize="large" color="primary" />, path: "/adm/abrigados", section: "shelter" },
   { title: "Abrigos", description: "Gerencie abrigos.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/shelters", section: "shelter" },
   { title: "Pagelas", description: "Gerencie pagelas.", icon: <Groups fontSize="large" color="primary" />, path: "/adm/pagelas", section: "shelter" },
 
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
 
   const normalizedQuery = query.trim().toLowerCase();
   const leaderAllowed = new Set<string>([
-    "/adm/criancas",
+    "/adm/abrigados",
     "/adm/professores",
     "/adm/shelters",
     "/adm/pagelas",

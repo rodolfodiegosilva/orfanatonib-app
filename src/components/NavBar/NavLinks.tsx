@@ -83,7 +83,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
       {isAuthenticated ? (
         <Fragment>
           {renderLink('/area-do-professor', 'Área do Professor')}
-          {(isTeacher) && renderLink('/area-das-criancas', 'Área das crianças')}
+          {(isTeacher) && renderLink('/area-dos-abrigados', 'Área dos Abrigados')}
           {(isAdmin || isLeader) && renderLink('/adm', 'Administração')}
           <Button
             onClick={handleLogout}

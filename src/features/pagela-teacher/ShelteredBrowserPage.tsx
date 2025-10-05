@@ -106,7 +106,7 @@ export default function ShelteredBrowserPage() {
       });
       setDialogError("");
     } catch (e: any) {
-      setDialogError(e?.response?.data?.message || e?.message || "Não foi possível abrir a criança para edição");
+      setDialogError(e?.response?.data?.message || e?.message || "Não foi possível abrir o abrigado para edição");
     }
   };
 
@@ -121,7 +121,7 @@ export default function ShelteredBrowserPage() {
   };
 
   React.useEffect(() => {
-    document.title = "Lançar Pagela • Selecionar Criança";
+    document.title = "Lançar Pagela • Selecionar Abrigado";
   }, []);
 
   return (
@@ -131,7 +131,7 @@ export default function ShelteredBrowserPage() {
         pt: { xs: 2, md: 4 },
         pb: { xs: 2, md: 4 },
         minHeight: "100vh",
-        bgcolor: "#f6f7f9"
+        bgcolor: "#f8f9fa"
       }}
     >
       <Box
@@ -166,9 +166,9 @@ export default function ShelteredBrowserPage() {
             component="h1"
             variant="h5"
             fontWeight={900}
-            sx={{ color: "#143a2b", fontSize: { xs: "1.25rem", md: "1.75rem" } }}
+            sx={{ color: "#2c3e50", fontSize: { xs: "1.25rem", md: "1.75rem" } }}
           >
-            Área das crianças
+            Área dos abrigados
           </Typography>
 
           {shelter && (
@@ -177,7 +177,7 @@ export default function ShelteredBrowserPage() {
               color="text.secondary"
               sx={{ display: { xs: "none", md: "block" } }}
             >
-              Toque em uma criança para abrir suas pagelas
+              Toque em um abrigado para abrir suas pagelas
             </Typography>
 
           )}
@@ -190,7 +190,7 @@ export default function ShelteredBrowserPage() {
             variant="contained"
             sx={{ display: { xs: "none", md: "inline-flex" } }}
           >
-            Adicionar criança
+            Adicionar abrigado
           </Button>
         )}
       </Box>
@@ -198,7 +198,7 @@ export default function ShelteredBrowserPage() {
       {shelter && (
         <Fab
           color="primary"
-          aria-label="Adicionar criança"
+          aria-label="Adicionar abrigado"
           onClick={openCreate}
           sx={{
             position: "fixed",
@@ -227,8 +227,8 @@ export default function ShelteredBrowserPage() {
             elevation={0}
             sx={{ p: 2, mb: 2, borderRadius: 3, border: "1px solid", borderColor: "divider" }}
           >
-            <Typography variant="h6" fontWeight={900} sx={{ mb: 1, color: "#143a2b" }}>
-              Selecionar Criança
+            <Typography variant="h6" fontWeight={900} sx={{ mb: 1, color: "#2c3e50" }}>
+              Selecionar Abrigado
             </Typography>
             <TextField
               value={query}
@@ -262,7 +262,7 @@ export default function ShelteredBrowserPage() {
                 <Grid key={sheltered.id} item xs={12} sm={6} md={4} lg={3} xl={2.4 as any}>
                   <ShelteredCard
                     sheltered={sheltered}
-                    onClick={(c) => nav(`/area-das-criancas/${c.id}`, { state: { sheltered: c } })}
+                    onClick={(c) => nav(`/area-dos-abrigados/${c.id}`, { state: { sheltered: c } })}
                     onEdit={(c) => openEdit(c.id)}
                     onRefresh={refetch}
                   />

@@ -81,7 +81,7 @@ export default function DecisionModal({ open, onClose, sheltered, onSuccess }: P
         </Box>
 
         <Typography sx={{ mb: 2, fontSize: { xs: "0.85rem", sm: "1rem" } }}>
-          Criança: <strong>{sheltered.name}</strong>
+          Abrigado: <strong>{sheltered.name}</strong>
         </Typography>
 
         <RowSwitch

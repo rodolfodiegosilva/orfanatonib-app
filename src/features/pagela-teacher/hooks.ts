@@ -40,16 +40,21 @@ export function useShelteredBrowser() {
       setItems(list);
     } catch (e: any) {
       setShelteredError(
-        e?.response?.data?.message || e?.message || "Erro ao listar crianças"
+        e?.response?.data?.message || e?.message || "Erro ao listar abrigados"
       );
     } finally {
       setLoading(false);
     }
   }, []);
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   useEffect(() => {
-    search("");
-  }, [search]);
+    if (!hasInitialized) {
+      search("");
+      setHasInitialized(true);
+    }
+  }, [search, hasInitialized]);
 
   const onChangeQ = (v: string) => {
     setQ(v);
@@ -67,13 +72,11 @@ export function useShelteredBrowser() {
 
 export function useShelteredPagelas(
   shelteredId: string | null | undefined,
-  initial?: { year?: number; week?: number }
+  initial?: { year?: number; visit?: number }
 ) {
   const [year, setYearState] = useState<number | undefined>(initial?.year);
-  const [week, setWeekState] = useState<number | undefined>(initial?.week);
+  const [visit, setVisitState] = useState<number | undefined>(initial?.visit);
   const [presentQ, setPresentQState] = useState<Tri>("any");
-  const [medQ, setMedQState] = useState<Tri>("any");
-  const [verseQ, setVerseQState] = useState<Tri>("any");
   const [rows, setRows] = useState<Pagela[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -81,26 +84,20 @@ export function useShelteredPagelas(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const setYear = useCallback((v?: number) => { setYearState(v); setPage(1); }, []);
-  const setWeek = useCallback((v?: number) => { setWeekState(v); setPage(1); }, []);
+  const setVisit = useCallback((v?: number) => { setVisitState(v); setPage(1); }, []);
   const setPresentQ = useCallback((v: Tri) => { setPresentQState(v); setPage(1); }, []);
-  const setMedQ = useCallback((v: Tri) => { setMedQState(v); setPage(1); }, []);
-  const setVerseQ = useCallback((v: Tri) => { setVerseQState(v); setPage(1); }, []);
 
   const clearFilters = useCallback(() => {
     setYear(undefined);
-    setWeek(undefined);
+    setVisit(undefined);
     setPresentQ("any");
-    setMedQ("any");
-    setVerseQ("any");
-  }, [setYear, setWeek, setPresentQ, setMedQ, setVerseQ]);
+  }, [setYear, setVisit, setPresentQ]);
 
   type Query = {
     shelteredId: string;
     year?: number;
-    week?: number;
+    visit?: number;
     present?: "true" | "false";
-    didMeditation?: "true" | "false";
-    recitedVerse?: "true" | "false";
     page: number;
     limit: number;
   };
@@ -110,14 +107,12 @@ export function useShelteredPagelas(
     return {
       shelteredId,
       year,
-      week,
+      visit,
       present: triToBoolString(presentQ),
-      didMeditation: triToBoolString(medQ),
-      recitedVerse: triToBoolString(verseQ),
       page,
       limit,
     };
-  }, [shelteredId, year, week, presentQ, medQ, verseQ, page, limit]);
+  }, [shelteredId, year, visit, presentQ, page, limit]);
 
   const debouncedQuery = useDebouncedValue(query, 250);
   const lastKeyRef = useRef<string>("");
@@ -190,8 +185,8 @@ export function useShelteredPagelas(
 
   return {
     filters: {
-      year, week, presentQ, medQ, verseQ,
-      setYear, setWeek, setPresentQ, setMedQ, setVerseQ, clearFilters,
+      year, visit, presentQ,
+      setYear, setVisit, setPresentQ, clearFilters,
     },
     list: {
       rows, total, page, limit,

@@ -105,7 +105,7 @@ function AdminLayout() {
           { label: "Usuários", to: "/adm/usuarios", icon: <Group /> },
           { label: "Professores", to: "/adm/professores", icon: <School /> },
           { label: "Líderes", to: "/adm/lideres", icon: <SupervisorAccount /> },
-          { label: "Crianças", to: "/adm/criancas", icon: <Groups /> },
+          { label: "Abrigados", to: "/adm/abrigados", icon: <Groups /> },
         ],
       },
       {
@@ -122,7 +122,7 @@ function AdminLayout() {
   );
 
   const leaderAllowed = new Set<string>([
-    "/adm/criancas",
+    "/adm/abrigados",
     "/adm/professores",
     "/adm/shelters",
     "/adm/pagelas",
@@ -157,7 +157,7 @@ function AdminLayout() {
       path.startsWith("/adm/pagelas") ||
       path.startsWith("/adm/professores") ||
       path.startsWith("/adm/lideres") ||
-      path.startsWith("/adm/criancas")
+      path.startsWith("/adm/abrigados")
     ) {
       return "shelter";
     }

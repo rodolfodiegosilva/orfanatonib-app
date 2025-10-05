@@ -114,8 +114,8 @@ function App() {
                 <Route path="/imagens-shelter" element={<ImageSectionPage />} />
                 <Route path="/lista-materias-semanais" element={<WeekMaterialsList />} />
                 <Route path="/avaliar-site" element={<SiteFeedbackForm />} />
-                <Route path="/area-das-criancas" element={<ShelteredBrowserPage />} />
-                <Route path="/area-das-criancas/:shelteredId" element={<ShelteredPagelasPage />} />
+                <Route path="/area-dos-abrigados" element={<ShelteredBrowserPage />} />
+                <Route path="/area-dos-abrigados/:shelteredId" element={<ShelteredPagelasPage />} />
                 <Route path="/compartilhar-ideia" element={<IdeasSectionPage />} />
               </Route>
 
@@ -138,7 +138,7 @@ function App() {
                   <Route path="usuarios" element={<UsersManager />} />
                   <Route path="lideres" element={<LeaderProfilesManager />} />
                   <Route path="professores" element={<TeacherProfilesManager />} />
-                  <Route path="criancas" element={<ShelteredManager />} />
+                  <Route path="abrigados" element={<ShelteredManager />} />
                   <Route path="shelters" element={<SheltersManager />} />
                   <Route path="pagelas" element={<PagelaSheltersManager />} />
 

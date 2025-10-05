@@ -25,6 +25,14 @@ export type ShelteredResponseDto = {
     postalCode: string;
     complement?: string;
   } | null;
+  pagelas?: Array<{
+    id: string;
+    year: number;
+    visit: number;
+    referenceDate: string;
+    present: boolean;
+    notes: string | null;
+  }>;
   createdAt: string;
   updatedAt: string;
 };
@@ -65,18 +73,24 @@ export type Paginated<T> = {
 };
 
 export type ShelteredFilters = {
+  // Filtros agrupados (novos)
+  shelteredName?: string;
+  shelterFilters?: string;
+  addressFilter?: string;
+  geographicSearchString?: string;
+  gender?: "masculino" | "feminino";
+  birthDateFrom?: string;
+  birthDateTo?: string;
+  joinedFrom?: string;
+  joinedTo?: string;
+  // Filtros legados (compatibilidade)
   searchString?: string;
   shelterId?: string;
   shelterName?: string;
   city?: string;
   state?: string;
-  gender?: "masculino" | "feminino";
   birthDate?: string;
-  birthDateFrom?: string;
-  birthDateTo?: string;
   joinedAt?: string;
-  joinedFrom?: string;
-  joinedTo?: string;
 };
 
 export type ShelteredSort =

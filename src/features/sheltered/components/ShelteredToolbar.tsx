@@ -253,10 +253,10 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
                     </Fab>
                   </Tooltip>
 
-                  <Tooltip title="Nova Criança">
+                  <Tooltip title="Nova Abrigado">
                     <Fab
                       color="primary"
-                      aria-label="Nova Criança"
+                      aria-label="Nova Abrigado"
                       onClick={onCreateClick}
                     >
                       <Add />

@@ -5,10 +5,9 @@ export async function apiListPagelasPaginated(
   params: {
     shelteredId: string;
     year?: number;
-    week?: number;
+    visit?: number;
     present?: "true" | "false";
-    didMeditation?: "true" | "false";
-    recitedVerse?: "true" | "false";
+    searchString?: string;
     page?: number;
     limit?: number;
   },

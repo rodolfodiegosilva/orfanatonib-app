@@ -26,29 +26,30 @@ export default function ShelteredFormDialog({
   mode, open, value, onChange, onCancel, onSubmit, error, loading,
 }: Props) {
   const isCreate = mode === "create";
-  if (!value) return null;
-
+  
   const user = useSelector((state: RootState) => state.auth.user);
   const isTeacher = user?.role === UserRole.TEACHER;
   const teacherShelter = user?.teacherProfile?.shelter ?? null;
   const teacherShelterId = teacherShelter?.id ?? null;
 
+  const [shelterOptions, setShelterOptions] = React.useState<Array<{ id: string; detalhe: string; leader: boolean }>>([]);
+  const [loadingShelterDetail, setLoadingShelterDetail] = React.useState(false);
+  const [shelterDetailErr, setShelterDetailErr] = React.useState<string>("");
+  const [showErrors, setShowErrors] = React.useState(false);
+
   const setField = <K extends keyof (CreateShelteredForm & EditShelteredForm)>(key: K, val: any) =>
     onChange({ ...(value as any), [key]: val } as any);
 
+  const effectiveShelterId = (value as any)?.shelterId ?? null;
+
   React.useEffect(() => {
+    if (!value) return;
     if (!isTeacher) return;
     if (!teacherShelterId) return;
     if ((value as any).shelterId !== teacherShelterId) {
       setField("shelterId", teacherShelterId);
     }
-  }, [isTeacher, teacherShelterId]);
-
-  const effectiveShelterId = (value as any).shelterId ?? null;
-
-  const [shelterOptions, setShelterOptions] = React.useState<Array<{ id: string; detalhe: string; leader: boolean }>>([]);
-  const [loadingShelterDetail, setLoadingShelterDetail] = React.useState(false);
-  const [shelterDetailErr, setShelterDetailErr] = React.useState<string>("");
+  }, [value, isTeacher, teacherShelterId]);
 
   React.useEffect(() => {
     if (!isTeacher) return;
@@ -75,13 +76,12 @@ export default function ShelteredFormDialog({
     return found?.detalhe ?? null;
   }, [effectiveShelterId, shelterOptions]);
 
-  const [showErrors, setShowErrors] = React.useState(false);
+  if (!value) return null;
 
   const req = {
     name: !!(value as any).name?.trim(),
     gender: !!(value as any).gender,
     birthDate: !!(value as any).birthDate,
-    guardianName: !!(value as any).guardianName?.trim(),
     district: !!(value as any).address?.district?.trim(),
     city: !!(value as any).address?.city?.trim(),
     state: !!(value as any).address?.state?.trim(),
@@ -97,7 +97,7 @@ export default function ShelteredFormDialog({
 
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="md" fullWidth>
-      <DialogTitle>{isCreate ? "Cadastrar Criança" : "Editar Criança"}</DialogTitle>
+      <DialogTitle>{isCreate ? "Cadastrar Abrigado" : "Editar Abrigado"}</DialogTitle>
 
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -120,7 +120,13 @@ export default function ShelteredFormDialog({
               <InputLabel>Gênero (obrigatório)</InputLabel>
               <Select
                 label="Gênero (obrigatório)"
-                value={(value as any).gender ?? ""}
+                value={(() => {
+                  const gender = (value as any).gender ?? "";
+                  // Normalize gender value to match expected format
+                  if (gender === "M" || gender === "Masculino") return "masculino";
+                  if (gender === "F" || gender === "Feminino") return "feminino";
+                  return gender;
+                })()}
                 onChange={(e) => setField("gender", e.target.value)}
               >
                 <MenuItem value="masculino">Masculino</MenuItem>
@@ -147,12 +153,9 @@ export default function ShelteredFormDialog({
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              required
-              label="Responsável (obrigatório)"
+              label="Responsável"
               value={(value as any).guardianName ?? ""}
               onChange={(e) => setField("guardianName", e.target.value)}
-              error={showErrors && !req.guardianName}
-              helperText={showErrors && !req.guardianName ? "Informe o responsável" : undefined}
             />
           </Grid>
 

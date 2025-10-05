@@ -162,8 +162,8 @@ const buttonMap: Record<string, FofinhoButtonProps> = {
     color: 'primary',
   },
   shelteredrenArea: {
-    to: '/area-das-criancas',
-    label: 'Área das Crianças',
+    to: '/area-dos-abrigados',
+    label: 'Área dos Abrigados',
     icon: ShelteredCareIcon,
     color: 'primary',
   },

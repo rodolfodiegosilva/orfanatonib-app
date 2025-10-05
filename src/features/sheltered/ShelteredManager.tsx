@@ -150,7 +150,7 @@ export default function ShelteredManager() {
         bgcolor: "#f9fafb"
       }}
     >
-      <BackHeader title="Gerenciar Crianças" />
+      <BackHeader title="Gerenciar Abrigados" />
 
       <ShelteredToolbar
         filters={filters}

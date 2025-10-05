@@ -16,8 +16,6 @@ import {
 } from "@mui/material";
 import { Close, Save } from "@mui/icons-material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import SpaIcon from "@mui/icons-material/Spa";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useSelector } from "react-redux";
@@ -30,10 +28,10 @@ type Props = {
   shelteredName: string;
   shelteredGender: string;
   defaultYear: number;
-  defaultWeek: number;
+  defaultVisit: number;
   teacherProfileId?: string | null;
 
-  findPagela: (year: number, week: number) => Pagela | null;
+  findPagela: (year: number, visit: number) => Pagela | null;
 
   onCreate: (payload: CreatePagelaPayload) => Promise<void>;
   onUpdate: (id: string, payload: UpdatePagelaPayload) => Promise<void>;
@@ -45,7 +43,8 @@ export default function PagelaQuickForm({
   shelteredId,
   shelteredName,
   shelteredGender,
-
+  defaultYear,
+  defaultVisit,
   teacherProfileId,
   findPagela,
   onCreate,
@@ -62,14 +61,12 @@ export default function PagelaQuickForm({
   const effectiveTeacherProfileId = teacherProfileIdFromRedux ?? teacherProfileId ?? null;
 
   const [yearText, setYearText] = React.useState<string>("");
-  const [weekText, setWeekText] = React.useState<string>("");
+  const [visitText, setVisitText] = React.useState<string>("");
 
   const [editing, setEditing] = React.useState<boolean>(!!initial?.id);
   const [currentId, setCurrentId] = React.useState<string | null>(initial?.id ?? null);
 
   const [present, setPresent] = React.useState<boolean>(initial?.present ?? false);
-  const [med, setMed] = React.useState<boolean>(initial?.didMeditation ?? false);
-  const [verse, setVerse] = React.useState<boolean>(initial?.recitedVerse ?? false);
   const [notes, setNotes] = React.useState<string>(initial?.notes ?? "");
 
   React.useEffect(() => {
@@ -77,16 +74,14 @@ export default function PagelaQuickForm({
       setEditing(true);
       setCurrentId(initial.id);
       setYearText(String(initial.year ?? ""));
-      setWeekText(String(initial.week ?? ""));
+      setVisitText(String(initial.visit ?? ""));
       setPresent(!!initial.present);
-      setMed(!!initial.didMeditation);
-      setVerse(!!initial.recitedVerse);
       setNotes(initial.notes ?? "");
     } else {
       setEditing(false);
       setCurrentId(null);
       setYearText("");
-      setWeekText("");
+      setVisitText("");
     }
   }, [initial]);
 
@@ -98,25 +93,23 @@ export default function PagelaQuickForm({
     return Math.floor(n);
   }, [yearText]);
 
-  const parsedWeek = React.useMemo(() => {
-    if (!weekText.trim()) return undefined;
-    const n = Number(weekText);
+  const parsedVisit = React.useMemo(() => {
+    if (!visitText.trim()) return undefined;
+    const n = Number(visitText);
     if (!Number.isFinite(n)) return undefined;
     if (n < 1 || n > 53) return undefined;
     return Math.floor(n);
-  }, [weekText]);
+  }, [visitText]);
 
   React.useEffect(() => {
-    if (parsedYear && parsedWeek) {
-      const found = findPagela(parsedYear, parsedWeek);
+    if (parsedYear && parsedVisit) {
+      const found = findPagela(parsedYear, parsedVisit);
       if (found) {
         setEditing(true);
         setCurrentId(found.id);
         setYearText(String(found.year));
-        setWeekText(String(found.week));
+        setVisitText(String(found.visit));
         setPresent(!!found.present);
-        setMed(!!found.didMeditation);
-        setVerse(!!found.recitedVerse);
         setNotes(found.notes ?? "");
       } else {
         setEditing(false);
@@ -126,9 +119,9 @@ export default function PagelaQuickForm({
       setEditing(false);
       setCurrentId(null);
     }
-  }, [parsedYear, parsedWeek, findPagela]);
+  }, [parsedYear, parsedVisit, findPagela]);
 
-  const canSave = !!shelteredId && parsedYear !== undefined && parsedWeek !== undefined;
+  const canSave = !!shelteredId && parsedYear !== undefined && parsedVisit !== undefined;
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -136,10 +129,8 @@ export default function PagelaQuickForm({
     const payloadCommon = {
       referenceDate: todayISO(),
       year: parsedYear!,
-      week: parsedWeek!,
+      visit: parsedVisit!,
       present,
-      didMeditation: med,
-      recitedVerse: verse,
       notes,
       teacherProfileId: effectiveTeacherProfileId,
     };
@@ -165,7 +156,7 @@ export default function PagelaQuickForm({
     ? "ao salvar, você ATUALIZA o registro existente"
     : "ao salvar, você CRIA um novo registro";
 
-  const yearWeekLabel = `Ano: ${parsedYear ?? "--"} • Semana: ${parsedWeek ?? "--"}`;
+  const yearWeekLabel = `Ano: ${parsedYear ?? "--"} • Visita: ${parsedVisit ?? "--"}`;
 
   const article = shelteredGender === "F" ? "a" : "o";
 
@@ -261,16 +252,14 @@ export default function PagelaQuickForm({
               label="Semana"
               size="small"
               type="text"
-              value={weekText}
-              onChange={(e) => setWeekText(e.target.value.replace(/\D+/g, "").slice(0, 2))}
+              value={visitText}
+              onChange={(e) => setVisitText(e.target.value.replace(/\D+/g, "").slice(0, 2))}
               sx={{ width: 140 }}
               inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 2 }}
             />
           </Stack>
 
           <RowSwitch icon={<CheckCircleIcon />} label="Presença" checked={present} onChange={setPresent} />
-          <RowSwitch icon={<SpaIcon />} label="Fez meditação" checked={med} onChange={setMed} />
-          <RowSwitch icon={<MenuBookIcon />} label="Recitou o versículo" checked={verse} onChange={setVerse} />
 
           <Divider sx={{ my: 0.5 }} />
 
