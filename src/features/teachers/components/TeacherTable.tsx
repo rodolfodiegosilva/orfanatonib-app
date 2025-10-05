@@ -32,14 +32,14 @@ type Props = {
   setSorting: (s: SortingState) => void;
   onView: (t: TeacherProfile) => void;
   onEditLinks: (t: TeacherProfile) => void;
-  onClearClub: (teacherId: string) => void;
+  onClearShelter: (teacherId: string) => void;
 };
 
 type ActionsCellProps = {
   teacher: TeacherProfile;
   onView: (t: TeacherProfile) => void;
   onEditLinks: (t: TeacherProfile) => void;
-  onClearClub: (teacherId: string) => void;
+  onClearShelter: (teacherId: string) => void;
   isAdmin: boolean;
 };
 
@@ -47,7 +47,7 @@ const ActionsCell = memo(function ActionsCell({
   teacher,
   onView,
   onEditLinks,
-  onClearClub,
+  onClearShelter,
   isAdmin,
 }: ActionsCellProps) {
   const { user: loggedUser } = useSelector((state: RootState) => state.auth);
@@ -88,22 +88,22 @@ const ActionsCell = memo(function ActionsCell({
         </Tooltip>
       )}
 
-      <Tooltip title="Vincular / Alterar Clubinho">
+      <Tooltip title="Vincular / Alterar Abrigo">
         <IconButton
           size={isXs ? "small" : "medium"}
           onClick={() => onEditLinks(teacher)}
-          aria-label="vincular ou alterar clubinho"
+          aria-label="vincular ou alterar shelter"
         >
           <LinkIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
 
       {isAdmin && (
-        <Tooltip title="Desvincular Clubinho">
+        <Tooltip title="Desvincular Abrigo">
           <IconButton
             size={isXs ? "small" : "medium"}
-            onClick={() => onClearClub(teacher.id)}
-            aria-label="desvincular clubinho"
+            onClick={() => onClearShelter(teacher.id)}
+            aria-label="desvincular shelter"
           >
             <LinkOff fontSize="inherit" />
           </IconButton>
@@ -115,7 +115,7 @@ const ActionsCell = memo(function ActionsCell({
 
 export default function TeacherTable({
   rows, total, pageIndex, pageSize, setPageIndex, setPageSize,
-  sorting, setSorting, onView, onEditLinks, onClearClub,
+  sorting, setSorting, onView, onEditLinks, onClearShelter,
 }: Props) {
   const isAdmin = useSelector(selectIsAdmin);
 
@@ -145,18 +145,18 @@ export default function TeacherTable({
       },
     },
     {
-      id: "club",
-      header: "Clubinho",
+      id: "shelter",
+      header: "Abrigo",
       cell: ({ row }) => (
-        <Chip size="small" label={row.original.club?.number ?? "—"} />
+        <Chip size="small" label={row.original.shelter?.name ?? "—"} />
       ),
       meta: { width: 100 },
     },
     {
       id: "coord",
-      header: "Coordenador",
+      header: "Líder",
       cell: ({ row }) => {
-        const c = row.original.club?.coordinator?.user;
+        const c = row.original.shelter?.leader?.user;
         return <Typography noWrap>{c?.name || c?.email || "—"}</Typography>;
       },
       meta: { width: 220 },
@@ -186,13 +186,13 @@ export default function TeacherTable({
           teacher={row.original}
           onView={onView}
           onEditLinks={onEditLinks}
-          onClearClub={onClearClub}
+          onClearShelter={onClearShelter}
           isAdmin={isAdmin}
         />
       ),
       meta: { width: isXs ? 180 : 240 },
     },
-  ], [isMdUp, isXs, isAdmin, onView, onEditLinks, onClearClub]);
+  ], [isMdUp, isXs, isAdmin, onView, onEditLinks, onClearShelter]);
 
   const table = useReactTable({
     data: rows,

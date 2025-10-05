@@ -1,6 +1,6 @@
 :root {
-  --cor-primaria: #81d742;
-  --cor-secundaria: #0073E6;
+  --cor-primaria: #FFFF00;
+  --cor-secundaria: #000000;
 }
 
 * {
@@ -12,8 +12,8 @@
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  background-color: #f4f4f4;
-  color: #333;
+  background-color: #FFFFFF;
+  color: #000000;
 }
 
 a {

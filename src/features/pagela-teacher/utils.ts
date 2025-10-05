@@ -7,8 +7,8 @@ export function todayISO() {
 export function clampWeek(w: number) {
   return Math.max(1, Math.min(53, w));
 }
-export function toLabelWeek(year: number, week: number) {
-  return `Ano: ${year} Semana: ${String(week).padStart(2,"0")}`;
+export function toLabelVisit(year: number, visit: number) {
+  return `Ano: ${year} Visita: ${String(visit).padStart(2,"0")}`;
 }
 export function getISOWeekYear(date: Date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));

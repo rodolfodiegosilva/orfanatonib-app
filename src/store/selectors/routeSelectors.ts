@@ -18,7 +18,7 @@ export const selectIsTeacher = createSelector(
   (auth) => auth.isAuthenticated && auth.user?.role === UserRole.TEACHER
 );
 
-export const selectIsCoordinator = createSelector(
+export const selectIsLeader = createSelector(
   [(state: RootState) => state.auth],
   (auth) => auth.isAuthenticated && auth.user?.role === UserRole.COORDINATOR
 );

@@ -4,22 +4,22 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { apiCreateAcceptedChrist } from "../api";
-import type { ChildSimpleResponseDto } from "@/features/children/types";
+import type { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  child: ChildSimpleResponseDto;
+  sheltered: ShelteredSimpleResponseDto;
   onSuccess?: () => void;
 }
 
-export default function DecisionModal({ open, onClose, child, onSuccess }: Props) {
+export default function DecisionModal({ open, onClose, sheltered, onSuccess }: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const alreadyAccepted = child.acceptedChrists.length > 0;
+  const alreadyAccepted = sheltered.acceptedChrists.length > 0;
   const title = alreadyAccepted
     ? "A criança quer se reconciliar com Jesus?"
     : "A criança fez a decisão de aceitar Jesus?";
@@ -48,7 +48,7 @@ export default function DecisionModal({ open, onClose, child, onSuccess }: Props
     setLoading(true);
     try {
       await apiCreateAcceptedChrist({
-        childId: child.id,
+        shelteredId: sheltered.id,
         decision: alreadyAccepted ? "RECONCILED" : "ACCEPTED",
         notes: notes || null,
       });
@@ -81,7 +81,7 @@ export default function DecisionModal({ open, onClose, child, onSuccess }: Props
         </Box>
 
         <Typography sx={{ mb: 2, fontSize: { xs: "0.85rem", sm: "1rem" } }}>
-          Criança: <strong>{child.name}</strong>
+          Abrigado: <strong>{sheltered.name}</strong>
         </Typography>
 
         <RowSwitch

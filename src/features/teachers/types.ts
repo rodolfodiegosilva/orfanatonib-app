@@ -2,18 +2,32 @@ export const TZ = "America/Manaus";
 
 export type MinimalUser = { id: string; name?: string; email?: string; phone?: string };
 
-export type ClubSimple = { id: string; number?: number; weekday?: string };
+export type ShelterSimple = { 
+  id: string; 
+  name: string;
+  address?: {
+    id: string;
+    street: string;
+    number: string;
+    district: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    complement?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type TeacherProfile = {
   id: string;
+  active: boolean;
   user: MinimalUser;
-  club?: (ClubSimple & {
-    coordinator?: { user?: MinimalUser } | null;
-  }) | null;
-  active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  vinculado?: boolean;
+  shelter?: ShelterSimple | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Page<T> = {
@@ -24,13 +38,11 @@ export type Page<T> = {
 };
 
 export type TeacherQuery = {
-  searchString?: string; 
-  q?: string;
-  active?: boolean;
-  hasClub?: boolean;
-  clubNumber?: number;
+  teacherSearchString?: string;
+  shelterSearchString?: string;
+  hasShelter?: boolean;
   page?: number;
   limit?: number;
-  sort?: "updatedAt" | "createdAt" | "name" | "clubNumber";
+  sort?: "updatedAt" | "createdAt" | "name";
   order?: "asc" | "desc";
 };

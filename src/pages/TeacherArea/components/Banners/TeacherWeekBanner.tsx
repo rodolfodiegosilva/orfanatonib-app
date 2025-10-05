@@ -13,6 +13,26 @@ const TeacherWeekBanner: React.FC = () => {
     (route) => route.entityType === MediaTargetType.WeekMaterialsPage && route.current === true
   );
 
+  // Função para determinar a parte do mês
+  const getMonthPart = () => {
+    const today = new Date();
+    const dayOfMonth = today.getDate();
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    
+    const monthName = monthNames[today.getMonth()];
+    const isFirstHalf = dayOfMonth <= 15;
+    
+    return {
+      part: isFirstHalf ? 'primeira parte' : 'segunda parte',
+      month: monthName
+    };
+  };
+
+  const { part, month } = getMonthPart();
+
   if (!currentWeekRoute) {
     return (
       <Paper
@@ -124,7 +144,7 @@ const TeacherWeekBanner: React.FC = () => {
               textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)',
             }}
           >
-            Olá {user?.name || 'Professor'}, estamos na:
+            Olá {user?.name || 'Professor'}, estamos na {part} do mês de:
           </Typography>
 
           <Typography
@@ -138,7 +158,7 @@ const TeacherWeekBanner: React.FC = () => {
               lineHeight: 1.2,
             }}
           >
-            {currentWeekRoute.title}
+            {month}
           </Typography>
 
           {currentWeekRoute.subtitle && (

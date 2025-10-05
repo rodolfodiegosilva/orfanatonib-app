@@ -42,7 +42,7 @@ export default function ImagePageDetailsModal({ section, open, onClose }: Props)
 
   const handleEdit = (s: SectionData) => {
     dispatch(setData(s));
-    navigate('/adm/editar-imagens-clubinho');
+    navigate('/adm/editar-imagens-shelter');
   };
 
   const carouselSettings = {

@@ -8,8 +8,11 @@ export const formatDate = (date?: string | null, includeTime: boolean = false) =
 export const fmtDateOnly = (d?: string | null) => formatDate(d, false);
 export const fmtDT = (s?: string) => formatDate(s, true);
 
-export const gLabel = (g?: "M" | "F") => 
-  g === "M" ? "Menino" : g === "F" ? "Menina" : "—";
+export const gLabel = (g?: "M" | "F" | "masculino" | "feminino") => {
+  if (g === "M" || g === "masculino") return "Masculino";
+  if (g === "F" || g === "feminino") return "Feminino";
+  return "—";
+};
 
 export const fmtBR = (d: string) =>
   d ? new Date(d + "T00:00:00").toLocaleDateString("pt-BR") : "";

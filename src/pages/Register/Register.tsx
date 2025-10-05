@@ -27,7 +27,7 @@ interface RegisterProps {
   commonUser: boolean;
 }
 
-type RoleChoice = '' | 'teacher' | 'coordinator';
+type RoleChoice = '' | 'teacher' | 'leader';
 
 const PhoneMask = React.forwardRef<HTMLInputElement, any>(function PhoneMask(props, ref) {
   return <IMaskInput {...props} mask="(00) 00000-0000" inputRef={ref} overwrite />;
@@ -53,8 +53,8 @@ const getSchema = (commonUser: boolean) =>
       })
       .required('Telefone é obrigatório'),
     role: (commonUser
-      ? Yup.mixed<RoleChoice>().oneOf(['', 'teacher', 'coordinator'])
-      : Yup.mixed<RoleChoice>().oneOf(['teacher', 'coordinator']).required('Selecione seu perfil')) as any,
+      ? Yup.mixed<RoleChoice>().oneOf(['', 'teacher', 'leader'])
+      : Yup.mixed<RoleChoice>().oneOf(['teacher', 'leader']).required('Selecione seu perfil')) as any,
   });
 
 interface FormData {
@@ -275,13 +275,13 @@ const Register: React.FC<RegisterProps> = ({ commonUser }) => {
                       fullWidth
                       margin="normal"
                       error={!!errors.role}
-                      helperText={errors.role?.message || 'Informe se você é Professor ou Coordenador'}
+                      helperText={errors.role?.message || 'Informe se você é Professor ou Líder'}
                     >
                       <MenuItem value="">
                         <em>Selecione</em>
                       </MenuItem>
                       <MenuItem value="teacher">Professor</MenuItem>
-                      <MenuItem value="coordinator">Coordenador</MenuItem>
+                      <MenuItem value="leader">Líder</MenuItem>
                     </TextField>
                   )}
                 />
