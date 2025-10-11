@@ -3,7 +3,7 @@ import { Box, Typography, Button, Container } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HeroSectionProps } from '../types';
-import banner from '@/assets/banner.jpg';
+import banner from '@/assets/banner.png';
 
 const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
   return (
