@@ -36,21 +36,40 @@ export type AddressResponseDto = {
   updatedAt: string;
 };
 
-export type ShelterSimpleResponseDto = {
+export type MediaItemDto = {
   id: string;
-  name: string;
-  address: AddressResponseDto;
+  title: string;
+  description?: string;
+  mediaType: "image" | "video";
+  uploadType: "upload" | "link";
+  url: string;
+  isLocalFile: boolean;
+  platformType?: string | null;
+  originalName?: string | null;
+  size?: number | null;
   createdAt: string;
   updatedAt: string;
 };
 
-// Atualizado para suportar relacionamentos ManyToMany
+export type ShelterSimpleResponseDto = {
+  id: string;
+  name: string;
+  description?: string | null;
+  address: AddressResponseDto;
+  mediaItem?: MediaItemDto | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Atualizado para suportar relacionamentos ManyToMany e mediaItem
 export type ShelterResponseDto = {
   id: string;
   name: string;
+  description?: string | null;
   address: AddressResponseDto;
   leaders: LeaderMiniDto[]; // Mudou de leader? para leaders[]
   teachers: TeacherMiniDto[];
+  mediaItem?: MediaItemDto | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -62,46 +81,41 @@ export type SimpleShelterResponseDto = {
 };
 
 export type Paginated<T> = {
-  data: T[];
+  items: T[];
   total: number;
   page: number;
   limit: number;
   pageCount: number;
 };
 
-// Atualizado para suportar múltiplos leaders
+// Atualizado para suportar múltiplos leaders, description e mediaItem
 export type CreateShelterForm = {
   name: string;
+  description?: string;
   address: Partial<AddressResponseDto> & {
     street: string; district: string; city: string; state: string; postalCode: string;
   };
   leaderProfileIds?: string[]; // Mudou de leaderProfileId para leaderProfileIds[]
   teacherProfileIds?: string[];
+  mediaItem?: {
+    title: string;
+    description?: string;
+    uploadType: "upload" | "link";
+    url?: string; // Para link
+    isLocalFile?: boolean;
+    fieldKey?: string; // Para upload
+  };
+  file?: File; // Para upload de arquivo
 };
 
 export type EditShelterForm = Partial<CreateShelterForm> & { id: string };
 export type UserLite = { id: string; name?: string; email?: string };
 
-// Filtros simplificados conforme nova documentação
+// Filtros conforme nova API
 export type ShelterFilters = {
-  // Filtros principais
-  shelterName?: string; // Busca por nome do abrigo
-  staffFilters?: string; // Busca em TODOS os campos de líderes e professores
-  addressFilter?: string; // Busca em TODOS os campos de endereço
-  
-  // Filtros legados para compatibilidade (mantidos temporariamente)
-  addressSearchString?: string;
-  userSearchString?: string;
-  shelterSearchString?: string;
-  searchString?: string;
-  city?: string;
-  state?: string;
-  leaderId?: string;
-  teacherId?: string;
-  hasLeaders?: boolean;
-  hasTeachers?: boolean;
-  leaderIds?: string[];
-  teacherIds?: string[];
+  searchString?: string; // Busca geral por nome, endereço, cidade, estado
+  nameSearchString?: string; // Busca específica por nome do shelter
+  leaderId?: string; // Filtrar por ID do líder
 };
 
 export type ShelterSort =

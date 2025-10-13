@@ -25,24 +25,9 @@ export default function SheltersManager() {
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [filters, setFilters] = useState<ShelterFilters>({
-    // Filtros principais
-    shelterName: undefined,
-    staffFilters: undefined,
-    addressFilter: undefined,
-    
-    // Filtros legados para compatibilidade (mantidos temporariamente)
-    addressSearchString: undefined,
-    userSearchString: undefined,
-    shelterSearchString: undefined,
     searchString: undefined,
-    city: undefined,
-    state: undefined,
+    nameSearchString: undefined,
     leaderId: undefined,
-    teacherId: undefined,
-    hasLeaders: undefined,
-    hasTeachers: undefined,
-    leaderIds: undefined,
-    teacherIds: undefined,
   });
 
   const [pageSize, setPageSize] = useState<number>(12);
@@ -91,6 +76,7 @@ export default function SheltersManager() {
     await loadRefs(); // Carrega opções apenas quando necessário
     setCreating({
       name: "",
+      description: "",
       address: {
         street: "",
         district: "",
@@ -100,22 +86,68 @@ export default function SheltersManager() {
       } as any,
       leaderProfileIds: [], // Mudou de leaderProfileId para leaderProfileIds[]
       teacherProfileIds: [],
+      mediaItem: undefined,
+      file: undefined,
     });
   };
 
   const submitCreate = async () => {
     if (!creating) return;
 
-    const payload: CreateShelterForm = {
-      ...creating,
-      leaderProfileIds: sanitizeIds(creating.leaderProfileIds), // Mudou para leaderProfileIds
-      teacherProfileIds: sanitizeIds(creating.teacherProfileIds),
+    const { file, ...rest } = creating as any;
+    
+    // Preparar payload limpo (seguindo guia do backend)
+    const payload: any = {
+      name: rest.name,
+      description: rest.description,
+      address: rest.address,
+      leaderProfileIds: sanitizeIds(rest.leaderProfileIds),
+      teacherProfileIds: sanitizeIds(rest.teacherProfileIds),
     };
 
-    if (!payload.teacherProfileIds?.length) delete (payload as any).teacherProfileIds;
-    if (!payload.leaderProfileIds?.length) delete (payload as any).leaderProfileIds; // Mudou para leaderProfileIds
+    // Remover arrays vazios (backend não precisa deles)
+    if (!payload.teacherProfileIds?.length) delete payload.teacherProfileIds;
+    if (!payload.leaderProfileIds?.length) delete payload.leaderProfileIds;
 
-    await createShelter(payload);
+    // Tratar mediaItem (3 cenários do guia)
+    if (file) {
+      // Cenário 1: Upload de arquivo (form-data)
+      const formData = new FormData();
+      
+      // Seguindo formato do guia: shelterData como string JSON
+      const shelterData = {
+        name: payload.name,
+        description: payload.description,
+        address: payload.address,
+        leaderProfileIds: payload.leaderProfileIds,
+        teacherProfileIds: payload.teacherProfileIds,
+        mediaItem: {
+          title: rest.mediaItem?.title || "Foto do Abrigo",
+          description: rest.mediaItem?.description || "Imagem do abrigo",
+          uploadType: "upload",
+          isLocalFile: true,
+          fieldKey: "shelterImage"
+        }
+      };
+      
+      formData.append('shelterData', JSON.stringify(shelterData));
+      formData.append('shelterImage', file);
+      
+      await createShelter(formData);
+    } else if (rest.mediaItem?.url) {
+      // Cenário 2: Link de URL (JSON)
+      payload.mediaItem = {
+        title: rest.mediaItem.title || "Foto do Abrigo",
+        description: rest.mediaItem.description || "Imagem do abrigo",
+        url: rest.mediaItem.url,
+        uploadType: "link",
+      };
+      await createShelter(payload);
+    } else {
+      // Cenário 3: Sem imagem (JSON)
+      await createShelter(payload);
+    }
+
     setCreating(null);
   };
 
@@ -126,29 +158,83 @@ export default function SheltersManager() {
     setEditing({
       id: c.id,
       name: c.name,
+      description: c.description || "",
       address: c.address,
       leaderProfileIds: (c.leaders ?? []).map((l) => l.id), // Mudou de leader?.id para leaders.map
       teacherProfileIds: (c.teachers ?? []).map((t) => t.id),
-    });
+      mediaItem: c.mediaItem ? {
+        title: c.mediaItem.title,
+        description: c.mediaItem.description,
+        uploadType: c.mediaItem.uploadType,
+        url: c.mediaItem.url,
+        isLocalFile: c.mediaItem.isLocalFile,
+      } : undefined,
+      file: undefined,
+      _originalLeaders: c.leaders ?? [], // Guardar líderes originais
+      _originalTeachers: c.teachers ?? [], // Guardar professores originais
+    } as any);
   };
 
   const submitEdit = async () => {
     if (!editing) return;
 
-    const { id, ...rest } = editing;
-    const leaderIds = sanitizeIds(rest.leaderProfileIds) ?? []; // Mudou para leaderProfileIds
+    const { id, file, _originalLeaders, _originalTeachers, ...rest } = editing as any;
+    const leaderIds = sanitizeIds(rest.leaderProfileIds) ?? [];
     const teacherIds = sanitizeIds(rest.teacherProfileIds) ?? [];
 
-    const payload: Omit<EditShelterForm, "id"> & { 
-      leaderProfileIds: string[];
-      teacherProfileIds: string[] 
-    } = {
-      ...rest,
-      leaderProfileIds: leaderIds, // Mudou para leaderProfileIds
+    // ✅ Preparar payload limpo (seguindo guia: apenas campos que mudaram)
+    const payload: any = {
+      name: rest.name,
+      description: rest.description,
+      address: rest.address,
+      leaderProfileIds: leaderIds,
       teacherProfileIds: teacherIds,
     };
 
-    await updateShelter(id, payload);
+    // Remover arrays vazios
+    if (!payload.teacherProfileIds?.length) delete payload.teacherProfileIds;
+    if (!payload.leaderProfileIds?.length) delete payload.leaderProfileIds;
+
+    // ⚠️ IMPORTANTE: Só incluir mediaItem se realmente mudou
+    if (file) {
+      // Cenário 1: Upload de novo arquivo (form-data)
+      const formData = new FormData();
+      
+      // Seguindo formato do guia: shelterData como string JSON
+      const shelterData = {
+        name: payload.name,
+        description: payload.description,
+        address: payload.address,
+        leaderProfileIds: payload.leaderProfileIds,
+        teacherProfileIds: payload.teacherProfileIds,
+        mediaItem: {
+          title: rest.mediaItem?.title || "Foto do Abrigo",
+          description: rest.mediaItem?.description || "Imagem do abrigo",
+          uploadType: "upload",
+          isLocalFile: true,
+          fieldKey: "shelterImage"
+        }
+      };
+      
+      formData.append('shelterData', JSON.stringify(shelterData));
+      formData.append('shelterImage', file);
+      
+      await updateShelter(id, formData);
+    } else if (rest.mediaItem && !rest.mediaItem.id) {
+      // Cenário 2: Nova URL de link (sem ID = nova criação)
+      payload.mediaItem = {
+        title: rest.mediaItem.title || "Foto do Abrigo",
+        description: rest.mediaItem.description || "Imagem do abrigo",
+        url: rest.mediaItem.url,
+        uploadType: "link",
+      };
+      await updateShelter(id, payload);
+    } else {
+      // Cenário 3: ✅ NÃO enviar mediaItem se não mudou
+      // Backend detecta automaticamente e ignora
+      await updateShelter(id, payload);
+    }
+
     setEditing(null);
   };
 

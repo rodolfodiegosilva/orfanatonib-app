@@ -16,7 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { TeacherOption } from "../../types";
+import { TeacherOption } from "../types";
 
 type Props = {
   value: string[];
@@ -67,7 +67,14 @@ export default function TeachersSelect({
   const baseVisible = useMemo(
     () =>
       (options ?? []).filter(
-        (opt) => !opt.vinculado || safeValue.includes(opt.teacherProfileId)
+        (opt) => {
+          // Se não está vinculado, sempre mostrar
+          if (!opt.vinculado) return true;
+          
+          // Se está vinculado, mostrar apenas se já está selecionado
+          // Isso permite manter líderes/professores já vinculados ao shelter atual
+          return safeValue.includes(opt.teacherProfileId);
+        }
       ),
     [fingerprint, safeValue]
   );
@@ -126,9 +133,10 @@ export default function TeachersSelect({
         if (total === 0) return "Nenhum professor";
         if (total <= 2) {
           const names = selected
-            .map(
-              (id) => options.find((t) => t.teacherProfileId === id)?.name ?? id
-            )
+            .map((id) => {
+              const found = options.find((t) => t.teacherProfileId === id);
+              return found?.name ?? id;
+            })
             .join(", ");
           return names;
         }
@@ -137,8 +145,8 @@ export default function TeachersSelect({
       return (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
           {selected.map((id) => {
-            const name =
-              options.find((t) => t.teacherProfileId === id)?.name ?? id;
+            const found = options.find((t) => t.teacherProfileId === id);
+            const name = found?.name ?? id;
             return (
               <Chip key={id} size="small" label={name} sx={{ maxWidth: 180 }} title={name} />
             );

@@ -33,6 +33,8 @@ import {
   ContentCopy,
   Phone as PhoneIcon,
   WhatsApp,
+  Image as ImageIcon,
+  DescriptionOutlined,
 } from "@mui/icons-material";
 import { ShelterResponseDto } from "./types";
 import { fmtDate } from "@/utils/dates";
@@ -77,6 +79,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
   
   const address = shelter?.address;
   const teachers = shelter?.teachers ?? [];
+  const leaders = shelter?.leaders ?? [];
 
   return (
     <Dialog
@@ -159,6 +162,69 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
           </Typography>
         ) : (
           <Stack spacing={2}>
+            {/* Imagem do Abrigo */}
+            {shelter.mediaItem && (
+              <Box
+                sx={{
+                  width: "100%",
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  bgcolor: "grey.100",
+                  position: "relative",
+                }}
+              >
+                <Box
+                  component="img"
+                  src={shelter.mediaItem.url}
+                  alt={shelter.mediaItem.title || "Imagem do abrigo"}
+                  sx={{
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: 400,
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    bgcolor: "rgba(0,0,0,0.6)",
+                    color: "white",
+                    p: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <ImageIcon fontSize="small" />
+                  <Typography variant="caption">
+                    {shelter.mediaItem.title}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+
+            {/* Descrição do Abrigo */}
+            {shelter.description && (
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: "grey.50" }}>
+                <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 1 }}>
+                  <DescriptionOutlined fontSize="small" color="primary" />
+                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                    Descrição
+                  </Typography>
+                </Stack>
+                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                  {shelter.description}
+                </Typography>
+              </Paper>
+            )}
+
             <Grid container spacing={1.25}>
               <Grid item xs={12} sm={6}>
                 <LineCard icon={<NumbersOutlined fontSize="small" />} title="Nome">
@@ -187,9 +253,9 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                 />
                 <Chip
                   size="small"
-                  label={`Líder: ${shelter.leader ? "Vinculado" : "Não vinculado"}`}
-                  color={shelter.leader ? "success" : "default"}
-                  variant={shelter.leader ? "filled" : "outlined"}
+                  label={`Líderes: ${leaders.length}`}
+                  color={leaders.length > 0 ? "success" : "default"}
+                  variant={leaders.length > 0 ? "filled" : "outlined"}
                 />
               </Stack>
             </Paper>
@@ -217,20 +283,26 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
 
             <Grid container spacing={1.25}>
               <Grid item xs={12}>
-                <LineCard icon={<PersonOutline fontSize="small" />} title="Líder">
-                  {shelter.leader ? (
-                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                      <Typography variant="body1" fontWeight={600}>
-                        {shelter.leader.user?.name || shelter.leader.user?.email || shelter.leader.id}
-                      </Typography>
-                      {shelter.leader.user?.phone && (
-                        <>
-                          <Link href={`tel:${shelter.leader.user.phone}`} underline="hover">
-                            {shelter.leader.user.phone}
-                          </Link>
-                          <CopyButton value={shelter.leader.user.phone} title="Copiar telefone" />
-                        </>
-                      )}
+                <LineCard icon={<PersonOutline fontSize="small" />} title="Líderes">
+                  {leaders.length > 0 ? (
+                    <Stack spacing={1}>
+                      {leaders.map((leader) => (
+                        <Box key={leader.id}>
+                          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                            <Typography variant="body1" fontWeight={600}>
+                              {leader.user?.name || leader.user?.email || leader.id}
+                            </Typography>
+                            {leader.user?.phone && (
+                              <>
+                                <Link href={`tel:${leader.user.phone}`} underline="hover">
+                                  {leader.user.phone}
+                                </Link>
+                                <CopyButton value={leader.user.phone} title="Copiar telefone" />
+                              </>
+                            )}
+                          </Stack>
+                        </Box>
+                      ))}
                     </Stack>
                   ) : (
                     <Typography variant="body2" color="text.secondary">

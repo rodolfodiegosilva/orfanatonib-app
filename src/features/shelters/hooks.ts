@@ -126,7 +126,7 @@ export function useShelterMutations(
   const [dialogError, setDialogError] = useState("");
 
   const createShelter = useCallback(
-    async (payload: CreateShelterForm) => {
+    async (payload: CreateShelterForm | FormData) => {
       setDialogLoading(true);
       setDialogError("");
       try {
@@ -143,7 +143,7 @@ export function useShelterMutations(
   );
 
   const updateShelter = useCallback(
-    async (id: string, payload: Omit<EditShelterForm, "id">) => {
+    async (id: string, payload: Omit<EditShelterForm, "id"> | FormData) => {
       setDialogLoading(true);
       setDialogError("");
       try {
@@ -200,12 +200,13 @@ export function useOptions() {
         name: c.name,
       }));
 
-      const mappedTeachers: TeacherOption[] = (teachersApi ?? []).map((t) => ({
+      const mappedTeachers: TeacherOption[] = (teachersApi ?? []).map((t: any) => ({
         teacherProfileId: t.teacherProfileId,
         name: t.name,
         vinculado: !!t.vinculado,
       }));
 
+      
       setLeaders(mappedCoords);
       setTeachers(mappedTeachers);
       setLoaded(true);
