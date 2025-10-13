@@ -232,7 +232,7 @@ export default function IdeasSectionEditor({ fromTemplatePage }: IdeasSectionEdi
               px: 2,
             }}
           >
-            Compartilhe uma ideia incrível que você teve nessa semana no seu Clubinho
+            Compartilhe uma ideia incrível que você teve nessa semana no seu Abrigo
           </Typography>
         )}
         

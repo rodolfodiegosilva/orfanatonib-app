@@ -74,9 +74,6 @@ export const FeedbackCategoryLabels: Record<FeedbackCategory, string> = {
   [FeedbackCategory.OTHER]: 'Outro tipo de feedback',
 };
 
-export type Weekday =
-  | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
-
 export type Address = {
   id?: string;
   street: string;
@@ -92,21 +89,20 @@ export type Address = {
   updatedAt?: string;
 };
 
-export type Club = {
+export type Shelter = {
   id: string;
-  number: number;
-  weekday: Weekday;
+  name: string;
   address: Address;
-  coordinator?: CoordinatorProfile | null;
+  leader?: LeaderProfile | null;
   teachers?: TeacherProfile[];
   createdAt: string;
   updatedAt: string;
 };
 
-export type CoordinatorProfile = {
+export type LeaderProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  clubs?: Club[];
+  shelters?: Shelter[];
   teachers?: TeacherProfile[];
   createdAt: string;
   updatedAt: string;
@@ -115,18 +111,9 @@ export type CoordinatorProfile = {
 export type TeacherProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  club?: { id: string; number: number } | null;
-  coordinator?: { id: string } | null;
+  shelter?: { id: string; name: string } | null;
+  leader?: { id: string } | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export const weekdayOptions: { value: Weekday; label: string }[] = [
-  { value: "monday", label: "Segunda" },
-  { value: "tuesday", label: "Terça" },
-  { value: "wednesday", label: "Quarta" },
-  { value: "thursday", label: "Quinta" },
-  { value: "friday", label: "Sexta" },
-  { value: "saturday", label: "Sábado" },
-  { value: "sunday", label: "Domingo" },
-];

@@ -49,14 +49,14 @@ const CommentsSection: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     comment: '',
-    clubinho: '',
+    shelter: '',
     neighborhood: '',
   });
 
   const [errors, setErrors] = useState({
     name: false,
     comment: false,
-    clubinho: false,
+    shelter: false,
     neighborhood: false,
   });
 
@@ -77,7 +77,7 @@ const CommentsSection: React.FC = () => {
     const newErrors = {
       name: !formData.name.trim(),
       comment: !formData.comment.trim(),
-      clubinho: !formData.clubinho.trim(),
+      shelter: !formData.shelter.trim(),
       neighborhood: !formData.neighborhood.trim(),
     };
     setErrors(newErrors);
@@ -86,8 +86,8 @@ const CommentsSection: React.FC = () => {
     setIsSubmitting(true);
     try {
       await api.post('/comments', formData);
-      setFormData({ name: '', comment: '', clubinho: '', neighborhood: '' });
-      setErrors({ name: false, comment: false, clubinho: false, neighborhood: false });
+      setFormData({ name: '', comment: '', shelter: '', neighborhood: '' });
+      setErrors({ name: false, comment: false, shelter: false, neighborhood: false });
       setFormOpen(false);
       setSuccessSnackbarOpen(true);
       await fetchComments();
@@ -129,21 +129,21 @@ const CommentsSection: React.FC = () => {
   const labels: Record<string, string> = {
     name: 'Nome (obrigatório)',
     comment: 'Comentário (obrigatório)',
-    clubinho: 'Clubinho (obrigatório)',
+    shelter: 'Abrigo (obrigatório)',
     neighborhood: 'Bairro (obrigatório)',
   };
 
   const placeholders: Record<string, string> = {
     name: 'Seu nome',
     comment: 'Escreva seu comentário aqui...',
-    clubinho: 'Ex: Clubinho do Amor',
+    shelter: 'Ex: Abrigo do Amor',
     neighborhood: 'Ex: Jardim das Flores',
   };
 
   const fieldIcons: Record<string, React.ReactNode> = {
     name: <PersonIcon />,
     comment: <CommentIcon />,
-    clubinho: <HomeIcon />,
+    shelter: <HomeIcon />,
     neighborhood: <LocationOnIcon />,
   };
 
@@ -267,7 +267,7 @@ const CommentsSection: React.FC = () => {
                     </Typography>
 
                     <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 2, md: 3 } }}>
-                      {['name', 'comment', 'clubinho', 'neighborhood'].map((field) => (
+                      {['name', 'comment', 'shelter', 'neighborhood'].map((field) => (
                         <Grid item xs={12} md={field === 'comment' ? 8 : 4} key={field}>
                           <Box sx={{ position: 'relative' }}>
                             <TextField
@@ -497,7 +497,7 @@ const CommentsSection: React.FC = () => {
                                 <Stack direction="row" spacing={{ xs: 0.5, md: 1 }} flexWrap="wrap" useFlexGap>
                                   <Chip
                                     icon={<HomeIcon />}
-                                    label={comment.clubinho}
+                                    label={comment.shelter}
                                     size="small"
                                     sx={{
                                       bgcolor: 'primary.light',

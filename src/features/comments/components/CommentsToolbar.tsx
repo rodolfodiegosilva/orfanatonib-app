@@ -15,7 +15,7 @@ export default function CommentsToolbar({ search, onSearchChange, status, setSta
       <Box sx={{ flex: 1, position: "relative" }}>
         <TextField
           fullWidth
-          label="Buscar por nome, clubinho ou bairro"
+          label="Buscar por nome, shelter ou bairro"
           variant="outlined"
           size="small"
           value={search}

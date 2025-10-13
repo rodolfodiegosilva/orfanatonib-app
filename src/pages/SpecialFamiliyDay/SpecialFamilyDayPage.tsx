@@ -215,7 +215,7 @@ const SpecialFamilyDayPage: React.FC = () => {
             {[
               { icon: <CalendarMonthIcon />, label: "Data", value: "09/08/2025", color: "#FF8A65" },
               { icon: <AccessTimeIcon />, label: "Horário", value: "14h às 15h30", color: "#4FC3F7" },
-              { icon: <PlaceIcon />, label: "Local", value: "No seu Clubinho Bíblico", color: "#81C784" },
+              { icon: <PlaceIcon />, label: "Local", value: "No seu Abrigo Bíblico", color: "#81C784" },
             ].map((info, i) => (
               <Grid key={i} item xs={12} sm={6} md={4}>
                 <Card
@@ -279,8 +279,8 @@ const SpecialFamilyDayPage: React.FC = () => {
               {[
                 "Recepção e crachás",
                 "Boas-vindas e oração",
-                "Apresentação do Clubinho",
-                "Vídeo convite do Clubão",
+                "Apresentação do Abrigo",
+                "Vídeo convite do Shelterão",
                 "Declaração das crianças",
                 "Brincadeira pais e filhos",
                 "Música especial",
