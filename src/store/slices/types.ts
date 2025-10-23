@@ -27,7 +27,8 @@ export enum MediaTargetType {
   IdeasPage = 'IdeasPage',
   Document = 'Document',
   Event = 'Event',
-  Informative = 'Informative'
+  Informative = 'Informative',
+  ShelterPage = 'shelterPage'
 }
 
 export interface MediaItem {

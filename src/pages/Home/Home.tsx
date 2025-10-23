@@ -4,6 +4,7 @@ import { gradients } from '@/theme';
 import { HeroSection, FeaturesSection, TestimonialsSection, CTASection } from './components';
 import WeekMaterialsBanner from './WeekMaterialsBanner';
 import CardsSection from './CardsSection';
+import SheltersSection from './SheltersSection';
 import { FEATURES } from './constants';
 import { useComments, useAuth } from './hooks';
 
@@ -22,17 +23,13 @@ const Home: React.FC = () => {
       }}
     >
       <HeroSection isAuthenticated={isAuthenticated} />
-
       {isAuthenticated && <WeekMaterialsBanner />}
-      
+      <SheltersSection />
       <CardsSection />
-
       <FeaturesSection features={FEATURES} />
-
       {comments && comments.length > 0 && (
         <TestimonialsSection testimonials={comments.filter(comment => comment.id) as any} />
       )}
-      
       <CTASection isAuthenticated={isAuthenticated} />
     </Box>
   );
