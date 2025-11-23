@@ -82,7 +82,8 @@ function App() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          bgcolor: '#f0f0f0',
+          background: 'linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%)',
+          backgroundAttachment: 'fixed',
         }}
       >
         <CircularProgress size={48} />
@@ -92,7 +93,13 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        background: 'linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%)',
+        backgroundAttachment: 'fixed',
+      }}>
         <Navbar />
 
         <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -103,7 +110,7 @@ function App() {
               <Route path="/sobre" element={<About />} />
               <Route path="/contato" element={<Contact />} />
               <Route path="/eventos" element={<Event />} />
-              <Route path="/feed-shelter" element={<ShelterFeedView feed />} />
+              <Route path="/feed-abrigos" element={<ShelterFeedView feed />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastrar-google" element={<Register commonUser={false} />} />
               <Route path="/cadastrar" element={<Register commonUser />} />
@@ -130,7 +137,7 @@ function App() {
                   <Route path="contatos" element={<ContactsManager />} />
                   <Route path="paginas-materiais-semanais" element={<WeekMaterialManager />} />
                   <Route path="paginas-fotos" element={<ImagePageManager />} />
-                  <Route path="fotos-shelters" element={<ImageSectionManager />} />
+                  <Route path="fotos-abrigos" element={<ImageSectionManager />} />
                   <Route path="ideias-compartilhadas" element={<IdeasSectionManager  />} />
                   <Route path="paginas-videos" element={<VideosManager />} />
                   <Route path="paginas-ideias" element={<IdeasManager />} />

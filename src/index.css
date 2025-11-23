@@ -12,9 +12,12 @@
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  background-color: #FFFFFF;
+  background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+  background-attachment: fixed;
   color: #000000;
 }
+
+/* Background global suave - usar gradients.subtle.greenWhiteSoft no código */
 
 a {
   color: inherit;

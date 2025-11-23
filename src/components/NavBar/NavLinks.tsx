@@ -76,7 +76,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
       sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}
     >
       {renderLink('/', 'Início')}
-      {renderLink('/feed-shelter', 'Feed Orfanato')}
+      {renderLink('/feed-abrigos', 'Feed Orfanato')}
       {renderLink('/sobre', 'Sobre')}
       {renderLink('/eventos', 'Eventos')}
       {renderLink('/contato', 'Contato')}

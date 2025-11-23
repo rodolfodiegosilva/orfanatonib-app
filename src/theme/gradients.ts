@@ -50,6 +50,8 @@ export const gradients = {
     blackWhite: 'linear-gradient(135deg, #000000 0%, #FFFFFF 100%)',
     // Gradiente sutil verde para branco
     greenWhite: 'linear-gradient(135deg, #009933 0%, #FFFFFF 100%)',
+    // Gradiente sutil verde suave para branco (background global)
+    greenWhiteSoft: 'linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%)',
     // Gradiente sutil amarelo para branco
     yellowWhite: 'linear-gradient(135deg, #FFFF00 0%, #FFFFFF 100%)',
     // Gradiente diagonal verde para branco

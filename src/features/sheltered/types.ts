@@ -37,13 +37,9 @@ export type ShelteredResponseDto = {
   updatedAt: string;
 };
 
-export type AcceptedChristShortDto = {
-  id: string;
-  decision: "ACCEPTED" | "RECONCILED" | null;
-  createdAt: string;
-  updatedAt: string;
-  notes?: string | null;
-};
+import type { AcceptedChristShortDto } from "@/features/accepted-christs/types";
+
+export type { AcceptedChristShortDto };
 
 export type ShelteredSimpleResponseDto = {
   id: string;

@@ -40,9 +40,20 @@ export interface SectionItemProps extends Omit<SectionData, 'id' | 'public'> {}
 
 const formatDateTime = (value: string | Date) => {
   const date = new Date(value);
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+  
+  const day = date.getDate();
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  
   return {
-    date: date.toLocaleDateString('pt-BR'),
-    time: date.toLocaleTimeString('pt-BR'),
+    date: `${day} de ${month} de ${year}`,
+    time: `${hours}:${minutes}`,
   };
 };
 
@@ -126,106 +137,142 @@ const ShelterSectionImageView: React.FC<SectionItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -8 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
+      style={{ marginBottom: theme.spacing(4) }}
     >
       <Card
         elevation={6}
         sx={{
           borderRadius: { xs: 3, md: 4 },
           overflow: 'hidden',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8faff 100%)',
-          border: `2px solid ${theme.palette.primary.main}15`,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+          border: `2px solid ${theme.palette.success.main}20`,
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
             elevation: 12,
             transform: 'translateY(-4px)',
-            borderColor: theme.palette.primary.main,
-            boxShadow: `0 20px 40px ${theme.palette.primary.main}20`,
+            borderColor: theme.palette.success.main,
+            boxShadow: `0 20px 40px ${theme.palette.success.main}20`,
           },
         }}
       >
         {/* Header com Avatar e Info */}
-        <CardContent sx={{ p: { xs: 3, md: 4 }, pb: 2 }}>
-          <Box display="flex" alignItems="flex-start" gap={3} mb={3}>
-            <Avatar
-              sx={{
-                width: { xs: 48, md: 56 },
-                height: { xs: 48, md: 56 },
-                bgcolor: 'primary.main',
-                boxShadow: 3,
-              }}
+        <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 }, pb: 2 }}>
+          <Box 
+            display="flex" 
+            alignItems="flex-start" 
+            gap={{ xs: 2, sm: 3 }} 
+            mb={{ xs: 2, sm: 3 }}
+            flexDirection={{ xs: 'column', sm: 'row' }}
+          >
+            <Box 
+              display="flex" 
+              alignItems="center" 
+              gap={{ xs: 2, sm: 3 }}
+              width={{ xs: '100%', sm: 'auto' }}
             >
-              <ImageIcon sx={{ fontSize: { xs: '1.5rem', md: '1.8rem' } }} />
-            </Avatar>
+              <Avatar
+                sx={{
+                  width: { xs: 40, sm: 48, md: 56 },
+                  height: { xs: 40, sm: 48, md: 56 },
+                  bgcolor: 'success.main',
+                  boxShadow: 3,
+                }}
+              >
+                <ImageIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.8rem' } }} />
+              </Avatar>
             
-            <Box flex={1}>
-              <Box display="flex" alignItems="center" gap={2} mb={1}>
-                <Typography
-                  variant="h5"
-                  fontWeight="bold"
-                  color="primary.main"
-                  sx={{
-                    fontSize: { xs: '1.3rem', md: '1.6rem' },
-                    lineHeight: 1.3,
-                  }}
+              <Box flex={1}>
+                <Box 
+                  display="flex" 
+                  alignItems={{ xs: 'flex-start', sm: 'center' }} 
+                  gap={{ xs: 1, sm: 2 }} 
+                  mb={1}
+                  flexDirection={{ xs: 'column', sm: 'row' }}
                 >
-                  {caption}
-                </Typography>
-                <Badge
-                  badgeContent={mediaItems.length}
-                  color="secondary"
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                    },
-                  }}
-                >
-                  <Chip
-                    label="Imagens"
-                    size="small"
+                  <Typography
+                    variant="h5"
+                    fontWeight="bold"
+                    color="success.main"
                     sx={{
-                      bgcolor: 'primary.light',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '0.75rem',
+                      fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.6rem' },
+                      lineHeight: { xs: 1.2, md: 1.3 },
+                      mb: { xs: 1, sm: 0 },
                     }}
-                  />
-                </Badge>
+                  >
+                    {caption}
+                  </Typography>
+                  <Badge
+                    badgeContent={mediaItems.length}
+                    color="secondary"
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                        fontWeight: 'bold',
+                      },
+                    }}
+                  >
+                    <Chip
+                      label="Imagens"
+                      size="small"
+                      sx={{
+                        bgcolor: 'success.light',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                        height: { xs: 20, sm: 24 },
+                      }}
+                    />
+                  </Badge>
+                </Box>
+
+                {description && (
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' },
+                      lineHeight: { xs: 1.4, md: 1.6 },
+                      mb: { xs: 1.5, md: 2 },
+                    }}
+                  >
+                    {description}
+                  </Typography>
+                )}
+
+                {/* Metadata com ícones */}
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }}>
+                  {created && (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <ScheduleIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {created.date} às {created.time}
+                      </Typography>
+                    </Box>
+                  )}
+                  {updated && updated.date !== created?.date && (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <UpdateIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {updated.date} às {updated.time}
+                      </Typography>
+                    </Box>
+                  )}
+                </Stack>
               </Box>
-
-              {description && (
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{
-                    fontSize: { xs: '0.95rem', md: '1rem' },
-                    lineHeight: 1.6,
-                    mb: 2,
-                  }}
-                >
-                  {description}
-                </Typography>
-              )}
-
-              {/* Metadata com ícones */}
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                {created && (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <ScheduleIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Criado em {created.date} às {created.time}
-                    </Typography>
-                  </Box>
-                )}
-                {updated && updated.date !== created?.date && (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <UpdateIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      Atualizado em {updated.date} às {updated.time}
-                    </Typography>
-                  </Box>
-                )}
-              </Stack>
             </Box>
           </Box>
         </CardContent>
@@ -342,7 +389,7 @@ const ShelterSectionImageView: React.FC<SectionItemProps> = ({
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            background: 'rgba(33, 150, 243, 0.3)',
+                            background: 'rgba(76, 175, 80, 0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',

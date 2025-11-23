@@ -62,7 +62,7 @@ const cardData: CardData[] = [
 
   { title: "Páginas de Materiais", description: "Gerencie conteúdos semanais.", icon: <EventNote fontSize="large" color="primary" />, path: "/adm/paginas-materiais-semanais", section: "pages" },
   { title: "Páginas de Fotos", description: "Organize e edite galerias de imagens do site.", icon: <PhotoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-fotos", section: "pages" },
-  { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-shelters", section: "pages" },
+  { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-abrigos", section: "pages" },
   { title: "Ideias compartilhadas", description: "Gerencie Ideias compartilhadas pelos Abrigos", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/ideias-compartilhadas", section: "pages" },
   { title: "Páginas de Vídeos", description: "Adicione vídeos ou links do YouTube para o site.", icon: <VideoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-videos", section: "pages" },
   { title: "Páginas de Ideias", description: "Gerencie páginas de ideias para professores.", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/paginas-ideias", section: "pages" },

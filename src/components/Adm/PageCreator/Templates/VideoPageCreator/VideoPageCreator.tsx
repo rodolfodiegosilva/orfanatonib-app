@@ -72,7 +72,7 @@ export default function VideoPageCreator({ fromTemplatePage = false }: VideoProp
 
   useEffect(() => {
     if (!videoData && !fromTemplatePage) {
-      navigate('/feed-shelter');
+      navigate('/feed-abrigos');
       return;
     }
 

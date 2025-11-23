@@ -27,7 +27,7 @@ const TeacherArea: React.FC = () => {
   const { loading, showWeek, showMeditation } = useTeacherArea();
 
   return (
-    <Box sx={{ background: gradients.subtle.greenWhite, minHeight: '100vh' }}>
+    <Box sx={{ background: gradients.subtle.greenWhiteSoft, minHeight: '100vh' }}>
       <Container maxWidth={false} sx={CONTAINER_STYLES.main}>
       {/* Informative Banner */}
       <InformativeBanner />

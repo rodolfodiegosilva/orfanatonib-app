@@ -14,7 +14,7 @@ const AboutLayout: React.FC<AboutLayoutProps> = ({ children }) => {
       component="main"
       sx={{
         minHeight: 'calc(100vh - 128px)',
-        background: gradients.subtle.greenWhite,
+        background: gradients.subtle.greenWhiteSoft,
         position: 'relative',
         overflow: 'hidden',
         '&::before': {

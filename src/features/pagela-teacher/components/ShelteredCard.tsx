@@ -44,11 +44,23 @@ export default function ShelteredCard({
     return parts.map((p) => p[0]?.toUpperCase() || "").join("");
   }, [sheltered.name]);
 
-  const alreadyAccepted = sheltered.acceptedChrists?.length > 0;
+  const acceptedChrists = sheltered.acceptedChrists || [];
+  const hasAnyDecision = acceptedChrists.length > 0;
+  
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const handleCloseModal = () => {
     setModalOpen(false);
+  };
+
+  const getHeartColor = () => {
+    return hasAnyDecision ? theme.palette.error.main : "#ccc";
+  };
+
+  const getTooltipText = () => {
+    return hasAnyDecision 
+      ? "Tem decisão(ões) registrada(s) - Clique para registrar nova"
+      : "Registrar decisão por Jesus";
   };
 
   return (
@@ -69,22 +81,43 @@ export default function ShelteredCard({
               : "linear-gradient(180deg, #1e1e1e 0%, #161616 100%)",
         }}
       >
-        <Tooltip title={alreadyAccepted ? "Registrar reconciliação" : "Registrar decisão por Jesus"}>
+        <Tooltip title={getTooltipText()}>
           <IconButton
-            onClick={() => setModalOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalOpen(true);
+            }}
             sx={{
               position: "absolute",
-              top: 8,
-              left: 8,
+              top: { xs: 6, sm: 8 },
+              left: { xs: 6, sm: 8 },
               bgcolor: "background.paper",
               border: "2px solid",
-              borderColor: "divider",
+              borderColor: hasAnyDecision ? getHeartColor() : "divider",
               zIndex: 3,
-              mb: 6,
-              "&:hover": { bgcolor: "background.paper" },
+              boxShadow: hasAnyDecision ? 2 : 0,
+              width: { xs: 36, sm: 40 },
+              height: { xs: 36, sm: 40 },
+              transition: "all 0.2s ease",
+              "&:hover": { 
+                bgcolor: "background.paper",
+                transform: "scale(1.1)",
+                boxShadow: 3,
+              },
             }}
           >
-            <FavoriteIcon sx={{ color: alreadyAccepted ? theme.palette.error.main : "#ccc" }} />
+            <FavoriteIcon 
+              sx={{ 
+                color: getHeartColor(),
+                fontSize: { xs: "1.1rem", sm: "1.3rem" },
+                animation: hasAnyDecision ? "heartbeat 1.5s ease-in-out infinite" : "none",
+                "@keyframes heartbeat": {
+                  "0%, 100%": { transform: "scale(1)" },
+                  "10%, 30%": { transform: "scale(0.9)" },
+                  "20%, 40%": { transform: "scale(1.1)" },
+                }
+              }} 
+            />
           </IconButton>
         </Tooltip>
 

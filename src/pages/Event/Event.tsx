@@ -647,7 +647,7 @@ const Eventos: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: gradients.subtle.greenWhite,
+          background: gradients.subtle.greenWhiteSoft,
         }}
       >
         {/* Título e Controles */}
@@ -1429,7 +1429,7 @@ const Eventos: React.FC = () => {
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     sx={{
-                      background: gradients.subtle.greenWhite,
+                      background: gradients.subtle.greenWhiteSoft,
                       '& .MuiAccordionSummary-content': {
                         alignItems: 'center',
                         gap: 2,

@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { gradients } from '@/theme';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -27,7 +26,10 @@ import { UserRole } from 'store/slices/auth/authSlice';
 import ShelterSectionImageView from './ShelterSectionImageView';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import ButtonSection from './../../TeacherArea/components/Buttons/FofinhoButton';
+import { FofinhoButton } from './../../TeacherArea/components';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import {
   setSectionData,
   appendSections,
@@ -53,228 +55,199 @@ function SectionSkeleton() {
       <Paper
         elevation={3}
         sx={{
-          p: { xs: 2, sm: 3, md: 4 },
-          mb: 3,
-          borderRadius: 3,
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
+          p: { xs: 3, md: 4 },
+          mt: { xs: 2, md: 3 },
+          mb: { xs: 3, md: 4 },
+          borderRadius: { xs: 3, md: 4 },
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+          border: `2px solid ${theme.palette.success.main}20`,
         }}
       >
-        <Stack spacing={2}>
-          <Skeleton variant="text" width="60%" height={32} />
-          <Skeleton variant="text" width="40%" height={20} />
-          <Skeleton variant="rectangular" width="100%" height={200} sx={{ borderRadius: 2 }} />
-          <Stack direction="row" spacing={1}>
-            <Skeleton variant="circular" width={24} height={24} />
-            <Skeleton variant="text" width="20%" height={20} />
-          </Stack>
-        </Stack>
+        <Box textAlign="center" mb={3}>
+          <Skeleton 
+            variant="text" 
+            width={220} 
+            height={isMobile ? 24 : 32} 
+            sx={{ 
+              mx: 'auto', 
+              borderRadius: 2,
+            }} 
+          />
+          <Skeleton 
+            variant="text" 
+            width="60%" 
+            sx={{ 
+              mx: 'auto', 
+              mt: 1,
+              borderRadius: 1,
+            }} 
+          />
+          <Skeleton 
+            variant="text" 
+            width="50%" 
+            sx={{ 
+              mx: 'auto', 
+              mt: 1,
+              borderRadius: 1,
+            }} 
+          />
+          <Box 
+            mt={2} 
+            display="flex" 
+            flexDirection="column" 
+            alignItems={{ xs: 'center', md: 'flex-end' }}
+          >
+            <Skeleton variant="text" width={180} sx={{ borderRadius: 1 }} />
+            <Skeleton variant="text" width={220} sx={{ borderRadius: 1 }} />
+          </Box>
+        </Box>
+        <Skeleton
+          variant="rectangular"
+          sx={{ 
+            width: '100%', 
+            height: isMobile ? 200 : 400, 
+            borderRadius: { xs: 2, md: 3 },
+            mb: 2,
+          }}
+        />
+        <Grid container spacing={1} justifyContent="center">
+          {[...Array(6)].map((_, i) => (
+            <Grid item xs={4} sm={2} md={2} key={i}>
+              <Skeleton 
+                variant="rectangular" 
+                height={isMobile ? 60 : 80} 
+                sx={{ 
+                  borderRadius: { xs: 2, md: 3 },
+                }} 
+              />
+            </Grid>
+          ))}
+        </Grid>
       </Paper>
     </motion.div>
   );
 }
 
 export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const section = useSelector((state: RootState) => state.imageSectionPagination.section);
 
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { section } = useSelector(
-    (state: RootState) => state.imageSectionPagination
-  );
-  
-  const sections = section?.sections || [];
-  const loading = false; // Add loading state management if needed
-  const error = null; // Add error state management if needed
-  const hasMore = section ? section.sections.length < section.total : false;
-  const currentPage = 1; // Add pagination state management if needed
-  const totalPages = section ? Math.ceil(section.total / section.limit) : 0;
+  const isAdmin = isAuthenticated && user?.role === UserRole.ADMIN;
+  const defaultSectionId = import.meta.env.VITE_FEED_MINISTERIO_ID;
 
-  const [initialLoading, setInitialLoading] = useState(true);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadingRef = useRef<HTMLDivElement>(null);
-
-  const feedId = import.meta.env.VITE_FEED_MINISTERIO_ID;
-
-  const loadSections = useCallback(
-    async (page: number = 1, reset: boolean = false) => {
-      try {
-        const endpoint = feed ? `/image-sections/feed/${feedId}` : '/image-sections';
-        const response = await api.get<PaginatedSectionResponse>(endpoint, {
-          params: {
-            page,
-            limit: 10,
-          },
-        });
-
-        const responseData = response.data;
-
-        if (reset || page === 1) {
-          dispatch(setSectionData(responseData));
-        } else {
-          dispatch(appendSections(responseData.sections));
-        }
-      } catch (err) {
-        console.error('Erro ao carregar seções:', err);
-      } finally {
-        if (page === 1) {
-          setInitialLoading(false);
-        }
-      }
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastSectionRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loadingMore) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) setPage((prev) => prev + 1);
+      });
+      if (node) observer.current.observe(node);
     },
-    [dispatch, feed, feedId]
+    [loadingMore, hasMore]
   );
 
-  const loadMore = useCallback(() => {
-    if (!loading && hasMore && currentPage < totalPages) {
-      loadSections(currentPage + 1, false);
-    }
-  }, [loading, hasMore, currentPage, totalPages, loadSections]);
+  const sectionsList = useMemo(() => section?.sections ?? [], [section?.sections]);
 
   useEffect(() => {
-    loadSections(1, true);
-  }, [loadSections]);
+    const controller = new AbortController();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
+    const fetchSectionData = async () => {
+      try {
+        setError(null);
+        if (page === 1) setLoading(true);
+        else setLoadingMore(true);
+
+        const sectionId = feed ? defaultSectionId : undefined;
+        if (!sectionId) throw new Error('Nenhum ID de seção fornecido.');
+
+        const { data } = await api.get<PaginatedSectionResponse>(
+          `/image-pages/${sectionId}/sections?page=${page}&limit=2`,
+          { signal: controller.signal }
+        );
+
+        if (page === 1) {
+          dispatch(setSectionData(data));
+        } else {
+          dispatch(appendSections(data.sections));
+          dispatch(updatePagination({ page: data.page, total: data.total }));
         }
-      },
-      { threshold: 0.1 }
-    );
 
-    observerRef.current = observer;
-
-    if (loadingRef.current) {
-      observer.observe(loadingRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+        setHasMore(data.page * data.limit < data.total);
+      } catch (err: any) {
+        if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
+          console.error('Erro ao carregar a seção:', err);
+          setError('Erro ao carregar a seção. Tente novamente mais tarde.');
+        }
+      } finally {
+        if (page === 1) setLoading(false);
+        else setLoadingMore(false);
       }
     };
-  }, [loadMore]);
 
-  const handleGoBack = () => {
+    fetchSectionData();
+
+    return () => controller.abort();
+  }, [page, defaultSectionId, dispatch, feed]);
+
+  const handleBack = () => {
     navigate(-1);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
-
-  if (initialLoading) {
+  if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
-        <Box sx={{ mb: 4 }}>
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <IconButton onClick={handleGoBack} sx={{ color: 'primary.main' }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Skeleton variant="text" width={200} height={40} />
-          </Stack>
-        </Box>
-        
-        {Array.from({ length: 3 }).map((_, index) => (
-          <SectionSkeleton key={index} />
-        ))}
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          {[...Array(2)].map((_, i) => (
+            <SectionSkeleton key={i} />
+          ))}
+        </motion.div>
       </Container>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Alert 
+            severity="error" 
+            sx={{ 
+              borderRadius: { xs: 3, md: 4 }, 
+              boxShadow: 3,
+              fontSize: { xs: '0.9rem', md: '1rem' },
+              p: { xs: 2, md: 3 },
+            }}
+          >
+            {error}
+          </Alert>
+        </motion.div>
       </Container>
     );
   }
 
-  return (
-    <Box sx={{ background: gradients.subtle.greenWhite, minHeight: '100vh' }}>
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Box sx={{ mb: 4 }}>
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <IconButton
-              onClick={handleGoBack}
-              sx={{
-                color: 'primary.main',
-                bgcolor: 'primary.50',
-                '&:hover': { bgcolor: 'primary.100' },
-              }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            
-            <Box
-              sx={{
-                background: gradients.primary.main,
-                borderRadius: 3,
-                p: { xs: 2, md: 3 },
-                color: 'white',
-                flex: 1,
-                textAlign: 'center',
-              }}
-            >
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                sx={{
-                  fontSize: { xs: '1.5rem', md: '2rem' },
-                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                }}
-              >
-                📰 Feed Orfanato
-              </Typography>
-            </Box>
-          </Stack>
-
-          {isAuthenticated && user?.role === UserRole.TEACHER && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-            >
-              <ButtonSection references={['photos']} />
-            </motion.div>
-          )}
-        </Box>
-      </motion.div>
-
-      {/* Content */}
-      {sections.length === 0 ? (
+  if (!section) {
+    return (
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -283,45 +256,184 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
           <Paper
             elevation={2}
             sx={{
-              p: { xs: 3, md: 4 },
+              p: 6,
               textAlign: 'center',
-              borderRadius: 3,
-              bgcolor: 'background.paper',
+              borderRadius: { xs: 3, md: 4 },
             }}
           >
-            <PhotoLibraryIcon
-              sx={{
-                fontSize: { xs: 48, md: 64 },
-                color: 'primary.main',
+            <Typography 
+              variant="h5" 
+              color="text.secondary"
+              sx={{ 
+                fontSize: { xs: '1.3rem', md: '1.5rem' },
                 mb: 2,
               }}
-            />
-            <Typography
-              variant="h6"
-              fontWeight="600"
-              sx={{ mb: 2, color: 'text.primary' }}
             >
-              Nenhum conteúdo encontrado
+              📸 Nenhuma página de imagens encontrada
             </Typography>
-            <Typography color="text.secondary" sx={{ mb: 3 }}>
-              O feed de notícias do Abrigo ainda não possui conteúdo.
+            <Typography color="text.secondary">
+              A página de imagens solicitada não existe ou foi removida.
             </Typography>
           </Paper>
         </motion.div>
-      ) : (
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
+      {/* Header da Galeria */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: { xs: 3, md: 4 },
+            background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
         >
-          <AnimatePresence>
-            {sections.map((sectionItem) => (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -50,
+              right: -50,
+              width: 200,
+              height: 200,
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: '50%',
+              zIndex: 0,
+            }}
+          />
+          
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              mb={2}
+              flexWrap="wrap"
+              gap={2}
+            >
+              <Box display="flex" alignItems="center" gap={2}>
+                <IconButton
+                  onClick={handleBack}
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.3)',
+                    },
+                  }}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+                <PhotoLibraryIcon sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }} />
+              </Box>
+
+              {feed && isAuthenticated && user?.role === UserRole.TEACHER && (
+                <Button
+                  component={Link}
+                  to="/imagens-abrigo"
+                  variant="contained"
+                  startIcon={<PhotoCameraIcon />}
+                  sx={{
+                    bgcolor: '#FF0000',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: { xs: 2.5, md: 3.5 },
+                    py: { xs: 1.25, md: 1.75 },
+                    borderRadius: 2.5,
+                    textTransform: 'none',
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    boxShadow: '0 4px 12px rgba(255, 0, 0, 0.4)',
+                    border: '2px solid',
+                    borderColor: '#CC0000',
+                    '&:hover': {
+                      bgcolor: '#CC0000',
+                      boxShadow: '0 6px 16px rgba(255, 0, 0, 0.5)',
+                      transform: 'translateY(-2px)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  Envie fotos do seu Clubinho para todos verem
+                </Button>
+              )}
+            </Box>
+
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              sx={{
+                fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem' },
+                mb: 1,
+                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+            >
+              📰 Feed Orfanato
+            </Typography>
+
+            <Typography
+              variant="h5"
+              fontWeight="600"
+              sx={{
+                fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' },
+                mb: 2,
+                opacity: 0.95,
+                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              }}
+            >
+              Acompanhe as novidades e atividades
+            </Typography>
+
+            <Box
+              display="flex"
+              alignItems="center"
+              gap={2}
+              mt={3}
+              flexWrap="wrap"
+            >
+              <Chip
+                label={`${sectionsList.length} ${sectionsList.length === 1 ? 'Seção' : 'Seções'}`}
+                sx={{
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                }}
+              />
+            </Box>
+          </Box>
+        </Paper>
+      </motion.div>
+
+      {/* Seções da Galeria */}
+      <AnimatePresence>
+        {sectionsList.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {sectionsList.map((sectionItem, index) => (
               <motion.div
                 key={sectionItem.id}
-                variants={itemVariants}
-                layout
+                ref={index === sectionsList.length - 1 ? lastSectionRef : null}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                style={{ 
+                  marginBottom: index < sectionsList.length - 1 ? theme.spacing(2) : 0 
+                }}
               >
-                <ShelterSectionImageView
+                <ShelterSectionImageView 
                   caption={sectionItem.caption}
                   description={sectionItem.description}
                   mediaItems={sectionItem.mediaItems}
@@ -330,37 +442,48 @@ export default function ShelterFeedView({ feed = true }: ShelterFeedViewProps) {
                 />
               </motion.div>
             ))}
-          </AnimatePresence>
 
-          {/* Loading indicator for infinite scroll */}
-          <div ref={loadingRef} style={{ height: '20px', margin: '20px 0' }}>
-            {loading && (
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <CircularProgress size={24} />
-                <Typography variant="body2" sx={{ ml: 2 }}>
-                  Carregando mais conteúdo...
-                </Typography>
+            {loadingMore && (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                py={4}
+              >
+                <CircularProgress size={40} />
               </Box>
             )}
-          </div>
-
-          {!hasMore && sections.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Paper
+              elevation={2}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: { xs: 3, md: 4 },
+              }}
             >
-              <Box textAlign="center" sx={{ py: 4 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Você chegou ao final do feed! 🎉
-                </Typography>
-              </Box>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
-      </Container>
-    </Box>
+              <Typography
+                variant="h6"
+                color="text.secondary"
+                sx={{ mb: 2 }}
+              >
+                📸 Nenhuma seção disponível
+              </Typography>
+              <Typography color="text.secondary">
+                As seções de imagens ainda não foram publicadas.
+              </Typography>
+            </Paper>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+    </Container>
   );
 }
 
