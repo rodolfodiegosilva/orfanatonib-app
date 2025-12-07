@@ -27,11 +27,11 @@ import type { CreatePagelaPayload, Pagela, UpdatePagelaPayload } from "../types"
 import { todayISO, toLabelWeek } from "../utils";
 
 type Props = {
-  childName?: string;
+  shelteredName?: string;
   current?: Pagela | null;
-  childId: string;
+  shelteredId: string;
   year: number;
-  week: number;
+  visit: number;
   teacherProfileId?: string | null;
   onCreate: (p: CreatePagelaPayload) => Promise<void>;
   onUpdate: (id: string, p: UpdatePagelaPayload) => Promise<void>;
@@ -54,9 +54,9 @@ function formatDateBRLong(date = new Date()) {
 }
 
 export default function PagelaQuickCard({
-  childName,
+  shelteredName,
   current,
-  childId,
+  shelteredId,
   year,
   week,
   teacherProfileId,
@@ -69,14 +69,10 @@ export default function PagelaQuickCard({
   const isNew = !current?.id;
 
   const [present, setPresent] = React.useState(current?.present ?? false);
-  const [med, setMed] = React.useState(current?.didMeditation ?? false);
-  const [verse, setVerse] = React.useState(current?.recitedVerse ?? false);
   const [notes, setNotes] = React.useState(current?.notes ?? "");
 
   React.useEffect(() => {
     setPresent(current?.present ?? false);
-    setMed(current?.didMeditation ?? false);
-    setVerse(current?.recitedVerse ?? false);
     setNotes(current?.notes ?? "");
   }, [current]);
 
@@ -86,23 +82,19 @@ export default function PagelaQuickCard({
       await onUpdate(current.id, {
         referenceDate,
         year,
-        week,
+        visit,
         present,
-        didMeditation: med,
-        recitedVerse: verse,
         notes,
         teacherProfileId: teacherProfileId ?? null,
       });
     } else {
       await onCreate({
-        childId,
+        shelteredId,
         teacherProfileId: teacherProfileId ?? null,
         referenceDate,
         year,
-        week,
+        visit,
         present,
-        didMeditation: med,
-        recitedVerse: verse,
         notes,
       });
     }
@@ -132,16 +124,12 @@ export default function PagelaQuickCard({
 
   const Chips = () =>
     isXs ? (
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", columnGap: 0.5, rowGap: 0, width: "100%" }}>
-        {present ? <ChipYes label="Pres" sx={chipMobileSx} /> : <ChipNo label="Pres" sx={chipMobileSx} />}
-        {med ? <ChipYes label="Med" sx={chipMobileSx} /> : <ChipNo label="Med" sx={chipMobileSx} />}
-        {verse ? <ChipYes label="Vers" sx={chipMobileSx} /> : <ChipNo label="Vers" sx={chipMobileSx} />}
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr", columnGap: 0.5, rowGap: 0, width: "100%" }}>
+        {present ? <ChipYes label="Presente" sx={chipMobileSx} /> : <ChipNo label="Ausente" sx={chipMobileSx} />}
       </Box>
     ) : (
       <Stack direction="row" spacing={0.75} flexWrap="wrap" justifyContent="flex-end">
-        {present ? <ChipYes label="Presente" /> : <ChipNo label="Presença" />}
-        {med ? <ChipYes label="Meditação" /> : <ChipNo label="Meditação" />}
-        {verse ? <ChipYes label="Versículo" /> : <ChipNo label="Versículo" />}
+        {present ? <ChipYes label="Presente" /> : <ChipNo label="Ausente" />}
       </Stack>
     );
 
@@ -157,11 +145,11 @@ export default function PagelaQuickCard({
               {isNew ? <AddCircleOutline fontSize="small" /> : <EditOutlined fontSize="small" />}
             </Box>
             <Stack spacing={0.3} sx={{ minWidth: 0, flex: 1 }}>
-              <Typography noWrap title={childName} sx={titleSx}>
+              <Typography noWrap title={shelteredName} sx={titleSx}>
                 {isNew ? "Criar pagela" : "Pagela da semana"}
               </Typography>
               <Typography variant="caption" color="text.secondary" noWrap>
-                {toLabelWeek(year, week)}
+                {toLabelVisit(year, visit)}
               </Typography>
               <Chip
                 size="small"
@@ -179,10 +167,10 @@ export default function PagelaQuickCard({
                 {isNew ? <AddCircleOutline fontSize="small" /> : <EditOutlined fontSize="small" />}
               </Box>
               <Typography variant="caption" color="text.secondary" noWrap>
-                {toLabelWeek(year, week)}
+                {toLabelVisit(year, visit)}
               </Typography>
             </Stack>
-            <Typography noWrap title={childName} sx={titleSx}>
+            <Typography noWrap title={shelteredName} sx={titleSx}>
               {isNew ? "Criando novo registro de pagela" : "Editando registro de pagela"}
             </Typography>
             <Chip
@@ -203,11 +191,11 @@ export default function PagelaQuickCard({
               {isXs ? (
                 <>
                   <Stack spacing={0.5} sx={{ minWidth: 0 }}>
-                    <Typography variant="subtitle1" noWrap title={childName} sx={titleSx}>
-                      {childName || "—"}
+                    <Typography variant="subtitle1" noWrap title={shelteredName} sx={titleSx}>
+                      {shelteredName || "—"}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      {toLabelWeek(year, week)}
+                      {toLabelVisit(year, visit)}
                     </Typography>
                     <Chips />
                   </Stack>
@@ -227,7 +215,7 @@ export default function PagelaQuickCard({
                 <>
                   <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ gap: 1, minWidth: 0 }}>
                     <Typography variant="subtitle1" fontWeight={900} noWrap>
-                      {childName || "—"} • {toLabelWeek(year, week)}
+                      {shelteredName || "—"} • {toLabelVisit(year, visit)}
                     </Typography>
                     <Chips />
                   </Stack>
@@ -235,8 +223,6 @@ export default function PagelaQuickCard({
                   <Divider />
 
                   <FormControlLabel control={<Switch checked={present} onChange={(_, v) => setPresent(v)} />} label={<Typography fontWeight={700}>Presença</Typography>} labelPlacement="start" sx={{ m: 0, justifyContent: "space-between" }} />
-                  <FormControlLabel control={<Switch checked={med} onChange={(_, v) => setMed(v)} />} label={<Typography fontWeight={700}>Fez meditação</Typography>} labelPlacement="start" sx={{ m: 0, justifyContent: "space-between" }} />
-                  <FormControlLabel control={<Switch checked={verse} onChange={(_, v) => setVerse(v)} />} label={<Typography fontWeight={700}>Recitou o versículo</Typography>} labelPlacement="start" sx={{ m: 0, justifyContent: "space-between" }} />
 
                   <TextField size="small" label="Observações" value={notes} onChange={(e) => setNotes(e.target.value)} multiline minRows={2} fullWidth />
 

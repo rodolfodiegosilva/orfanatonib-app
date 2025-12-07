@@ -10,8 +10,8 @@ import {
   apiUpdatePagela,
   apiDeletePagela,
 } from "./api";
-import { apiFetchChildSimple } from "@/features/children/api";
-import type { ChildSimpleResponseDto } from "../children/types";
+import { apiFetchShelteredSimple } from "@/features/sheltered/api";
+import type { ShelteredSimpleResponseDto } from "../sheltered/types";
 
 export type Tri = "any" | "yes" | "no";
 const triToBoolString = (t: Tri): "true" | "false" | undefined =>
@@ -26,30 +26,35 @@ function useDebouncedValue<T>(value: T, delay = 250) {
   return debounced;
 }
 
-export function useChildrenBrowser() {
+export function useShelteredBrowser() {
   const [q, setQ] = useState("");
-  const [items, setItems] = useState<ChildSimpleResponseDto[]>([]);
+  const [items, setItems] = useState<ShelteredSimpleResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setChildrenError] = useState<string>("");
+  const [error, setShelteredError] = useState<string>("");
 
   const search = useCallback(async (_term: string) => {
     setLoading(true);
-    setChildrenError("");
+    setShelteredError("");
     try {
-      const list = await apiFetchChildSimple();
+      const list = await apiFetchShelteredSimple();
       setItems(list);
     } catch (e: any) {
-      setChildrenError(
-        e?.response?.data?.message || e?.message || "Erro ao listar crianças"
+      setShelteredError(
+        e?.response?.data?.message || e?.message || "Erro ao listar abrigados"
       );
     } finally {
       setLoading(false);
     }
   }, []);
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   useEffect(() => {
-    search("");
-  }, [search]);
+    if (!hasInitialized) {
+      search("");
+      setHasInitialized(true);
+    }
+  }, [search, hasInitialized]);
 
   const onChangeQ = (v: string) => {
     setQ(v);
@@ -62,18 +67,16 @@ export function useChildrenBrowser() {
 
   const byId = useMemo(() => new Map(items.map((c) => [c.id, c])), [items]);
 
-  return { q, onChangeQ, items, byId, loading, error, setError: setChildrenError, refetch };
+  return { q, onChangeQ, items, byId, loading, error, setError: setShelteredError, refetch };
 }
 
-export function useChildPagelas(
-  childId: string | null | undefined,
-  initial?: { year?: number; week?: number }
+export function useShelteredPagelas(
+  shelteredId: string | null | undefined,
+  initial?: { year?: number; visit?: number }
 ) {
   const [year, setYearState] = useState<number | undefined>(initial?.year);
-  const [week, setWeekState] = useState<number | undefined>(initial?.week);
+  const [visit, setVisitState] = useState<number | undefined>(initial?.visit);
   const [presentQ, setPresentQState] = useState<Tri>("any");
-  const [medQ, setMedQState] = useState<Tri>("any");
-  const [verseQ, setVerseQState] = useState<Tri>("any");
   const [rows, setRows] = useState<Pagela[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -81,43 +84,35 @@ export function useChildPagelas(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const setYear = useCallback((v?: number) => { setYearState(v); setPage(1); }, []);
-  const setWeek = useCallback((v?: number) => { setWeekState(v); setPage(1); }, []);
+  const setVisit = useCallback((v?: number) => { setVisitState(v); setPage(1); }, []);
   const setPresentQ = useCallback((v: Tri) => { setPresentQState(v); setPage(1); }, []);
-  const setMedQ = useCallback((v: Tri) => { setMedQState(v); setPage(1); }, []);
-  const setVerseQ = useCallback((v: Tri) => { setVerseQState(v); setPage(1); }, []);
 
   const clearFilters = useCallback(() => {
     setYear(undefined);
-    setWeek(undefined);
+    setVisit(undefined);
     setPresentQ("any");
-    setMedQ("any");
-    setVerseQ("any");
-  }, [setYear, setWeek, setPresentQ, setMedQ, setVerseQ]);
+  }, [setYear, setVisit, setPresentQ]);
 
   type Query = {
-    childId: string;
+    shelteredId: string;
     year?: number;
-    week?: number;
+    visit?: number;
     present?: "true" | "false";
-    didMeditation?: "true" | "false";
-    recitedVerse?: "true" | "false";
     page: number;
     limit: number;
   };
 
   const query: Query | null = useMemo(() => {
-    if (!childId) return null;
+    if (!shelteredId) return null;
     return {
-      childId,
+      shelteredId,
       year,
-      week,
+      visit,
       present: triToBoolString(presentQ),
-      didMeditation: triToBoolString(medQ),
-      recitedVerse: triToBoolString(verseQ),
       page,
       limit,
     };
-  }, [childId, year, week, presentQ, medQ, verseQ, page, limit]);
+  }, [shelteredId, year, visit, presentQ, page, limit]);
 
   const debouncedQuery = useDebouncedValue(query, 250);
   const lastKeyRef = useRef<string>("");
@@ -190,8 +185,8 @@ export function useChildPagelas(
 
   return {
     filters: {
-      year, week, presentQ, medQ, verseQ,
-      setYear, setWeek, setPresentQ, setMedQ, setVerseQ, clearFilters,
+      year, visit, presentQ,
+      setYear, setVisit, setPresentQ, clearFilters,
     },
     list: {
       rows, total, page, limit,

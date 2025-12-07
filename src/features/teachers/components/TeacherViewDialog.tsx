@@ -12,9 +12,13 @@ import {
   Stack,
   useTheme,
   useMediaQuery,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import { Edit as EditIcon } from "@mui/icons-material";
 import { TeacherProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
+import TeamManagementDialog from "../../shelters/components/TeamManagementDialog";
 
 type Props = {
   open: boolean;
@@ -25,13 +29,12 @@ type Props = {
 export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const [teamManagementOpen, setTeamManagementOpen] = React.useState(false);
 
-  const clubNumber =
-    teacher?.club?.number != null ? `#${teacher.club.number}` : "—";
-  const coordName =
-    teacher?.club?.coordinator?.user?.name ||
-    teacher?.club?.coordinator?.user?.email ||
-    "—";
+  const shelterName = teacher?.shelter?.name ?? "—";
+  const shelterId = teacher?.shelter?.id;
+  const teamNumber = teacher?.shelter?.team?.numberTeam;
+  const leaderName = teacher?.shelter?.leader?.user?.name ?? null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -49,24 +52,48 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
               </Typography>
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Clubinho:
-                </Typography>
-                {teacher.club?.number != null ? (
-                  <Chip size="small" color="primary" label={clubNumber} />
-                ) : (
-                  <Typography variant="body2">—</Typography>
+            {shelterName !== "—" && (
+              <>
+                <Grid item xs={12} md={6}>
+                  <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      Abrigo:
+                    </Typography>
+                    <Chip size="small" color="secondary" label={shelterName} />
+                    <Tooltip title="Gerenciar Equipes do Abrigo">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => setTeamManagementOpen(true)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                </Grid>
+                {teamNumber !== undefined && (
+                  <Grid item xs={12} md={6}>
+                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Equipe:
+                      </Typography>
+                      <Chip size="small" color="info" label={`Equipe ${teamNumber}`} />
+                    </Stack>
+                  </Grid>
                 )}
-              </Stack>
-            </Grid>
+              </>
+            )}
 
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2">
-                <strong>Coordenador:</strong> {coordName}
-              </Typography>
-            </Grid>
+            {leaderName && (
+              <Grid item xs={12} md={6}>
+                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    Líder da Equipe:
+                  </Typography>
+                  <Chip size="small" color="primary" label={leaderName} />
+                </Stack>
+              </Grid>
+            )}
 
             {isMdUp && (
               <>
@@ -92,6 +119,17 @@ export default function TeacherViewDialog({ open, teacher, onClose }: Props) {
       <DialogActions>
         <Button onClick={onClose}>Fechar</Button>
       </DialogActions>
+
+      <TeamManagementDialog
+        open={teamManagementOpen}
+        shelterId={shelterId}
+        teacherId={teacher?.id}
+        onClose={() => setTeamManagementOpen(false)}
+        onSuccess={async () => {
+          // Não fechar o modal, apenas atualizar os dados se necessário
+          // O modal só fecha quando o usuário clicar em "Fechar"
+        }}
+      />
     </Dialog>
   );
 }

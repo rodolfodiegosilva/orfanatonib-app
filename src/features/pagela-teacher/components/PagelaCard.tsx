@@ -14,10 +14,8 @@ import {
 } from "@mui/material";
 import { Delete, Edit, EventNote } from "@mui/icons-material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import SpaIcon from "@mui/icons-material/Spa";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import type { Pagela } from "../types";
-import { toLabelWeek } from "../utils";
+import { toLabelVisit } from "../utils";
 import DeleteConfirmDialog from "@/components/common/modal/DeleteConfirmDialog";
 
 function formatPtBrDate(iso: string | null | undefined) {
@@ -69,7 +67,7 @@ export default function PagelaCard({
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: "1fr",
           columnGap: 0.5,
           width: "100%",
         }}
@@ -79,25 +77,7 @@ export default function PagelaCard({
             size="small"
             color={row.present ? "success" : "default"}
             icon={<CheckCircleIcon sx={{ fontSize: 16 }} />}
-            label={row.present ? "Pres." : "Aus."}
-            sx={chipMobileSx}
-          />
-        </Tooltip>
-        <Tooltip title="Meditação">
-          <Chip
-            size="small"
-            color={row.didMeditation ? "success" : "default"}
-            icon={<SpaIcon sx={{ fontSize: 16 }} />}
-            label="Med."
-            sx={chipMobileSx}
-          />
-        </Tooltip>
-        <Tooltip title="Versículo">
-          <Chip
-            size="small"
-            color={row.recitedVerse ? "success" : "default"}
-            icon={<MenuBookIcon sx={{ fontSize: 16 }} />}
-            label="Vers."
+            label={row.present ? "Presente" : "Ausente"}
             sx={chipMobileSx}
           />
         </Tooltip>
@@ -111,24 +91,10 @@ export default function PagelaCard({
           label={row.present ? "Presente" : "Ausente"}
           sx={{ fontWeight: 700 }}
         />
-        <Chip
-          size="small"
-          color={row.didMeditation ? "success" : "default"}
-          icon={<SpaIcon sx={{ fontSize: 16 }} />}
-          label="Meditação"
-          sx={{ fontWeight: 700 }}
-        />
-        <Chip
-          size="small"
-          color={row.recitedVerse ? "success" : "default"}
-          icon={<MenuBookIcon sx={{ fontSize: 16 }} />}
-          label="Versículo"
-          sx={{ fontWeight: 700 }}
-        />
       </Stack>
     );
 
-  const weekTitle = toLabelWeek(row.year, row.week);
+  const visitTitle = toLabelVisit(row.year, row.visit);
 
   return (
     <>
@@ -160,9 +126,9 @@ export default function PagelaCard({
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}
-                title={weekTitle}
+                title={visitTitle}
               >
-                {weekTitle}
+                {visitTitle}
               </Typography>
 
               <Stack direction="row" spacing={0.5}>
@@ -214,7 +180,7 @@ export default function PagelaCard({
 
       <DeleteConfirmDialog
         open={confirmOpen}
-        title={weekTitle}
+        title={visitTitle}
         onClose={() => (busy ? null : setConfirmOpen(false))}
         onConfirm={async () => {
           if (busy) return;

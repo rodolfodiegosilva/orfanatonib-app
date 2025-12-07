@@ -9,7 +9,7 @@ function buildWaMessage(userName?: string, adminName?: string) {
 
   return `Olá ${name}!
 
-Sou ${admin}. Sou administrador do sistema clubinho.
+Sou ${admin}. Sou administrador do sistema shelter.
 
 Gostaria de falar com você sobre uma coisa:
 

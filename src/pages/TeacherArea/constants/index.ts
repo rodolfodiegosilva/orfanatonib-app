@@ -78,11 +78,11 @@ export const CONTAINER_STYLES = {
     mt: 3,
     mb: 8,
     px: { xs: 2, md: 4 },
-    bgcolor: '#f5f7fa',
   },
   paper: {
     p: { xs: 2, md: 5 },
     borderRadius: 3,
-    background: 'linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backdropFilter: 'blur(10px)',
   },
 };

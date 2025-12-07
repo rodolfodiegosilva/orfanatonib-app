@@ -10,7 +10,7 @@ export interface Testimonial {
   id: string;
   comment: string;
   name: string;
-  clubinho: string;
+  shelter: string;
   neighborhood: string;
 }
 

@@ -20,7 +20,8 @@ const CardsSection: React.FC = () => {
         card.entityType !== MediaTargetType.WeekMaterialsPage &&
         card.entityType !== MediaTargetType.Document &&
         card.entityType !== MediaTargetType.Informative &&
-        card.entityType !== MediaTargetType.Meditation
+        card.entityType !== MediaTargetType.Meditation &&
+        card.entityType !== MediaTargetType.ShelterPage
     );
     setCards(filteredCards);
   }, [routes]);

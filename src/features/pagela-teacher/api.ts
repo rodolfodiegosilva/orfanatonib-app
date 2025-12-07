@@ -3,12 +3,11 @@ import type { PageDto, Pagela, CreatePagelaPayload, UpdatePagelaPayload } from "
 
 export async function apiListPagelasPaginated(
   params: {
-    childId: string;
+    shelteredId: string;
     year?: number;
-    week?: number;
+    visit?: number;
     present?: "true" | "false";
-    didMeditation?: "true" | "false";
-    recitedVerse?: "true" | "false";
+    searchString?: string;
     page?: number;
     limit?: number;
   },
@@ -33,13 +32,4 @@ export async function apiUpdatePagela(id: string, payload: UpdatePagelaPayload) 
 
 export async function apiDeletePagela(id: string) {
   await api.delete(`/pagelas/${id}`);
-}
-
-export async function apiCreateAcceptedChrist(payload: {
-  childId: string;
-  decision: "ACCEPTED" | "RECONCILED";
-  notes?: string | null;
-}) {
-  const { data } = await api.post("/accepted-christs", payload);
-  return data;
 }

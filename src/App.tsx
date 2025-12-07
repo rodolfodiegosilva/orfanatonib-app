@@ -17,7 +17,7 @@ import Contact from './pages/Contact/Contact';
 import Event from './pages/Event/Event';
 import Login from './pages/Login/Login';
 import TeacherArea from './pages/TeacherArea/TeacherArea';
-import ClubinhoFeedView from './pages/PageView/ClubinhoFeedView/ClubinhoFeedView';
+import ShelterFeedView from './pages/PageView/ShelterFeedView/ShelterFeedView';
 
 import MeditationPageCreator from './components/Adm/PageCreator/Templates/MeditationPageCreator/MeditationPageCreator';
 import ImagePageCreator from './components/Adm/PageCreator/Templates/ImagePageCreator/ImagePageCreator';
@@ -40,16 +40,16 @@ import ImageSectionPage from './pages/TeacherArea/ImageSection/ImageSectionPage'
 import ImageSectionEditorAdmin from './features/image-sections/ImageSectionEditorAdmin';
 import { SiteFeedbackForm } from './pages/TeacherArea/components';
 
-import CoordinatorProfilesManager from './features/coordinators/CoordinatorProfilesManager';
+import LeaderProfilesManager from './features/leaders/LeaderProfilesManager';
 import TeacherProfilesManager from './features/teachers/TeacherProfilesManager';
-import ClubsManager from './features/clubs/ClubsManager';
+import SheltersManager from './features/shelters/SheltersManager';
 import ContactsManager from './features/contacts/ContactsManager';
 import MeditationManager from './features/meditations/MeditationManager';
-import ChildrenManager from './features/children/ChildrenManager';
-import ChildrenBrowserPage from './features/pagela-teacher/ChildrenBrowserPage';
-import ChildPagelasPage from './features/pagela-teacher/ChildPagelasPage';
+import ShelteredManager from './features/sheltered/ShelteredManager';
+import ShelteredBrowserPage from './features/pagela-teacher/ShelteredBrowserPage';
+import ShelteredPagelasPage from './features/pagela-teacher/ShelteredPagelasPage';
 import Register from './pages/Register/Register';
-import PagelaClubsManager from './features/pagela-clubs/PagelaClubsManager';
+import PagelaSheltersManager from './features/pagela-shelters/PagelaSheltersManager';
 import CommentsManager from './features/comments/CommentsManager';
 import FeedbackManager from './features/feedback/FeedbackManager';
 import UsersManager from './features/users/UsersManager';
@@ -82,7 +82,8 @@ function App() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          bgcolor: '#f0f0f0',
+          background: 'linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%)',
+          backgroundAttachment: 'fixed',
         }}
       >
         <CircularProgress size={48} />
@@ -92,7 +93,13 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        background: 'linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%)',
+        backgroundAttachment: 'fixed',
+      }}>
         <Navbar />
 
         <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -103,7 +110,7 @@ function App() {
               <Route path="/sobre" element={<About />} />
               <Route path="/contato" element={<Contact />} />
               <Route path="/eventos" element={<Event />} />
-              <Route path="/feed-clubinho" element={<ClubinhoFeedView feed />} />
+              <Route path="/feed-abrigos" element={<ShelterFeedView feed />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cadastrar-google" element={<Register commonUser={false} />} />
               <Route path="/cadastrar" element={<Register commonUser />} />
@@ -111,11 +118,11 @@ function App() {
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/area-do-professor" element={<TeacherArea />} />
-                <Route path="/imagens-clubinho" element={<ImageSectionPage />} />
+                <Route path="/imagens-shelter" element={<ImageSectionPage />} />
                 <Route path="/lista-materias-semanais" element={<WeekMaterialsList />} />
                 <Route path="/avaliar-site" element={<SiteFeedbackForm />} />
-                <Route path="/area-das-criancas" element={<ChildrenBrowserPage />} />
-                <Route path="/area-das-criancas/:childId" element={<ChildPagelasPage />} />
+                <Route path="/area-dos-abrigados" element={<ShelteredBrowserPage />} />
+                <Route path="/area-dos-abrigados/:shelteredId" element={<ShelteredPagelasPage />} />
                 <Route path="/compartilhar-ideia" element={<IdeasSectionPage />} />
               </Route>
 
@@ -130,24 +137,24 @@ function App() {
                   <Route path="contatos" element={<ContactsManager />} />
                   <Route path="paginas-materiais-semanais" element={<WeekMaterialManager />} />
                   <Route path="paginas-fotos" element={<ImagePageManager />} />
-                  <Route path="fotos-clubinhos" element={<ImageSectionManager />} />
+                  <Route path="fotos-abrigos" element={<ImageSectionManager />} />
                   <Route path="ideias-compartilhadas" element={<IdeasSectionManager  />} />
                   <Route path="paginas-videos" element={<VideosManager />} />
                   <Route path="paginas-ideias" element={<IdeasManager />} />
                   <Route path="criar-pagina" element={<SelecPageTemplate />} />
                   <Route path="usuarios" element={<UsersManager />} />
-                  <Route path="coordenadores" element={<CoordinatorProfilesManager />} />
+                  <Route path="lideres" element={<LeaderProfilesManager />} />
                   <Route path="professores" element={<TeacherProfilesManager />} />
-                  <Route path="criancas" element={<ChildrenManager />} />
-                  <Route path="clubinhos" element={<ClubsManager />} />
-                  <Route path="pagelas" element={<PagelaClubsManager />} />
+                  <Route path="abrigados" element={<ShelteredManager />} />
+                  <Route path="shelters" element={<SheltersManager />} />
+                  <Route path="pagelas" element={<PagelaSheltersManager />} />
 
                   <Route path="editar-meditacao" element={<MeditationPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-imagens" element={<ImagePageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-videos" element={<VideoPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-semana" element={<WeekMaterialPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-ideias" element={<IdeasMaterialPageCreator fromTemplatePage={false} />} />
-                  <Route path="editar-imagens-clubinho" element={<ImageSectionEditorAdmin />} />
+                  <Route path="editar-imagens-shelter" element={<ImageSectionEditorAdmin />} />
                   <Route path="editar-ideias-compartilhadas" element={<IdeasSectionPage  />} />
                 </Route>
               </Route>

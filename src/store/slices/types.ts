@@ -27,7 +27,8 @@ export enum MediaTargetType {
   IdeasPage = 'IdeasPage',
   Document = 'Document',
   Event = 'Event',
-  Informative = 'Informative'
+  Informative = 'Informative',
+  ShelterPage = 'shelterPage'
 }
 
 export interface MediaItem {
@@ -74,9 +75,6 @@ export const FeedbackCategoryLabels: Record<FeedbackCategory, string> = {
   [FeedbackCategory.OTHER]: 'Outro tipo de feedback',
 };
 
-export type Weekday =
-  | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
-
 export type Address = {
   id?: string;
   street: string;
@@ -92,22 +90,31 @@ export type Address = {
   updatedAt?: string;
 };
 
-export type Club = {
+export type Shelter = {
   id: string;
-  number: number;
-  weekday: Weekday;
+  name: string;
   address: Address;
-  coordinator?: CoordinatorProfile | null;
-  teachers?: TeacherProfile[];
+  teamsQuantity?: number; // Quantidade de equipes
+  teams?: Array<{
+    id: string;
+    numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+    leaders?: LeaderProfile[];
+    teachers?: TeacherProfile[];
+  }>;
+  leaders?: LeaderProfile[]; // Calculado (agregação de todas as teams)
+  teachers?: TeacherProfile[]; // Calculado (agregação de todas as teams)
   createdAt: string;
   updatedAt: string;
 };
 
-export type CoordinatorProfile = {
+export type LeaderProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  clubs?: Club[];
-  teachers?: TeacherProfile[];
+  team?: {
+    id: string;
+    name: string;
+    shelter?: Shelter;
+  } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -115,18 +122,12 @@ export type CoordinatorProfile = {
 export type TeacherProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  club?: { id: string; number: number } | null;
-  coordinator?: { id: string } | null;
+  team?: {
+    id: string;
+    name: string;
+    shelter?: { id: string; name: string } | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export const weekdayOptions: { value: Weekday; label: string }[] = [
-  { value: "monday", label: "Segunda" },
-  { value: "tuesday", label: "Terça" },
-  { value: "wednesday", label: "Quarta" },
-  { value: "thursday", label: "Quinta" },
-  { value: "friday", label: "Sexta" },
-  { value: "saturday", label: "Sábado" },
-  { value: "sunday", label: "Domingo" },
-];

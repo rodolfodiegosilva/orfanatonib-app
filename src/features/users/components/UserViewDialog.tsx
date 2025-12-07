@@ -42,7 +42,7 @@ type Props = { open: boolean; user: UserRow | null; onClose: () => void };
 
 const roleLabels: Record<UserRole, string> = {
   [UserRole.ADMIN]: "Administrador",
-  [UserRole.COORDINATOR]: "Coordenador",
+  [UserRole.COORDINATOR]: "Líder",
   [UserRole.TEACHER]: "Professor",
 };
 
@@ -50,11 +50,11 @@ const roleLabels: Record<UserRole, string> = {
 function LineCard({
   icon,
   title,
-  children,
+  shelteredren,
 }: {
   icon: React.ReactNode;
   title: string;
-  children: React.ReactNode;
+  shelteredren: React.ReactNode;
 }) {
   return (
     <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2 }}>
@@ -65,7 +65,7 @@ function LineCard({
             {title}
           </Typography>
         </Stack>
-        {children}
+        {shelteredren}
       </Stack>
     </Paper>
   );

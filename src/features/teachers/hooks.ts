@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  apiAssignTeacherToClub,
   apiGetTeacher,
-  apiListClubsSimple,
+  apiListSheltersSimple,
   apiListTeachers,
-  apiUnassignTeacherFromClub,
 } from "./api";
-import { ClubSimple, TeacherProfile, TeacherQuery, Page } from "./types";
+import { ShelterSimple, TeacherProfile, TeacherQuery, Page } from "./types";
 import type { SortingState } from "@tanstack/react-table";
 
 export function useTeacherProfiles(
   pageIndex: number,  
   pageSize: number,
   sorting: SortingState,
-  filters: Pick<TeacherQuery, "searchString" | "q" | "active" | "hasClub" | "clubNumber">,
+  filters: Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter" | "teamId" | "teamName" | "hasTeam">,
 ) {
   const [rows, setRows] = useState<TeacherProfile[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -23,13 +21,14 @@ export function useTeacherProfiles(
   const filtersKey = useMemo(
     () =>
       JSON.stringify({
-        q: filters.q ?? undefined,
-        searchString: filters.searchString ?? undefined,
-        active: filters.active ?? undefined,
-        hasClub: filters.hasClub ?? undefined,
-        clubNumber: filters.clubNumber ?? undefined,
+        teacherSearchString: filters.teacherSearchString ?? undefined,
+        shelterSearchString: filters.shelterSearchString ?? undefined,
+        hasShelter: filters.hasShelter ?? undefined,
+        teamId: filters.teamId ?? undefined,
+        teamName: filters.teamName ?? undefined,
+        hasTeam: filters.hasTeam ?? undefined,
       }),
-    [filters.q, filters.searchString, filters.active, filters.hasClub, filters.clubNumber]
+    [filters.teacherSearchString, filters.shelterSearchString, filters.hasShelter, filters.teamId, filters.teamName, filters.hasTeam]
   );
 
   const sortParam = useMemo<Pick<TeacherQuery, "sort" | "order">>(() => {
@@ -38,12 +37,12 @@ export function useTeacherProfiles(
       teacher: "name",
       updatedAt: "updatedAt",
       createdAt: "createdAt",
-      club: "clubNumber",
+      shelter: "shelterNumber",
       coord: "name",
     } as const;
     if (!first) return { sort: "updatedAt", order: "desc" };
     type SortKey = (typeof map)[keyof typeof map];
-    const id = first.id as keyof typeof map | "name" | "updatedAt" | "createdAt" | "clubNumber";
+    const id = first.id as keyof typeof map | "name" | "updatedAt" | "createdAt" | "shelterNumber";
     const sort: SortKey = map[id as keyof typeof map] ?? "updatedAt";
     const order: "asc" | "desc" = first.desc ? "desc" : "asc";
     return { sort, order };
@@ -57,7 +56,7 @@ export function useTeacherProfiles(
     setError("");
     try {
       const data: Page<TeacherProfile> = await apiListTeachers({
-        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "searchString" | "q" | "active" | "hasClub" | "clubNumber">),
+        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter" | "teamId" | "teamName" | "hasTeam">),
         page: pageIndex + 1, 
         limit: pageSize,
         sort: sortParam.sort,
@@ -101,52 +100,32 @@ export function useTeacherMutations(
   const [dialogLoading, setDialogLoading] = useState(false);
   const [dialogError, setDialogError] = useState("");
 
-  const setClub = useCallback(async (teacherId: string, clubId: string) => {
-    setDialogLoading(true); setDialogError("");
-    try { await apiAssignTeacherToClub(teacherId, clubId); await refreshOne(teacherId); }
-    catch (err: any) { setDialogError(err?.response?.data?.message || err.message || "Erro ao vincular Clubinho"); throw err; }
-    finally { setDialogLoading(false); }
-  }, [refreshOne]);
-
-  const clearClub = useCallback(async (teacherId: string) => {
-    setDialogLoading(true); setDialogError("");
-    try {
-      const current = await apiGetTeacher(teacherId);
-      const currentClubId = current?.club?.id;
-      if (!currentClubId) return;
-      await apiUnassignTeacherFromClub(teacherId, currentClubId);
-      await refreshOne(teacherId);
-    } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao desvincular Clubinho");
-      throw err;
-    } finally { setDialogLoading(false); }
-  }, [refreshOne]);
-
-  return { dialogLoading, dialogError, setDialogError, setClub, clearClub };
+  // Métodos de setShelter/clearShelter removidos - agora gerenciados via Teams
+  return { dialogLoading, dialogError, setDialogError };
 }
 
-export function useClubsIndex() {
-  const [clubs, setClubs] = useState<ClubSimple[]>([]);
+export function useSheltersIndex() {
+  const [shelters, setShelters] = useState<ShelterSimple[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
     setLoading(true); setError("");
     try {
-      const list = await apiListClubsSimple();
-      setClubs(list || []);
+      const list = await apiListSheltersSimple();
+      setShelters(list || []);
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao listar clubinhos");
+      setError(err?.response?.data?.message || err.message || "Erro ao listar shelters");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const byNumber = useMemo(() => {
-    const map = new Map<number, ClubSimple>();
-    for (const c of clubs) if (typeof c.number === "number") map.set(c.number, c);
+  const byId = useMemo(() => {
+    const map = new Map<string, ShelterSimple>();
+    for (const c of shelters) map.set(c.id, c);
     return map;
-  }, [clubs]);
+  }, [shelters]);
 
-  return { clubs, byNumber, loading, error, refresh };
+  return { shelters, byId, loading, error, refresh };
 }

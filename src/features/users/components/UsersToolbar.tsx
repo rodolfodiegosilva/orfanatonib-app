@@ -29,7 +29,7 @@ type Props = {
 };
 
 const roleLabels: Record<UserRole, string> = {
-  [UserRole.COORDINATOR]: "Coordenador",
+  [UserRole.COORDINATOR]: "Líder",
   [UserRole.TEACHER]: "Professor",
   [UserRole.ADMIN]: "Administrador",
 };

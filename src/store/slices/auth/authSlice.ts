@@ -3,11 +3,11 @@ import apiAxios from '@/config/axiosConfig';
 
 export enum UserRole {
   ADMIN = 'admin',
-  COORDINATOR = 'coordinator',
+  COORDINATOR = 'leader',
   TEACHER = 'teacher',
 }
 
-interface ClubLite {
+interface ShelterLite {
   id: string;
   number: number;
   weekday: string;
@@ -16,13 +16,21 @@ interface ClubLite {
 interface TeacherProfileLite {
   id: string;
   active: boolean;
-  club: ClubLite | null;
+  team: {
+    id: string;
+    name: string;
+    shelter?: ShelterLite | null;
+  } | null;
 }
 
-interface CoordinatorProfileLite {
+interface LeaderProfileLite {
   id: string;
   active: boolean;
-  clubs: ClubLite[];
+  team: {
+    id: string;
+    name: string;
+    shelter?: ShelterLite | null;
+  } | null;
 }
 
 interface User {
@@ -37,7 +45,7 @@ interface User {
   updatedAt?: string;
   completed?: boolean;
   teacherProfile?: TeacherProfileLite | null;
-  coordinatorProfile?: CoordinatorProfileLite | null;
+  leaderProfile?: LeaderProfileLite | null;
 }
 
 interface GoogleUser {

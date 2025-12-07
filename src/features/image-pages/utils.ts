@@ -12,10 +12,10 @@ export async function copyToClipboard(text: string) {
     ta.value = text;
     ta.style.position = 'fixed';
     ta.style.opacity = '0';
-    document.body.appendChild(ta);
+    document.body.appendSheltered(ta);
     ta.select();
     const ok = document.execCommand('copy');
-    document.body.removeChild(ta);
+    document.body.removeSheltered(ta);
     return ok;
   }
 }

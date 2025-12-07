@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,143 +6,282 @@ import {
   DialogActions,
   Button,
   Grid,
-  TextField,
   Alert,
   Box,
   Typography,
-  Stack,
-  InputAdornment,
+  TextField,
+  Autocomplete,
+  CircularProgress,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
 import { TeacherProfile } from "../types";
+import { apiManageTeacherTeam } from "../api";
+import { apiFetchSheltersSimple, apiGetShelterTeamsQuantity } from "../../shelters/api";
+import { ShelterSimple } from "../../shelters/types";
 
 type Props = {
   open: boolean;
   teacher: TeacherProfile | null;
-  loading: boolean;
-  error: string;
-  onSetClub: (clubNumber: number) => void;
-  onClearClub: () => void;
   onClose: () => void;
+  onSuccess?: () => void;
 };
 
 export default function TeacherEditDialog({
   open,
   teacher,
-  loading,
-  error,
-  onSetClub,
-  onClearClub,
   onClose,
+  onSuccess,
 }: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [clubInput, setClubInput] = React.useState<string>("");
-  const [localErr, setLocalErr] = React.useState<string>("");
+  const [shelters, setShelters] = useState<ShelterSimple[]>([]);
+  const [selectedShelter, setSelectedShelter] = useState<ShelterSimple | null>(null);
+  const [numberTeam, setNumberTeam] = useState<number>(1);
+  const [teamsQuantity, setTeamsQuantity] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingShelters, setLoadingShelters] = useState(false);
+  const [loadingTeamsQuantity, setLoadingTeamsQuantity] = useState(false);
+  const [error, setError] = useState("");
 
-  React.useEffect(() => {
-    setClubInput(teacher?.club?.number ? String(teacher.club.number) : "");
-    setLocalErr("");
-  }, [teacher]);
-
-  const submit = React.useCallback(() => {
-    setLocalErr("");
-    const v = Number(clubInput);
-    if (!clubInput || Number.isNaN(v) || v <= 0) {
-      setLocalErr("Informe um número de Clubinho válido (maior que zero).");
-      return;
+  // Carregar abrigos ao abrir o modal
+  useEffect(() => {
+    if (open) {
+      loadShelters();
     }
-    onSetClub(v);
-  }, [clubInput, onSetClub]);
+  }, [open]);
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === "Enter" && !loading) {
-      e.preventDefault();
-      submit();
+  // Carregar abrigo atual e quantidade de equipes
+  useEffect(() => {
+    if (open && teacher?.shelter) {
+      const currentShelter = shelters.find((s) => s.id === teacher.shelter?.id);
+      if (currentShelter) {
+        setSelectedShelter(currentShelter);
+        loadTeamsQuantity(currentShelter.id);
+      }
+    } else if (open) {
+      setSelectedShelter(null);
+      setTeamsQuantity(null);
+      setNumberTeam(1);
+    }
+  }, [open, teacher, shelters]);
+
+  const loadShelters = async () => {
+    setLoadingShelters(true);
+    setError("");
+    try {
+      const data = await apiFetchSheltersSimple();
+      setShelters(data || []);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || "Erro ao carregar abrigos");
+    } finally {
+      setLoadingShelters(false);
     }
   };
 
-  const currentClubLabel =
-    teacher?.club?.number != null ? `#${teacher.club.number}` : "—";
+  const loadTeamsQuantity = async (shelterId: string) => {
+    setLoadingTeamsQuantity(true);
+    setError("");
+    try {
+      const data = await apiGetShelterTeamsQuantity(shelterId);
+      // Se teamsQuantity for 0 ou null, bloquear a inserção
+      if (data.teamsQuantity === 0 || data.teamsQuantity === null || data.teamsQuantity === undefined) {
+        setTeamsQuantity(null);
+      } else {
+        setTeamsQuantity(data.teamsQuantity);
+        // Se o professor já está vinculado, usar o número da equipe atual
+        if (teacher?.shelter?.id === shelterId && teacher?.shelter?.team?.numberTeam) {
+          setNumberTeam(teacher.shelter.team.numberTeam);
+        } else {
+          setNumberTeam(1);
+        }
+      }
+    } catch (err: any) {
+      // Se não encontrar a quantidade de equipes, bloquear a inserção
+      setTeamsQuantity(null);
+      // Não definir erro aqui, apenas deixar teamsQuantity como null para mostrar o alerta de baixo
+    } finally {
+      setLoadingTeamsQuantity(false);
+    }
+  };
+
+  const handleShelterChange = (shelter: ShelterSimple | null) => {
+    setSelectedShelter(shelter);
+    setNumberTeam(1);
+    if (shelter) {
+      loadTeamsQuantity(shelter.id);
+    } else {
+      setTeamsQuantity(null);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!teacher) return;
+
+    setError("");
+    
+    if (!selectedShelter) {
+      setError("Selecione um abrigo");
+      return;
+    }
+
+    if (!numberTeam || numberTeam < 1) {
+      setError("O número da equipe deve ser maior que 0");
+      return;
+    }
+
+    if (!teamsQuantity || teamsQuantity < 1) {
+      setError("Este abrigo não possui quantidade de equipes definida. Por favor, vá na aba de Abrigos, edite este abrigo e defina a quantidade de equipes antes de vincular professores.");
+      return;
+    }
+
+    if (numberTeam > teamsQuantity) {
+      setError(`O número da equipe não pode ser maior que ${teamsQuantity}`);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await apiManageTeacherTeam(teacher.id, {
+        shelterId: selectedShelter.id,
+        numberTeam,
+      });
+      if (onSuccess) await onSuccess();
+      onClose();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || "Erro ao vincular professor");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Gerar opções de número de equipe baseado em teamsQuantity
+  const teamNumberOptions = teamsQuantity
+    ? Array.from({ length: teamsQuantity }, (_, i) => i + 1)
+    : [];
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Vincular / Desvincular Clubinho</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          width: isXs ? "98vw" : undefined,
+          maxWidth: isXs ? "98vw" : undefined,
+          m: isXs ? 0 : undefined,
+        },
+      }}
+    >
+      <DialogTitle>Vincular Professor a Equipe</DialogTitle>
 
-      <DialogContent
-        dividers
-        sx={{ p: { xs: 2, md: 3 }, position: "relative" }}
-      >
-        {(error || localErr) && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error || localErr}
-          </Alert>
-        )}
-
-        {!!teacher && (
+      <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
+        {teacher && (
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography
-                component="div"
-                sx={{ fontWeight: 700, lineHeight: 1.3 }}
-              >
-                {teacher.user?.name || teacher.user?.email || "—"}
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                {teacher.user.name || teacher.user.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Clubinho atual: <strong>{currentClubLabel}</strong>
+                {teacher.user.email || "—"}
               </Typography>
+              {teacher.shelter && (
+                <>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Abrigo atual: <strong>{teacher.shelter.name}</strong>
+                  </Typography>
+                  {teacher.shelter.team?.numberTeam && (
+                    <Typography variant="body2" color="text.secondary">
+                      Equipe atual: <strong>Equipe {teacher.shelter.team.numberTeam}</strong>
+                    </Typography>
+                  )}
+                  {teacher.shelter.leader?.user?.name && (
+                    <Typography variant="body2" color="text.secondary">
+                      Líder da equipe: <strong>{teacher.shelter.leader.user.name}</strong>
+                    </Typography>
+                  )}
+                </>
+              )}
             </Grid>
 
-            <Grid item xs={12} md={8}>
-              <TextField
-                label="Número do Clubinho"
-                type="number"
-                size="small"
-                fullWidth
-                value={clubInput}
-                onChange={(e) => setClubInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                inputProps={{ min: 1 }}
-                disabled={loading}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">#</InputAdornment>
-                  ),
-                }}
-                helperText={
-                  teacher?.club?.number
-                    ? `Digite um novo número para alterar o vínculo`
-                    : `Digite o número do Clubinho para vincular`
-                }
+            <Grid item xs={12}>
+              <Autocomplete
+                options={shelters}
+                getOptionLabel={(option) => option.name}
+                value={selectedShelter}
+                onChange={(_, newValue) => handleShelterChange(newValue)}
+                loading={loadingShelters}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Abrigo"
+                    placeholder="Selecione um abrigo"
+                    required
+                    helperText="Selecione o abrigo onde o professor será vinculado"
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                )}
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Stack
-                direction={isXs ? "row" : "column"}
-                spacing={1}
-                sx={{ height: "100%", alignItems: "stretch", justifyContent: "center" }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={submit}
-                  disabled={loading || !clubInput}
-                >
-                  Vincular
-                </Button>
-                <Button
-                  color="warning"
-                  variant="outlined"
-                  onClick={onClearClub}
-                  disabled={loading}
-                >
-                  Desvincular
-                </Button>
-              </Stack>
-            </Grid>
+            {selectedShelter && (
+              <Grid item xs={12}>
+                {loadingTeamsQuantity ? (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CircularProgress size={20} />
+                    <Typography variant="body2" color="text.secondary">
+                      Carregando quantidade de equipes...
+                    </Typography>
+                  </Box>
+                ) : teamsQuantity !== null ? (
+                  <TextField
+                    select
+                    fullWidth
+                    label="Número da Equipe"
+                    value={numberTeam}
+                    onChange={(e) => setNumberTeam(parseInt(e.target.value) || 1)}
+                    required
+                    helperText={`Selecione o número da equipe (1 a ${teamsQuantity})`}
+                    SelectProps={{
+                      native: true,
+                    }}
+                  >
+                    {teamNumberOptions.map((num) => (
+                      <option key={num} value={num}>
+                        Equipe {num}
+                      </option>
+                    ))}
+                  </TextField>
+                ) : (
+                  <Alert severity="warning" sx={{ mt: 1 }}>
+                    <Typography variant="body2" fontWeight={600} gutterBottom>
+                      Quantidade de equipes não definida
+                    </Typography>
+                    <Typography variant="body2">
+                      Este abrigo não possui quantidade de equipes definida. Por favor, vá na aba de <strong>Abrigos</strong>, 
+                      edite este abrigo e defina a quantidade de equipes antes de vincular professores.
+                    </Typography>
+                  </Alert>
+                )}
+              </Grid>
+            )}
+
+            {selectedShelter && teamsQuantity !== null && (
+              <Grid item xs={12}>
+                <Alert severity="info">
+                  O abrigo <strong>{selectedShelter.name}</strong> possui <strong>{teamsQuantity}</strong> equipe(s).
+                  {teacher.shelter?.id === selectedShelter.id
+                    ? " O professor será movido para a equipe selecionada."
+                    : " O professor será vinculado à equipe selecionada."}
+                </Alert>
+              </Grid>
+            )}
           </Grid>
         )}
 
@@ -151,21 +290,28 @@ export default function TeacherEditDialog({
             sx={{
               position: "absolute",
               inset: 0,
-              bgcolor: "rgba(255,255,255,0.5)",
+              bgcolor: "rgba(255,255,255,0.8)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               pointerEvents: "none",
             }}
           >
-            <CircularProgress size={28} />
+            <CircularProgress size={32} />
           </Box>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} sx={{ color: "text.secondary" }}>
-          Fechar
+        <Button onClick={onClose} disabled={loading}>
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={loading || !selectedShelter || !numberTeam || numberTeam < 1 || teamsQuantity === null}
+        >
+          {loading ? "Salvando..." : "Vincular"}
         </Button>
       </DialogActions>
     </Dialog>

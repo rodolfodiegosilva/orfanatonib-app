@@ -3,7 +3,7 @@ import { Box, Typography, Button, Container } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HeroSectionProps } from '../types';
-import banner from '@/assets/banner.jpg';
+import banner from '@/assets/banner.png';
 
 const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
   return (
@@ -25,7 +25,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
       <Box
         component="img"
         src={banner}
-        alt="Banner Clubinho NIB"
+        alt="Banner Orfanato NIB"
         sx={{
           width: '100%',
           height: '100%',
@@ -106,7 +106,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
               lineHeight: 1.1,
             }}
           >
-            Bem-vindo ao Clubinho NIB
+            Bem-vindo ao Orfanato NIB
           </Typography>
         </motion.div>
 
@@ -130,7 +130,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isAuthenticated }) => {
               letterSpacing: '0.02em',
             }}
           >
-            Ministério de evangelismo que leva a palavra de Deus para as crianças que precisam conhecer o amor de Jesus
+            Ministério de evangelismo que leva a palavra de Deus para pessoas de todas as idades que precisam conhecer o amor de Jesus
           </Typography>
         </motion.div>
 

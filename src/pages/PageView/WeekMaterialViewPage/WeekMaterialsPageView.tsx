@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { gradients } from '@/theme';
 import {
   Box,
   Typography,
@@ -184,7 +185,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
       sx={{
         minHeight: '100vh',
         pt: 0,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: gradients.subtle.greenWhite,
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -204,7 +205,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
         >
           <Box
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: gradients.subtle.greenWhite,
               borderRadius: 0,
               p: { xs: 3, sm: 4, md: 5 },
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',

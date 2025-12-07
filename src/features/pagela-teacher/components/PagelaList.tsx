@@ -24,15 +24,11 @@ import type { Tri } from "../hooks";
 
 type FiltersProps = {
   year?: number;
-  week?: number;
+  visit?: number;
   presentQ: Tri;
-  medQ: Tri;
-  verseQ: Tri;
   setYear: (v?: number) => void;
-  setWeek: (v?: number) => void;
+  setVisit: (v?: number) => void;
   setPresentQ: (v: Tri) => void;
-  setMedQ: (v: Tri) => void;
-  setVerseQ: (v: Tri) => void;
   clearFilters: () => void;
 };
 
@@ -62,21 +58,19 @@ export default function PagelaList({
 
   const hasAny =
     filters.year !== undefined ||
-    filters.week !== undefined ||
-    filters.presentQ !== "any" ||
-    filters.medQ !== "any" ||
-    filters.verseQ !== "any";
+    filters.visit !== undefined ||
+    filters.presentQ !== "any";
 
   const [yearText, setYearText] = React.useState<string>(filters.year?.toString() ?? "");
-  const [weekText, setWeekText] = React.useState<string>(filters.week?.toString() ?? "");
+  const [visitText, setVisitText] = React.useState<string>(filters.visit?.toString() ?? "");
 
   React.useEffect(() => {
     setYearText(filters.year?.toString() ?? "");
   }, [filters.year]);
 
   React.useEffect(() => {
-    setWeekText(filters.week?.toString() ?? "");
-  }, [filters.week]);
+    setVisitText(filters.visit?.toString() ?? "");
+  }, [filters.visit]);
 
   const applyYearFromText = React.useCallback(() => {
     const raw = yearText.trim();
@@ -93,10 +87,10 @@ export default function PagelaList({
     setYearText(String(clamped)); 
   }, [yearText, filters.year, filters.setYear]);
 
-  const applyWeekFromText = React.useCallback(() => {
-    const raw = weekText.trim();
+  const applyVisitFromText = React.useCallback(() => {
+    const raw = visitText.trim();
     if (raw === "") {
-      if (filters.week !== undefined) filters.setWeek(undefined);
+      if (filters.visit !== undefined) filters.setVisit(undefined);
       return;
     }
     const digits = raw.replace(/\D+/g, "");
@@ -104,9 +98,9 @@ export default function PagelaList({
     const n = Math.floor(Number(digits));
     if (!Number.isFinite(n)) return;
     const clamped = Math.max(1, Math.min(53, n));
-    if (clamped !== filters.week) filters.setWeek(clamped);
-    setWeekText(String(clamped));
-  }, [weekText, filters.week, filters.setWeek]);
+    if (clamped !== filters.visit) filters.setVisit(clamped);
+    setVisitText(String(clamped));
+  }, [visitText, filters.visit, filters.setVisit]);
 
   React.useEffect(() => {
     const t = setTimeout(() => {
@@ -127,9 +121,9 @@ export default function PagelaList({
 
   React.useEffect(() => {
     const t = setTimeout(() => {
-      const raw = weekText.trim();
+      const raw = visitText.trim();
       if (raw === "") {
-        if (filters.week !== undefined) filters.setWeek(undefined);
+        if (filters.visit !== undefined) filters.setVisit(undefined);
         return;
       }
       const digits = raw.replace(/\D+/g, "");
@@ -137,18 +131,18 @@ export default function PagelaList({
       const n = Number(digits);
       if (!Number.isFinite(n)) return;
       const clamped = Math.max(1, Math.min(53, Math.floor(n)));
-      if (clamped !== filters.week) filters.setWeek(clamped);
+      if (clamped !== filters.visit) filters.setVisit(clamped);
     }, DEBOUNCE_MS);
     return () => clearTimeout(t);
-  }, [weekText, filters.week, filters.setWeek]);
+  }, [visitText, filters.visit, filters.setVisit]);
 
   const handleYearChange = (v: string) => {
     const digits = v.replace(/\D+/g, "").slice(0, 4);
     setYearText(digits);
   };
-  const handleWeekChange = (v: string) => {
+  const handleVisitChange = (v: string) => {
     const digits = v.replace(/\D+/g, "").slice(0, 2);
-    setWeekText(digits);
+    setVisitText(digits);
   };
 
   const onKeyDownApply =
@@ -184,14 +178,14 @@ export default function PagelaList({
         />
 
         <TextField
-          label="Semana"
+          label="Visita"
           margin="dense"
           size="small"
           type="text"
-          value={weekText}
-          onChange={(e) => handleWeekChange(e.target.value)}
-          onBlur={applyWeekFromText}
-          onKeyDown={onKeyDownApply(applyWeekFromText)}
+          value={visitText}
+          onChange={(e) => handleVisitChange(e.target.value)}
+          onBlur={applyVisitFromText}
+          onKeyDown={onKeyDownApply(applyVisitFromText)}
           inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 2 }}
           sx={{ width: { xs: "100%", sm: "100%" } }}
         />
@@ -218,57 +212,13 @@ export default function PagelaList({
           </Select>
         </FormControl>
 
-        <FormControl size="small" margin="dense" fullWidth sx={{ minWidth: 0 }}>
-          <InputLabel>Meditação</InputLabel>
-          <Select
-            label="Meditação"
-            value={filters.medQ}
-            onChange={(e) => filters.setMedQ(e.target.value as Tri)}
-          >
-            <MenuItem value="any">
-              <AllInclusiveIcon fontSize="small" style={{ marginRight: 8 }} />
-              Qualquer
-            </MenuItem>
-            <MenuItem value="yes">
-              <CheckCircleIcon fontSize="small" style={{ marginRight: 8 }} />
-              Sim
-            </MenuItem>
-            <MenuItem value="no">
-              <HighlightOffIcon fontSize="small" style={{ marginRight: 8 }} />
-              Não
-            </MenuItem>
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" margin="dense" fullWidth sx={{ minWidth: 0 }}>
-          <InputLabel>Versículo</InputLabel>
-          <Select
-            label="Versículo"
-            value={filters.verseQ}
-            onChange={(e) => filters.setVerseQ(e.target.value as Tri)}
-          >
-            <MenuItem value="any">
-              <AllInclusiveIcon fontSize="small" style={{ marginRight: 8 }} />
-              Qualquer
-            </MenuItem>
-            <MenuItem value="yes">
-              <CheckCircleIcon fontSize="small" style={{ marginRight: 8 }} />
-              Sim
-            </MenuItem>
-            <MenuItem value="no">
-              <HighlightOffIcon fontSize="small" style={{ marginRight: 8 }} />
-              Não
-            </MenuItem>
-          </Select>
-        </FormControl>
-
         <Box sx={{ gridColumn: { xs: "1 / -1", sm: "auto" }, display: "flex", justifyContent: "flex-end" }}>
           {hasAny && (
             <Button
               onClick={() => {
                 filters.clearFilters();
                 setYearText("");
-                setWeekText("");
+                setVisitText("");
               }}
               size="small"
               variant="text"

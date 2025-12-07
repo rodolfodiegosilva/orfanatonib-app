@@ -1,6 +1,6 @@
 :root {
-  --cor-primaria: #81d742;
-  --cor-secundaria: #0073E6;
+  --cor-primaria: #FFFF00;
+  --cor-secundaria: #000000;
 }
 
 * {
@@ -12,9 +12,12 @@
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  background-color: #f4f4f4;
-  color: #333;
+  background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+  background-attachment: fixed;
+  color: #000000;
 }
+
+/* Background global suave - usar gradients.subtle.greenWhiteSoft no código */
 
 a {
   color: inherit;

@@ -35,7 +35,7 @@ type Props = {
 
 const roleLabels: Record<UserRole, string> = {
   [UserRole.ADMIN]: "Administrador",
-  [UserRole.COORDINATOR]: "Coordenador",
+  [UserRole.COORDINATOR]: "Líder",
   [UserRole.TEACHER]: "Professor",
 };
 

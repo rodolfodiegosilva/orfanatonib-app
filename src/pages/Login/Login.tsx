@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 import api from '@/config/axiosConfig';
 import { RootState as RootStateType, AppDispatch as AppDispatchType } from '@/store/slices';
@@ -26,8 +26,19 @@ import {
   fetchCurrentUser,
 } from '@/store/slices/auth/authSlice';
 
-const log = (message: string, ...args: any[]) => {
-  if (import.meta.env.DEV) console.log(message, ...args);
+const log = (message: string, ...args: any[]): void => {
+  if (import.meta.env.DEV) {
+    console.log(message, ...args);
+  }
+};
+
+const isEmailValid = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isPasswordValid = (password: string): boolean => {
+  return password.length >= 6;
 };
 
 const mapLoginError = (err: unknown): string => {
@@ -36,7 +47,7 @@ const mapLoginError = (err: unknown): string => {
     const raw = (err.response?.data as any)?.message;
     const serverMsg = Array.isArray(raw) ? raw.join(' ') : String(raw ?? '');
 
-    if (status === 401 ) {
+    if (status === 401) {
       return 'Email ou senha inválidos.';
     }
 
@@ -44,9 +55,11 @@ const mapLoginError = (err: unknown): string => {
       return 'Usuário inativo ou sem permissão.';
     }
 
-    if (serverMsg) return serverMsg;
+    if (serverMsg) {
+      return serverMsg;
+    }
 
-    return 'Erro inesperado. Tente novamente mais tarde';
+    return 'Erro inesperado. Tente novamente mais tarde.';
   }
 
   return 'Erro inesperado. Tente novamente mais tarde.';
@@ -57,42 +70,66 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const dispatch = useDispatch<AppDispatchType>();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const { isAuthenticated, user } = useSelector((state: RootStateType) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const redirectPath = user?.role === UserRole.ADMIN || user?.role === UserRole.COORDINATOR ? '/adm' : '/area-do-professor';
+    if (isAuthenticated && user) {
+      const isAdminOrCoordinator =
+        user.role === UserRole.ADMIN || user.role === UserRole.COORDINATOR;
+
+      const redirectPath = isAdminOrCoordinator ? '/adm' : '/area-do-professor';
       navigate(redirectPath);
     }
   }, [isAuthenticated, user, navigate]);
 
-  const isFormValid = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) && password.length >= 6;
+  const isFormValid = (): boolean => {
+    return isEmailValid(email) && isPasswordValid(password);
   };
 
-  const bootstrapAfterLogin = async (accessToken: string) => {
+
+  const bootstrapAfterLogin = async (accessToken: string): Promise<void> => {
     try {
       api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-    } catch {}
+    } catch (error) {
+      log('[Login] Erro ao configurar token no axios:', error);
+    }
+
     try {
       await dispatch(fetchCurrentUser()).unwrap();
-    } catch (e) {
-      log('[Login] fetchCurrentUser falhou após login:', e);
+    } catch (error) {
+      log('[Login] fetchCurrentUser falhou após login:', error);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const getRedirectPath = (role: UserRole): string => {
+    return role === UserRole.ADMIN ? '/adm' : '/area-do-professor';
+  };
+
+  const mapUserRole = (responseUser: any): any => {
+    return {
+      ...responseUser,
+      role: responseUser.role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.TEACHER,
+    };
+  };
+
+  const handleUserInactive = (): void => {
+    setErrorMessage(
+      'Usuário não validado, entre em contato com (92) 99127-4881 ou (92) 98155-3139'
+    );
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
     if (!isFormValid()) {
-      setErrorMessage('Por favor, insira um email válido e uma senha com pelo menos 6 caracteres.');
+      setErrorMessage(
+        'Por favor, insira um email válido e uma senha com pelo menos 6 caracteres.'
+      );
       return;
     }
 
@@ -102,21 +139,18 @@ const Login: React.FC = () => {
 
     try {
       const response = await api.post<LoginResponse>('/auth/login', { email, password });
+
       if (response.data.user.active === false) {
-        setErrorMessage('Usuário não validado, entre em contato com (92) 99127-4881 ou (92) 98155-3139');
+        handleUserInactive();
         return;
       }
+
       const { accessToken, refreshToken, user: responseUser } = response.data;
-
-      const mappedUser = {
-        ...responseUser,
-        role: responseUser.role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.TEACHER,
-      };
-
+      const mappedUser = mapUserRole(responseUser);
       dispatch(login({ accessToken, refreshToken, user: mappedUser }));
       await bootstrapAfterLogin(accessToken);
 
-      const redirectPath = mappedUser.role === UserRole.ADMIN ? '/adm' : '/area-do-professor';
+      const redirectPath = getRedirectPath(mappedUser.role);
       navigate(redirectPath);
     } catch (error) {
       const msg = mapLoginError(error);
@@ -127,7 +161,8 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+
+  const handleGoogleSuccess = async (credentialResponse: any): Promise<void> => {
     setLoading(true);
     setErrorMessage(null);
     log('[Login] Login com Google bem-sucedido:', credentialResponse);
@@ -137,7 +172,7 @@ const Login: React.FC = () => {
       const res = await api.post('/auth/google', { token: credential });
 
       if (res.data.active === false) {
-        setErrorMessage('Usuário não validado, entre em contato com (92) 99127-4881 ou (92) 98155-3139');
+        handleUserInactive();
         return;
       }
 
@@ -150,15 +185,13 @@ const Login: React.FC = () => {
       }
 
       const { accessToken, refreshToken, user: responseUser } = res.data;
-      const mappedUser = {
-        ...responseUser,
-        role: responseUser.role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.TEACHER,
-      };
+      const mappedUser = mapUserRole(responseUser);
 
       dispatch(login({ accessToken, refreshToken, user: mappedUser }));
+
       await bootstrapAfterLogin(accessToken);
 
-      const redirectPath = mappedUser.role === UserRole.ADMIN ? '/adm' : '/area-do-professor';
+      const redirectPath = getRedirectPath(mappedUser.role);
       navigate(redirectPath);
     } catch (error) {
       const msg = mapLoginError(error);
@@ -169,9 +202,13 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleError = () => {
+  const handleGoogleError = (): void => {
     setErrorMessage('Erro ao fazer login com Google. Tente novamente.');
     log('[Login] Falha no login com Google');
+  };
+
+  const handleNavigateToRegister = (): void => {
+    navigate('/cadastrar');
   };
 
   return (
@@ -190,7 +227,12 @@ const Login: React.FC = () => {
         <Container maxWidth="sm" disableGutters sx={{ width: '100%', maxWidth: 560 }}>
           <Paper
             elevation={3}
-            sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, boxShadow: 3, backgroundColor: '#fff' }}
+            sx={{
+              p: { xs: 3, md: 4 },
+              borderRadius: 2,
+              boxShadow: 3,
+              backgroundColor: '#fff',
+            }}
           >
             <Typography variant="h5" component="h1" gutterBottom align="center">
               Área do Professor
@@ -221,6 +263,7 @@ const Login: React.FC = () => {
                 error={!!errorMessage && !email}
                 helperText={!!errorMessage && !email ? 'Email é obrigatório' : ''}
               />
+
               <TextField
                 fullWidth
                 type="password"
@@ -234,6 +277,7 @@ const Login: React.FC = () => {
                 error={!!errorMessage && !password}
                 helperText={!!errorMessage && !password ? 'Senha é obrigatória' : ''}
               />
+
               <Button
                 type="submit"
                 variant="contained"
@@ -253,7 +297,7 @@ const Login: React.FC = () => {
             <Button
               variant="outlined"
               fullWidth
-              onClick={() => navigate('/cadastrar')}
+              onClick={handleNavigateToRegister}
               sx={{ mt: 3, fontWeight: 'bold' }}
             >
               Cadastre-se

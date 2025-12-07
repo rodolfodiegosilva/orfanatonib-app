@@ -1,33 +1,38 @@
 export type Pagela = {
   id: string;
-  childId: string;
-  teacherProfileId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  sheltered: {
+    id: string;
+    name: string;
+  };
+  teacher: {
+    id: string;
+    user: Record<string, any>; // O backend está retornando user: {} vazio
+  };
   referenceDate: string;
   year: number;
-  week: number;
+  visit: number;
   present: boolean;
-  didMeditation: boolean;
-  recitedVerse: boolean;
   notes: string | null;
-  createdAt?: string;
-  updatedAt?: string;
 };
 
-export type PageDto<T> = { items: T[]; total: number; page: number; limit: number };
+export type PageDto<T> = { 
+  items: T[]; 
+  total: number; 
+  page: string; // O backend está retornando page como string
+  limit: string; // O backend está retornando limit como string
+};
 
 
 export type CreatePagelaPayload = {
-  childId: string;
+  shelteredId: string;
   teacherProfileId?: string | null;
   referenceDate: string;
-  week: number;
+  visit: number;
   year?: number;
   present: boolean;
-  didMeditation: boolean;
-  recitedVerse: boolean;
   notes?: string | null;
 };
 
-export type UpdatePagelaPayload = Partial<Omit<CreatePagelaPayload, "childId">> & {
-  teacherProfileId?: string | null;
-};
+export type UpdatePagelaPayload = Partial<Omit<CreatePagelaPayload, "shelteredId">>;
