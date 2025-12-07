@@ -6,7 +6,7 @@ import {
   Paper, Avatar, Slide, ButtonBase, Link
 } from "@mui/material";
 import { 
-  Visibility, Link as LinkIcon, ExpandMore as ExpandMoreIcon, SwapVert, Phone as PhoneIcon, SupervisorAccount, GroupOutlined, SchoolOutlined, WhatsApp
+  Visibility, Edit as EditIcon, ExpandMore as ExpandMoreIcon, SwapVert, Phone as PhoneIcon, SupervisorAccount, GroupOutlined, SchoolOutlined, WhatsApp
 } from "@mui/icons-material";
 import type { SortingState } from "@tanstack/react-table";
 import type { LeaderProfile } from "../types";
@@ -26,13 +26,13 @@ type Props = {
   sorting: SortingState;
   setSorting: (s: SortingState) => void;
   onView: (row: LeaderProfile) => void;
-  onLink: (row: LeaderProfile) => void;
+  onEdit: (row: LeaderProfile) => void;
 };
 
 export default function LeaderCards(props: Props) {
   const {
     rows, total, pageIndex, pageSize, setPageIndex, setPageSize,
-    sorting, setSorting, onView, onLink
+    sorting, setSorting, onView, onEdit
   } = props;
 
   const [open, setOpen] = useState<Set<string>>(new Set());
@@ -82,8 +82,10 @@ export default function LeaderCards(props: Props) {
       <Grid container spacing={{ xs: 1, sm: 1.25 }}>
         {rows.map((c) => {
           const expanded = open.has(c.id);
-          const shelters = c.shelter ? [c.shelter] : [];
-          const totalTeachers = shelters.reduce((acc, cl) => acc + (cl.teachers?.length || 0), 0);
+          // Professores agora são acessados via team
+          const shelter = c.shelter || null;
+          const teachers = shelter?.teachers || [];
+          const totalTeachers = teachers.length;
           const wa = buildWhatsappLink({ id: c.id, name: c.user?.name, phone: c.user?.phone } as any, loggedUser?.name);
 
           return (
@@ -289,32 +291,50 @@ export default function LeaderCards(props: Props) {
                       flexWrap="wrap"
                       rowGap={0.25}
                     >
-                      <Chip
-                        size="small"
-                        variant="filled"
-                        icon={<SchoolOutlined sx={{ fontSize: 12 }} />}
-                        label={`Abrigos: ${shelters.length}`}
-                        color="info"
-                        sx={{ 
-                          fontWeight: 600, 
-                          fontSize: "0.7rem",
-                          height: 20,
-                          "& .MuiChip-label": { px: 0.5 }
-                        }}
-                      />
-                      <Chip
-                        size="small"
-                        variant="filled"
-                        icon={<GroupOutlined sx={{ fontSize: 12 }} />}
-                        label={`Profs.: ${totalTeachers}`}
-                        color="success"
-                        sx={{ 
-                          fontWeight: 600, 
-                          fontSize: "0.7rem",
-                          height: 20,
-                          "& .MuiChip-label": { px: 0.5 }
-                        }}
-                      />
+                      {shelter && (
+                        <Chip
+                          size="small"
+                          variant="filled"
+                          icon={<SchoolOutlined sx={{ fontSize: 12 }} />}
+                          label={shelter.name || "Sem abrigo"}
+                          color="info"
+                          sx={{ 
+                            fontWeight: 600, 
+                            fontSize: "0.7rem",
+                            height: 20,
+                            "& .MuiChip-label": { px: 0.5 }
+                          }}
+                        />
+                      )}
+                      {shelter?.team?.numberTeam !== undefined && (
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          label={`Equipe ${shelter.team.numberTeam}`}
+                          color="info"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.7rem",
+                            height: 20,
+                            "& .MuiChip-label": { px: 0.5 }
+                          }}
+                        />
+                      )}
+                      {totalTeachers > 0 && (
+                        <Chip
+                          size="small"
+                          variant="filled"
+                          icon={<GroupOutlined sx={{ fontSize: 12 }} />}
+                          label={`Profs.: ${totalTeachers}`}
+                          color="success"
+                          sx={{ 
+                            fontWeight: 600, 
+                            fontSize: "0.7rem",
+                            height: 20,
+                            "& .MuiChip-label": { px: 0.5 }
+                          }}
+                        />
+                      )}
                     </Stack>
                   </Box>
                 )}
@@ -353,112 +373,112 @@ export default function LeaderCards(props: Props) {
                           </Stack>
                         </Paper>
 
-                        <Paper
-                          variant="outlined"
-                          sx={{
-                            p: 1.25,
-                            borderRadius: 2,
-                            bgcolor: "grey.50",
-                            border: "1px solid",
-                            borderColor: "grey.200",
-                          }}
-                        >
-                          <Stack spacing={1}>
-                            <Stack direction="row" spacing={0.75} alignItems="center">
-                              <SchoolOutlined fontSize="small" color="primary" />
-                              <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                Abrigos Vinculados ({shelters.length})
-                              </Typography>
-                            </Stack>
-                            
-                            {shelters.length === 0 ? (
-                              <Typography variant="body2" color="text.secondary">
-                                Nenhum abrigo vinculado.
-                              </Typography>
-                            ) : (
-                              <Stack spacing={1.5}>
-                                {shelters.map((cl) => (
-                                  <Paper
-                                    key={cl.id}
+                        {shelter ? (
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              p: 1.25,
+                              borderRadius: 2,
+                              bgcolor: "grey.50",
+                              border: "1px solid",
+                              borderColor: "grey.200",
+                            }}
+                          >
+                            <Stack spacing={1}>
+                              <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap" rowGap={0.5}>
+                                <Chip 
+                                  size="small" 
+                                  color="primary" 
+                                  label={shelter.name}
+                                  sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                                />
+                                {shelter.team?.numberTeam && (
+                                  <Chip 
+                                    size="small" 
                                     variant="outlined"
-                                    sx={{
-                                      p: 1,
-                                      borderRadius: 1.5,
-                                      bgcolor: "background.paper",
-                                      border: "1px solid",
-                                      borderColor: "grey.300",
+                                    label={`Equipe ${shelter.team.numberTeam}`}
+                                    color="info"
+                                    sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                                  />
+                                )}
+                                {totalTeachers > 0 && (
+                                  <Chip 
+                                    size="small" 
+                                    variant="filled"
+                                    label={`${totalTeachers} prof(s)`}
+                                    color="info"
+                                    sx={{ fontWeight: 500, fontSize: "0.75rem" }}
+                                  />
+                                )}
+                              </Stack>
+                              
+                              {teachers.length > 0 && (
+                                <Box>
+                                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5, display: "block" }}>
+                                    Professores:
+                                  </Typography>
+                                  <Box 
+                                    sx={{ 
+                                      display: "flex", 
+                                      gap: 0.5, 
+                                      flexWrap: "wrap",
+                                      maxHeight: 120,
+                                      overflowY: "auto",
+                                      "&::-webkit-scrollbar": {
+                                        width: "4px",
+                                      },
+                                      "&::-webkit-scrollbar-track": {
+                                        background: "transparent",
+                                      },
+                                      "&::-webkit-scrollbar-thumb": {
+                                        background: "rgba(0,0,0,0.2)",
+                                        borderRadius: "2px",
+                                      },
                                     }}
                                   >
-                                    <Stack spacing={1}>
-                                      <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap" rowGap={0.5}>
-                                        <Chip 
-                                          size="small" 
-                                          color="primary" 
-                                          label={cl.name ?? cl.id}
-                                          sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                                    {teachers.map((t) => {
+                                      const teacherName = t.user?.name || t.user?.email || "Sem nome";
+                                      return (
+                                        <Chip
+                                          key={t.id}
+                                          size="small"
+                                          variant="outlined"
+                                          label={teacherName}
+                                          sx={{ 
+                                            fontWeight: 500,
+                                            fontSize: "0.7rem",
+                                            maxWidth: "100%",
+                                            "& .MuiChip-label": {
+                                              overflow: "hidden",
+                                              textOverflow: "ellipsis",
+                                              whiteSpace: "nowrap",
+                                            }
+                                          }}
+                                          title={teacherName}
                                         />
-                                        <Chip 
-                                          size="small" 
-                                          variant="filled"
-                                          label={`${(cl.teachers ?? []).length} prof(s)`}
-                                          color="info"
-                                          sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-                                        />
-                                      </Stack>
-                                      
-                                      {(cl.teachers ?? []).length > 0 && (
-                                        <Box>
-                                          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5, display: "block" }}>
-                                            Professores:
-                                          </Typography>
-                                          <Box 
-                                            sx={{ 
-                                              display: "flex", 
-                                              gap: 0.5, 
-                                              flexWrap: "wrap",
-                                              maxHeight: 120,
-                                              overflowY: "auto",
-                                              "&::-webkit-scrollbar": {
-                                                width: "4px",
-                                              },
-                                              "&::-webkit-scrollbar-track": {
-                                                background: "transparent",
-                                              },
-                                              "&::-webkit-scrollbar-thumb": {
-                                                background: "rgba(0,0,0,0.2)",
-                                                borderRadius: "2px",
-                                              },
-                                            }}
-                                          >
-                                            {(cl.teachers ?? []).map((t) => (
-                                              <Chip
-                                                key={t.id}
-                                                size="small"
-                                                variant="outlined"
-                                                label={t.user?.name || t.user?.email || t.id}
-                                                sx={{ 
-                                                  fontWeight: 500,
-                                                  fontSize: "0.7rem",
-                                                  maxWidth: "100%",
-                                                  "& .MuiChip-label": {
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                  }
-                                                }}
-                                                title={t.user?.name || t.user?.email || t.id}
-                                              />
-                                            ))}
-                                          </Box>
-                                        </Box>
-                                      )}
-                                    </Stack>
-                                  </Paper>
-                                ))}
-                              </Stack>
-                            )}
-                          </Stack>
-                        </Paper>
+                                      );
+                                    })}
+                                  </Box>
+                                </Box>
+                              )}
+                            </Stack>
+                          </Paper>
+                        ) : (
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              p: 1.25,
+                              borderRadius: 2,
+                              bgcolor: "grey.50",
+                              border: "1px solid",
+                              borderColor: "grey.200",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Nenhum abrigo vinculado.
+                            </Typography>
+                          </Paper>
+                        )}
                       </Stack>
                     </CardContent>
                   </Box>
@@ -495,16 +515,16 @@ export default function LeaderCards(props: Props) {
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Vincular/Desvincular abrigo">
+                    <Tooltip title={c.shelter?.id ? "Gerenciar Equipes do Abrigo" : "Gerenciar Equipes"}>
                       <IconButton 
                         size="small" 
-                        onClick={() => onLink(c)}
+                        onClick={() => onEdit(c)}
                         sx={{ 
-                          color: "info.main",
-                          "&:hover": { bgcolor: "info.50" }
+                          color: "primary.main",
+                          "&:hover": { bgcolor: "primary.50" }
                         }}
                       >
-                        <LinkIcon fontSize="small" />
+                        <EditIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Stack>

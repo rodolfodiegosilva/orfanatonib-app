@@ -16,13 +16,21 @@ interface ShelterLite {
 interface TeacherProfileLite {
   id: string;
   active: boolean;
-  shelter: ShelterLite | null;
+  team: {
+    id: string;
+    name: string;
+    shelter?: ShelterLite | null;
+  } | null;
 }
 
 interface LeaderProfileLite {
   id: string;
   active: boolean;
-  shelters: ShelterLite[];
+  team: {
+    id: string;
+    name: string;
+    shelter?: ShelterLite | null;
+  } | null;
 }
 
 interface User {

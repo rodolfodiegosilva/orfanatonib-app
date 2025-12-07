@@ -94,8 +94,15 @@ export type Shelter = {
   id: string;
   name: string;
   address: Address;
-  leader?: LeaderProfile | null;
-  teachers?: TeacherProfile[];
+  teamsQuantity?: number; // Quantidade de equipes
+  teams?: Array<{
+    id: string;
+    numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+    leaders?: LeaderProfile[];
+    teachers?: TeacherProfile[];
+  }>;
+  leaders?: LeaderProfile[]; // Calculado (agregação de todas as teams)
+  teachers?: TeacherProfile[]; // Calculado (agregação de todas as teams)
   createdAt: string;
   updatedAt: string;
 };
@@ -103,8 +110,11 @@ export type Shelter = {
 export type LeaderProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  shelters?: Shelter[];
-  teachers?: TeacherProfile[];
+  team?: {
+    id: string;
+    name: string;
+    shelter?: Shelter;
+  } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -112,8 +122,11 @@ export type LeaderProfile = {
 export type TeacherProfile = {
   id: string;
   user: { id: string; name?: string; email?: string };
-  shelter?: { id: string; name: string } | null;
-  leader?: { id: string } | null;
+  team?: {
+    id: string;
+    name: string;
+    shelter?: { id: string; name: string } | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -15,21 +15,21 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { TeacherProfile } from "../types";
-import { apiManageTeacherTeam } from "../api";
+import { LeaderProfile } from "../types";
+import { apiManageLeaderTeam } from "../api";
 import { apiFetchSheltersSimple, apiGetShelterTeamsQuantity } from "../../shelters/api";
 import { ShelterSimple } from "../../shelters/types";
 
 type Props = {
   open: boolean;
-  teacher: TeacherProfile | null;
+  leader: LeaderProfile | null;
   onClose: () => void;
   onSuccess?: () => void;
 };
 
-export default function TeacherEditDialog({
+export default function LeaderEditDialog({
   open,
-  teacher,
+  leader,
   onClose,
   onSuccess,
 }: Props) {
@@ -54,8 +54,8 @@ export default function TeacherEditDialog({
 
   // Carregar abrigo atual e quantidade de equipes
   useEffect(() => {
-    if (open && teacher?.shelter) {
-      const currentShelter = shelters.find((s) => s.id === teacher.shelter?.id);
+    if (open && leader?.shelter) {
+      const currentShelter = shelters.find((s) => s.id === leader.shelter?.id);
       if (currentShelter) {
         setSelectedShelter(currentShelter);
         loadTeamsQuantity(currentShelter.id);
@@ -65,7 +65,7 @@ export default function TeacherEditDialog({
       setTeamsQuantity(null);
       setNumberTeam(1);
     }
-  }, [open, teacher, shelters]);
+  }, [open, leader, shelters]);
 
   const loadShelters = async () => {
     setLoadingShelters(true);
@@ -90,9 +90,9 @@ export default function TeacherEditDialog({
         setTeamsQuantity(null);
       } else {
         setTeamsQuantity(data.teamsQuantity);
-        // Se o professor já está vinculado, usar o número da equipe atual
-        if (teacher?.shelter?.id === shelterId && teacher?.shelter?.team?.numberTeam) {
-          setNumberTeam(teacher.shelter.team.numberTeam);
+        // Se o líder já está vinculado, usar o número da equipe atual
+        if (leader?.shelter?.id === shelterId && leader?.shelter?.team?.numberTeam) {
+          setNumberTeam(leader.shelter.team.numberTeam);
         } else {
           setNumberTeam(1);
         }
@@ -117,7 +117,7 @@ export default function TeacherEditDialog({
   };
 
   const handleSubmit = async () => {
-    if (!teacher) return;
+    if (!leader) return;
 
     setError("");
     
@@ -132,7 +132,7 @@ export default function TeacherEditDialog({
     }
 
     if (!teamsQuantity || teamsQuantity < 1) {
-      setError("Este abrigo não possui quantidade de equipes definida. Por favor, vá na aba de Abrigos, edite este abrigo e defina a quantidade de equipes antes de vincular professores.");
+      setError("Este abrigo não possui quantidade de equipes definida. Por favor, vá na aba de Abrigos, edite este abrigo e defina a quantidade de equipes antes de vincular líderes.");
       return;
     }
 
@@ -143,14 +143,14 @@ export default function TeacherEditDialog({
 
     setLoading(true);
     try {
-      await apiManageTeacherTeam(teacher.id, {
+      await apiManageLeaderTeam(leader.id, {
         shelterId: selectedShelter.id,
         numberTeam,
       });
       if (onSuccess) await onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao vincular professor");
+      setError(err?.response?.data?.message || err.message || "Erro ao vincular líder");
     } finally {
       setLoading(false);
     }
@@ -175,31 +175,31 @@ export default function TeacherEditDialog({
         },
       }}
     >
-      <DialogTitle>Vincular Professor a Equipe</DialogTitle>
+      <DialogTitle>Vincular Líder a Equipe</DialogTitle>
 
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 } }}>
-        {teacher && (
+        {leader && (
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                {teacher.user.name || teacher.user.email || "—"}
+                {leader.user.name || leader.user.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {teacher.user.email || "—"}
+                {leader.user.email || "—"}
               </Typography>
-              {teacher.shelter && (
+              {leader.shelter && (
                 <>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    Abrigo atual: <strong>{teacher.shelter.name}</strong>
+                    Abrigo atual: <strong>{leader.shelter.name}</strong>
                   </Typography>
-                  {teacher.shelter.team?.numberTeam && (
+                  {leader.shelter.team?.numberTeam && (
                     <Typography variant="body2" color="text.secondary">
-                      Equipe atual: <strong>Equipe {teacher.shelter.team.numberTeam}</strong>
+                      Equipe atual: <strong>Equipe {leader.shelter.team.numberTeam}</strong>
                     </Typography>
                   )}
-                  {teacher.shelter.leader?.user?.name && (
+                  {leader.shelter.teachers && leader.shelter.teachers.length > 0 && (
                     <Typography variant="body2" color="text.secondary">
-                      Líder da equipe: <strong>{teacher.shelter.leader.user.name}</strong>
+                      Professores da equipe: <strong>{leader.shelter.teachers.length}</strong>
                     </Typography>
                   )}
                 </>
@@ -219,7 +219,7 @@ export default function TeacherEditDialog({
                     label="Abrigo"
                     placeholder="Selecione um abrigo"
                     required
-                    helperText="Selecione o abrigo onde o professor será vinculado"
+                    helperText="Selecione o abrigo onde o líder será vinculado"
                   />
                 )}
                 renderOption={(props, option) => (
@@ -265,7 +265,7 @@ export default function TeacherEditDialog({
                     </Typography>
                     <Typography variant="body2">
                       Este abrigo não possui quantidade de equipes definida. Por favor, vá na aba de <strong>Abrigos</strong>, 
-                      edite este abrigo e defina a quantidade de equipes antes de vincular professores.
+                      edite este abrigo e defina a quantidade de equipes antes de vincular líderes.
                     </Typography>
                   </Alert>
                 )}
@@ -276,9 +276,9 @@ export default function TeacherEditDialog({
               <Grid item xs={12}>
                 <Alert severity="info">
                   O abrigo <strong>{selectedShelter.name}</strong> possui <strong>{teamsQuantity}</strong> equipe(s).
-                  {teacher.shelter?.id === selectedShelter.id
-                    ? " O professor será movido para a equipe selecionada."
-                    : " O professor será vinculado à equipe selecionada."}
+                  {leader.shelter?.id === selectedShelter.id
+                    ? " O líder será movido para a equipe selecionada."
+                    : " O líder será vinculado à equipe selecionada."}
                 </Alert>
               </Grid>
             )}
@@ -317,3 +317,4 @@ export default function TeacherEditDialog({
     </Dialog>
   );
 }
+

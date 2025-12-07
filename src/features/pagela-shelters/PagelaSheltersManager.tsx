@@ -48,6 +48,7 @@ export default function PagelaSheltersManager() {
     handleBack,
     handleSheltersSearchChange,
     handleShelteredSearchChange,
+    handlePagelasSearchChange,
   } = usePagelaSheltersManager();
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function PagelaSheltersManager() {
             currentPage={pagelas.currentPage}
             totalPages={pagelas.totalPages}
             onPageChange={pagelas.handlePageChange}
+            onSearchChange={handlePagelasSearchChange}
           />
         );
       default:
@@ -156,6 +158,7 @@ export default function PagelaSheltersManager() {
           currentPage={pagelas.currentPage}
           totalPages={pagelas.totalPages}
           onPageChange={pagelas.handlePageChange}
+          onSearchChange={handlePagelasSearchChange}
         />
       </Grid>
     </Grid>

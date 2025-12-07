@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  apiAssignShelter,
   apiGetLeader,
   apiListSheltersSimple,
   apiListLeaders,
-  apiUnassignShelter,
   type ListLeadersParams,
 } from "./api";
 import type {
@@ -101,48 +99,8 @@ export function useLeaderMutations(
   const [dialogLoading, setDialogLoading] = useState(false);
   const [dialogError, setDialogError] = useState("");
 
-
-  const assignShelter = useCallback(
-    async (leaderId: string, shelterId: string): Promise<string> => {
-      setDialogLoading(true); setDialogError("");
-      try {
-        const res: any = await apiAssignShelter(leaderId, shelterId);
-        await refreshOne(leaderId);
-        await refreshPage();
-        return res?.message || "Shelter atribuído ao líder com sucesso";
-      } catch (err: any) {
-        const msg =
-          err?.response?.data?.message || err.message || "Erro ao vincular abrigo";
-        setDialogError(msg);
-        throw err;
-      } finally {
-        setDialogLoading(false);
-      }
-    },
-    [refreshOne, refreshPage]
-  );
-
-  const unassignShelter = useCallback(
-    async (leaderId: string, shelterId?: string): Promise<string> => {
-      setDialogLoading(true); setDialogError("");
-      try {
-        const res: any = await apiUnassignShelter(leaderId, shelterId);
-        await refreshOne(leaderId);
-        await refreshPage();
-        return res?.message || "Shelter removido do líder com sucesso";
-      } catch (err: any) {
-        const msg =
-          err?.response?.data?.message || err.message || "Erro ao desvincular abrigo";
-        setDialogError(msg);
-        throw err;
-      } finally {
-        setDialogLoading(false);
-      }
-    },
-    [refreshOne, refreshPage]
-  );
-
-  return { dialogLoading, dialogError, setDialogError, assignShelter, unassignShelter };
+  // Métodos de assign/unassign removidos - agora gerenciados via Teams
+  return { dialogLoading, dialogError, setDialogError };
 }
 
 export function useSheltersIndex() {

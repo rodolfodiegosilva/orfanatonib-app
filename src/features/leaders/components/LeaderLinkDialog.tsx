@@ -32,6 +32,7 @@ export default function LeaderLinkDialog({
   }, [leader]);
 
   const hasShelter = !!leader?.shelter;
+  const currentTeamNumber = leader?.shelter?.number ?? null;
   const currentShelterName = leader?.shelter?.name ?? "—";
 
   const handleVincular = React.useCallback(() => {
@@ -63,7 +64,7 @@ export default function LeaderLinkDialog({
       }}
     >
       <DialogTitle>
-        {hasShelter ? "Desvincular Abrigo" : "Vincular Abrigo"}
+        Gerenciar Equipe
       </DialogTitle>
       <DialogContent dividers sx={{ p: { xs: 2, md: 3 }, position: "relative" }}>
         {(error || localErr) && (
@@ -82,55 +83,27 @@ export default function LeaderLinkDialog({
                 {leader.user?.name || leader.user?.email || "—"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Abrigo atual: <strong>{currentShelterName}</strong>
+                Equipe atual: <strong>{currentTeamNumber ? `Equipe ${currentTeamNumber}` : "—"}</strong>
+                {currentShelterName && ` (Abrigo: ${currentShelterName})`}
               </Typography>
             </Grid>
 
-            {hasShelter ? (
-              // Já tem abrigo - só desvincular
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    p: 2,
-                    bgcolor: "grey.50",
-                    borderRadius: 2,
-                    border: "1px solid",
-                    borderColor: "grey.300",
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    Este líder já está vinculado ao abrigo <strong>{currentShelterName}</strong>.
-                    Clique em "Desvincular" para remover o vínculo.
-                  </Typography>
-                </Box>
-              </Grid>
-            ) : (
-              // Não tem abrigo - selecionar para vincular
-              <Grid item xs={12}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Selecionar Abrigo</InputLabel>
-                  <Select
-                    value={selectedShelterId}
-                    onChange={(e) => setSelectedShelterId(e.target.value)}
-                    label="Selecionar Abrigo"
-                    disabled={loading}
-                  >
-                    {shelters.map((shelter) => (
-                      <MenuItem key={shelter.id} value={shelter.id}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Chip 
-                            size="small" 
-                            label={shelter.name} 
-                            color="primary" 
-                            variant="outlined"
-                          />
-                        </Stack>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            )}
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: "info.light",
+                  borderRadius: 2,
+                  border: "1px solid",
+                  borderColor: "info.main",
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  O gerenciamento de líderes agora é feito através de <strong>Equipes (Teams)</strong>.
+                  Use o módulo de Teams para vincular líderes a equipes e abrigos.
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
         )}
 
@@ -152,27 +125,9 @@ export default function LeaderLinkDialog({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} sx={{ color: "text.secondary" }}>
+        <Button onClick={onClose} variant="contained">
           Fechar
         </Button>
-        {hasShelter ? (
-          <Button
-            color="warning"
-            variant="contained"
-            onClick={handleDesvincular}
-            disabled={loading}
-          >
-            Desvincular
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            onClick={handleVincular}
-            disabled={loading || !selectedShelterId}
-          >
-            Vincular
-          </Button>
-        )}
       </DialogActions>
     </Dialog>
   );

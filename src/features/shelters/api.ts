@@ -3,11 +3,11 @@ import {
   ShelterResponseDto, CreateShelterForm, EditShelterForm,
   LeaderMiniDto, TeacherOption, UserPublicDto,
   ShelterFilters, ShelterSort,
-  LeaderOption, ShelterSimpleResponseDto, ShelterListResponseDto,
-  AssignLeaderRequest, UnassignLeaderRequest, AssignTeacherRequest, UnassignTeacherRequest
+  LeaderOption, ShelterSimpleResponseDto, ShelterListResponseDto
 } from "./types";
 import { LeaderProfile } from "../leaders/types";
 import { TeacherProfile } from "../teachers/types";
+import { apiListTeachersSimple } from "../teachers/api";
 
 export type PaginatedResponse<T> = {
   items: T[];
@@ -26,12 +26,19 @@ export async function apiFetchShelters(args: {
 }) {
   const { page, limit, filters, sort } = args;
   const {
+    // Filtros principais (conforme documentação)
+    shelterName,
+    staffFilters,
+    addressFilter,
+    teamId,
+    teamName,
+    leaderId,
+    // Filtros legados (compatibilidade)
     searchString,
     nameSearchString,
-    leaderId,
   } = filters || {};
 
-  const sortField = sort?.id ?? "updatedAt";
+  const sortField = sort?.id ?? "name";
   const order = sort?.desc ? "DESC" : "ASC";
 
   // Construir parâmetros conforme nova API
@@ -42,17 +49,37 @@ export async function apiFetchShelters(args: {
     order,
   };
 
-  // Adicionar filtros
-  if (searchString) {
-    params.searchString = searchString;
+  // Adicionar filtros principais (prioridade)
+  if (shelterName) {
+    params.shelterName = shelterName;
+  } else if (nameSearchString) {
+    // Fallback para filtro legado
+    params.shelterName = nameSearchString;
   }
   
-  if (nameSearchString) {
-    params.nameSearchString = nameSearchString;
+  if (staffFilters) {
+    params.staffFilters = staffFilters;
+  }
+  
+  if (addressFilter) {
+    params.addressFilter = addressFilter;
+  }
+  
+  if (teamId) {
+    params.teamId = teamId;
+  }
+  
+  if (teamName) {
+    params.teamName = teamName;
   }
   
   if (leaderId) {
     params.leaderId = leaderId;
+  }
+  
+  // Filtros legados (compatibilidade)
+  if (searchString && !shelterName && !nameSearchString) {
+    params.searchString = searchString;
   }
 
   const { data } = await api.get<PaginatedResponse<ShelterResponseDto>>("/shelters", {
@@ -99,18 +126,21 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
     const shelterData = {
       name: payload.name,
       description: payload.description,
+      teamsQuantity: payload.teamsQuantity, // Campo obrigatório
       address: payload.address,
-      leaderProfileIds: payload.leaderProfileIds,
-      teacherProfileIds: payload.teacherProfileIds,
-      mediaItem: payload.mediaItem,
+      mediaItem: payload.mediaItem ? {
+        title: payload.mediaItem.title || "Foto do Abrigo",
+        description: payload.mediaItem.description || "Imagem do abrigo",
+        uploadType: payload.mediaItem.uploadType === "upload" ? "UPLOAD" : "LINK",
+        url: payload.mediaItem.url,
+      } : undefined,
     };
     
     // Adicionar JSON como string
     formData.append("shelterData", JSON.stringify(shelterData));
     
-    // Adicionar arquivo com o nome do fieldKey
-    const fieldKey = payload.mediaItem?.fieldKey || "shelterImage";
-    formData.append(fieldKey, payload.file);
+    // Adicionar arquivo com o nome conforme documentação
+    formData.append("image", payload.file);
     
     const { data } = await api.post<ShelterResponseDto>("/shelters", formData, {
       headers: {
@@ -146,18 +176,21 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
     const shelterData = {
       name: payload.name,
       description: payload.description,
+      teamsQuantity: payload.teamsQuantity, // Campo obrigatório
       address: payload.address,
-      leaderProfileIds: payload.leaderProfileIds,
-      teacherProfileIds: payload.teacherProfileIds,
-      mediaItem: payload.mediaItem,
+      mediaItem: payload.mediaItem ? {
+        title: payload.mediaItem.title || "Foto do Abrigo",
+        description: payload.mediaItem.description || "Imagem do abrigo",
+        uploadType: payload.mediaItem.uploadType === "upload" ? "UPLOAD" : "LINK",
+        url: payload.mediaItem.url,
+      } : undefined,
     };
     
     // Adicionar JSON como string
     formData.append("shelterData", JSON.stringify(shelterData));
     
-    // Adicionar arquivo com o nome do fieldKey
-    const fieldKey = payload.mediaItem?.fieldKey || "shelterImage";
-    formData.append(fieldKey, payload.file);
+    // Adicionar arquivo com o nome conforme documentação
+    formData.append("image", payload.file);
     
     const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, formData, {
       headers: {
@@ -168,40 +201,84 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
   } else {
     // Sem arquivo, usar JSON simples
     const { file, ...rest } = payload;
-    const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, rest);
+    const payloadJson: any = {
+      name: rest.name,
+      description: rest.description,
+      teamsQuantity: rest.teamsQuantity, // Campo obrigatório
+      address: rest.address,
+    };
+    
+    // Incluir mediaItem apenas se for link
+    if (rest.mediaItem && rest.mediaItem.uploadType === "link" && rest.mediaItem.url) {
+      payloadJson.mediaItem = {
+        title: rest.mediaItem.title || "Foto do Abrigo",
+        description: rest.mediaItem.description || "Imagem do abrigo",
+        uploadType: "LINK",
+        url: rest.mediaItem.url,
+      };
+    }
+    
+    const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, payloadJson);
     return data;
   }
 }
 
-// Endpoint 7: Deletar Shelter - DELETE /shelters/:id
+// Endpoint 7: Atualizar Mídia do Shelter - PATCH /shelters/:id/media
+export async function apiUpdateShelterMedia(
+  id: string,
+  payload: {
+    mediaItem?: {
+      title?: string;
+      description?: string;
+      uploadType: "upload" | "link";
+      url?: string;
+    };
+    file?: File;
+  }
+) {
+  // Se há arquivo, usar FormData
+  if (payload.file) {
+    const formData = new FormData();
+    
+    const mediaData = {
+      title: payload.mediaItem?.title || "Foto do Abrigo",
+      description: payload.mediaItem?.description || "Imagem do abrigo",
+      uploadType: "UPLOAD",
+    };
+    
+    formData.append("mediaData", JSON.stringify(mediaData));
+    formData.append("image", payload.file); // Campo conforme documentação
+    
+    const { data } = await api.patch<ShelterResponseDto>(`/shelters/${id}/media`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } else {
+    // Sem arquivo, usar JSON simples
+    const { data } = await api.patch<ShelterResponseDto>(`/shelters/${id}/media`, {
+      title: payload.mediaItem?.title || "Foto do Abrigo",
+      description: payload.mediaItem?.description || "Imagem do abrigo",
+      uploadType: payload.mediaItem?.uploadType === "link" ? "LINK" : "UPLOAD",
+      url: payload.mediaItem?.url,
+    });
+    return data;
+  }
+}
+
+// Endpoint 5: Buscar Quantidade de Equipes do Abrigo - GET /shelters/:id/teams-quantity
+export async function apiGetShelterTeamsQuantity(id: string) {
+  const { data } = await api.get<{ id: string; teamsQuantity: number }>(`/shelters/${id}/teams-quantity`);
+  return data;
+}
+
+// Endpoint 9: Deletar Shelter - DELETE /shelters/:id
 export async function apiDeleteShelter(id: string) {
   await api.delete(`/shelters/${id}`);
 }
 
-// Novos endpoints para atribuição/remoção de leaders e teachers
-// Atribuir Leader a Shelter - PATCH /leader-profiles/:leaderId/assign-shelter
-export async function apiAssignLeaderToShelter(leaderId: string, payload: AssignLeaderRequest) {
-  const { data } = await api.patch(`/leader-profiles/${leaderId}/assign-shelter`, payload);
-  return data;
-}
-
-// Desatribuir Leader de Shelter - PATCH /leader-profiles/:leaderId/unassign-shelter
-export async function apiUnassignLeaderFromShelter(leaderId: string, payload: UnassignLeaderRequest) {
-  const { data } = await api.patch(`/leader-profiles/${leaderId}/unassign-shelter`, payload);
-  return data;
-}
-
-// Atribuir Teacher a Shelter - PATCH /teacher-profiles/:teacherId/assign-shelter
-export async function apiAssignTeacherToShelter(teacherId: string, payload: AssignTeacherRequest) {
-  const { data } = await api.patch(`/teacher-profiles/${teacherId}/assign-shelter`, payload);
-  return data;
-}
-
-// Desatribuir Teacher de Shelter - PATCH /teacher-profiles/:teacherId/unassign-shelter
-export async function apiUnassignTeacherFromShelter(teacherId: string, payload: UnassignTeacherRequest) {
-  const { data } = await api.patch(`/teacher-profiles/${teacherId}/unassign-shelter`, payload);
-  return data;
-}
+// Endpoints de atribuição/remoção removidos - agora gerenciados via Teams
 
 // Endpoints auxiliares para carregar opções
 export async function apiListUsersByRole(role: "leader" | "teacher", limit = 500) {
@@ -217,34 +294,46 @@ export async function apiGetLeaderProfile(userId: string) {
 }
 
 export async function apiGetTeacherProfile(userId: string) {
-  const { data } = await api.get<{ id: string; user: UserPublicDto; shelter?: { id: string; name?: string } | null }>(`/teacher-profiles/${userId}`);
+  const { data } = await api.get<{ id: string; user: UserPublicDto; team?: { id: string; name?: string } | null }>(`/teacher-profiles/${userId}`);
   return data;
 }
 
 export async function apiLoadLeaderOptions() {
-  const { data } = await api.get<LeaderProfile[]>("/leader-profiles");
-  return data.map((c) => ({
+  // Buscar todos os líderes fazendo múltiplas requisições paginadas
+  let allLeaders: any[] = [];
+  let page = 1;
+  let hasMore = true;
+  
+  while (hasMore) {
+    const { data } = await api.get(`/leader-profiles?page=${page}&limit=50`);
+    
+    if (data?.items && Array.isArray(data.items) && data.items.length > 0) {
+      allLeaders.push(...data.items);
+      hasMore = data.items.length === 50;
+      page++;
+    } else {
+      hasMore = false;
+    }
+  }
+  
+  return allLeaders.map((c) => ({
     leaderProfileId: c.id,
-    name: c.user?.name,
+    name: c.user?.name || c.user?.email || c.id,
   })) as LeaderOption[];
 }
 
 export async function apiLoadTeacherOptions() {
-  const { data } = await api.get<TeacherProfile[]>("/teacher-profiles");
-  return data.map((t) => ({
-    teacherProfileId: t.id,
-    name: t.user?.name ?? t.user?.email ?? t.id,
-    // Temporarily use id until types are fully updated
-    assignedShelter: t.shelter?.name ?? t.shelter?.id ?? null,
-    vinculado: !!t.shelter,
+  // Usar o endpoint simplificado que retorna diretamente a lista
+  const teachers = await apiListTeachersSimple();
+  
+  return teachers.map((t) => ({
+    teacherProfileId: t.teacherProfileId,
+    name: t.name,
+    vinculado: t.vinculado,
   })) as TeacherOption[];
 }
 
-export type TeacherSimpleApi = {
-  teacherProfileId: string;
-  name: string;
-  vinculado: boolean;
-};
+// Removido: TeacherSimpleApi agora é TeacherSimpleListDto no módulo de teachers
 
 export type LeaderSimpleApi = {
   leaderProfileId: string;
@@ -252,32 +341,8 @@ export type LeaderSimpleApi = {
   vinculado: boolean;
 };
 
-export async function apiListTeachersSimple(): Promise<TeacherSimpleApi[]> {
-  // Buscar TODOS os professores fazendo múltiplas requisições
-  let allTeachers: any[] = [];
-  let page = 1;
-  let hasMore = true;
-  
-  while (hasMore) {
-    const { data } = await api.get(`/teacher-profiles?page=${page}&limit=50`);
-    
-    if (data?.items && data.items.length > 0) {
-      allTeachers.push(...data.items);
-      hasMore = data.items.length === 50; // Se retornou 50, pode ter mais
-      page++;
-    } else {
-      hasMore = false;
-    }
-  }
-  
-  const mapped = allTeachers.map((t: any) => ({
-    teacherProfileId: t.id,
-    name: t.user?.name || t.user?.email || t.id,
-    vinculado: !!t.shelter,
-  }));
-  
-  return mapped;
-}
+// Removido: apiListTeachersSimple agora está no módulo de teachers
+// Use: import { apiListTeachersSimple } from "../../teachers/api";
 
 export async function apiListLeadersSimple(): Promise<LeaderSimpleApi[]> {
   // Buscar apenas líderes disponíveis (não vinculados) da API padrão
@@ -300,7 +365,7 @@ export async function apiListLeadersSimple(): Promise<LeaderSimpleApi[]> {
   const mapped = allLeaders.map((l: any) => ({
     leaderProfileId: l.id,
     name: l.user?.name || l.user?.email || l.id,
-    vinculado: !!l.shelter,
+    vinculado: !!l.team,
   }));
   
   return mapped;

@@ -25,8 +25,7 @@ import {
 } from "@mui/material";
 import {
   Visibility,
-  Link as LinkIcon,
-  LinkOff as LinkOffIcon,
+  Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   SwapVert,
   ContentCopy,
@@ -55,8 +54,7 @@ type Props = {
   sorting: SortingState;
   setSorting: (s: SortingState) => void;
   onView: (row: TeacherProfile) => void;
-  onEditLinks: (row: TeacherProfile) => void;
-  onClearShelter: (teacherId: string) => void;
+  onEdit: (row: TeacherProfile) => void;
 };
 
 export default function TeacherCards({
@@ -69,8 +67,7 @@ export default function TeacherCards({
   sorting,
   setSorting,
   onView,
-  onEditLinks,
-  onClearShelter,
+  onEdit,
 }: Props) {
   const [open, setOpen] = useState<Set<string>>(new Set());
   const { user: loggedUser } = useSelector((state: RootState) => state.auth);
@@ -138,7 +135,7 @@ export default function TeacherCards({
         {rows.map((t) => {
           const expanded = open.has(t.id);
           const shelter = t.shelter || null;
-          const coordUser = shelter?.leader?.user || null;
+          const leader = shelter?.leader || null;
           const wa = buildWhatsappLink(t.user?.name, loggedUser?.name, t.user?.phone);
 
           return (
@@ -299,13 +296,7 @@ export default function TeacherCards({
                         size="small"
                         variant="filled"
                         icon={<GroupOutlined sx={{ fontSize: 12 }} />}
-                        label={
-                          coordUser?.name
-                            ? coordUser.name
-                            : coordUser?.email
-                              ? coordUser.email
-                              : "Sem líder"
-                        }
+                        label={shelter?.name || "Sem abrigo"}
                         color="info"
                         sx={{
                           fontWeight: 600,
@@ -314,24 +305,19 @@ export default function TeacherCards({
                           "& .MuiChip-label": { px: 0.5 }
                         }}
                       />
-                      {coordUser?.phone && (
-                        <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mt: 0.5 }}>
-                          <PhoneIcon sx={{ fontSize: 14, color: "text.secondary" }} />
-                          <Link
-                            href={`tel:${coordUser.phone}`}
-                            underline="hover"
-                            sx={{
-                              fontSize: "0.75rem",
-                              color: "text.secondary",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis"
-                            }}
-                          >
-                            {coordUser.phone}
-                          </Link>
-                          <CopyButton value={coordUser.phone} title="Copiar telefone" />
-                        </Stack>
+                      {shelter?.team?.numberTeam !== undefined && (
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          label={`Equipe ${shelter.team.numberTeam}`}
+                          color="info"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.7rem",
+                            height: 20,
+                            "& .MuiChip-label": { px: 0.5 }
+                          }}
+                        />
                       )}
                     </Stack>
                   </Box>
@@ -390,7 +376,7 @@ export default function TeacherCards({
                           </Stack>
                         </Paper>
 
-                        {/* Abrigo */}
+                        {/* Abrigo, Equipe e Líder */}
                         {shelter && (
                           <Paper
                             variant="outlined"
@@ -406,7 +392,7 @@ export default function TeacherCards({
                               <Stack direction="row" spacing={0.75} alignItems="center">
                                 <SchoolOutlined fontSize="small" color="primary" />
                                 <Typography variant="subtitle2" color="text.primary" sx={{ fontWeight: 600 }}>
-                                  Abrigo {shelter.name ?? "?"}
+                                  Abrigo e Equipe
                                 </Typography>
                               </Stack>
                               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap rowGap={1}>
@@ -416,12 +402,23 @@ export default function TeacherCards({
                                   label={shelter.name ?? "?"}
                                   sx={{ fontWeight: 500 }}
                                 />
-                                <Chip
-                                  size="small"
-                                  variant="outlined"
-                                  label={coordUser?.name || coordUser?.email || "Sem líder"}
-                                  sx={{ fontWeight: 500 }}
-                                />
+                                {shelter.team?.numberTeam !== undefined && (
+                                  <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    color="info"
+                                    label={`Equipe ${shelter.team.numberTeam}`}
+                                    sx={{ fontWeight: 500 }}
+                                  />
+                                )}
+                                {leader && (
+                                  <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    label={`Líder: ${leader.user?.name ?? "—"}`}
+                                    sx={{ fontWeight: 500 }}
+                                  />
+                                )}
                               </Stack>
                             </Stack>
                           </Paper>
@@ -490,28 +487,16 @@ export default function TeacherCards({
                         <Visibility fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Vincular / Alterar Abrigo">
+                    <Tooltip title={t.shelter?.id ? "Gerenciar Equipes do Abrigo" : "Gerenciar Equipes"}>
                       <IconButton
                         size="small"
-                        onClick={() => onEditLinks(t)}
+                        onClick={() => onEdit(t)}
                         sx={{
-                          color: "info.main",
-                          "&:hover": { bgcolor: "info.50" }
+                          color: "primary.main",
+                          "&:hover": { bgcolor: "primary.50" }
                         }}
                       >
-                        <LinkIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Desvincular Abrigo">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => onClearShelter(t.id)}
-                        sx={{
-                          "&:hover": { bgcolor: "error.50" }
-                        }}
-                      >
-                        <LinkOffIcon fontSize="small" />
+                        <EditIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Stack>

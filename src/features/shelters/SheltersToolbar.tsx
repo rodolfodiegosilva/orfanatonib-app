@@ -40,9 +40,14 @@ export default function SheltersToolbar({
     onChange((prev) => {
       const newFilters = { ...prev, [key]: value };
       
-      // Mapear filtros legados para novos filtros (sempre, mesmo quando undefined)
+      // Mapear filtros internos para filtros principais da API
       if (key === 'shelterSearchString') {
         newFilters.shelterName = value as string | undefined;
+        // Limpar filtro legado se estiver usando o novo
+        if (value) {
+          newFilters.nameSearchString = undefined;
+          newFilters.searchString = undefined;
+        }
       } else if (key === 'userSearchString') {
         newFilters.staffFilters = value as string | undefined;
       } else if (key === 'city' || key === 'addressSearchString') {

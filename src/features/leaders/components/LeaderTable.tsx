@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import {
   Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   TableSortLabel, Divider, Typography, Chip, Box, TablePagination,
-  useMediaQuery, useTheme, Tooltip, IconButton
+  useMediaQuery, useTheme, Tooltip, IconButton, Stack
 } from "@mui/material";
 import {
   ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, SortingState, useReactTable
 } from "@tanstack/react-table";
-import { Visibility, Link as LinkIcon, WhatsApp } from "@mui/icons-material";
+import { Visibility, Edit as EditIcon, WhatsApp } from "@mui/icons-material";
 import type { LeaderProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
 import { buildWhatsappLink } from "@/utils/whatsapp";
@@ -24,12 +24,12 @@ type Props = {
   sorting: SortingState;
   setSorting: (s: SortingState) => void;
   onView: (c: LeaderProfile) => void;
-  onLink: (c: LeaderProfile) => void;
+  onEdit: (c: LeaderProfile) => void;
 };
 
 export default function LeaderTable({
   rows, total, pageIndex, pageSize, setPageIndex, setPageSize,
-  sorting, setSorting, onView, onLink,
+  sorting, setSorting, onView, onEdit,
 }: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -51,16 +51,26 @@ export default function LeaderTable({
     },
     {
       id: "shelters",
-      header: "Abrigos",
+      header: "Abrigo",
       cell: ({ row }) => {
         const shelter = row.original.shelter;
         if (!shelter) return <Chip size="small" label="—" />;
-        return (
-          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            <Chip key={shelter.id} size="small" label={shelter.name ?? shelter.id} />
-          </Box>
+        return <Chip size="small" label={shelter.name ?? "—"} />;
+      },
+      meta: { width: 150 },
+    },
+    {
+      id: "team",
+      header: "Equipe",
+      cell: ({ row }) => {
+        const teamNumber = row.original.shelter?.team?.numberTeam;
+        return teamNumber !== undefined ? (
+          <Chip size="small" label={`Equipe ${teamNumber}`} color="info" variant="outlined" />
+        ) : (
+          <Typography variant="body2" color="text.secondary">—</Typography>
         );
       },
+      meta: { width: 100 },
     },
     {
       id: "teachers",
@@ -71,7 +81,10 @@ export default function LeaderTable({
         if (!teachers.length) return <Chip size="small" label="—" />;
         return (
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-            {teachers.map((t) => <Chip key={t.id} size="small" label={t.user?.name || t.user?.email || t.id} />)}
+            {teachers.map((t) => {
+              const teacherName = t.user?.name || t.user?.email || "Sem nome";
+              return <Chip key={t.id} size="small" label={teacherName} />;
+            })}
           </Box>
         );
       },
@@ -119,9 +132,13 @@ export default function LeaderTable({
                 </IconButton>
               </Tooltip>
             )}
-            <Tooltip title="Vincular/Desvincular abrigo">
-              <IconButton size={isXs ? "small" : "medium"} onClick={() => onLink(row.original)}>
-                <LinkIcon fontSize="inherit" />
+            <Tooltip title={row.original.shelter?.id ? "Gerenciar Equipes do Abrigo" : "Gerenciar Equipes"}>
+              <IconButton 
+                size={isXs ? "small" : "medium"} 
+                onClick={() => onEdit(row.original)}
+                color="primary"
+              >
+                <EditIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
           </Box>
@@ -129,7 +146,7 @@ export default function LeaderTable({
       },
       meta: { width: isXs ? 180 : 240 },
     },
-  ], [isMdUp, isXs, onLink, onView]);
+  ], [isMdUp, isXs, onEdit, onView]);
 
   const table = useReactTable({
     data: rows,

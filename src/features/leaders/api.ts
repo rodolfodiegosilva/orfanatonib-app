@@ -1,5 +1,5 @@
 import api from "@/config/axiosConfig";
-import type { LeaderProfile, ShelterSimple, PageDto, LeaderSimpleApi } from "./types";
+import type { LeaderProfile, ShelterSimple, PageDto, LeaderSimpleListDto } from "./types";
 
 export type ListLeadersParams = {
   page: number; 
@@ -9,6 +9,9 @@ export type ListLeadersParams = {
   leaderSearchString?: string;
   shelterSearchString?: string;
   hasShelter?: boolean;
+  teamId?: string;              // Filtrar por ID da equipe específica
+  teamName?: string;            // Filtrar por número da equipe (busca parcial)
+  hasTeam?: boolean;            // Filtrar por líderes vinculados a equipes
   // Filtros legados (compatibilidade)
   q?: string;
   active?: boolean;
@@ -32,8 +35,12 @@ export async function apiListLeaders(params: ListLeadersParams) {
   return data;
 }
 
+/**
+ * Lista todos os líderes de forma simplificada (apenas ID, nome e status de vinculação)
+ * Usado para listas de seleção (selects, comboboxes)
+ */
 export async function apiListLeadersSimple() {
-  const { data } = await api.get<LeaderSimpleApi[]>("/leader-profiles/simple");
+  const { data } = await api.get<LeaderSimpleListDto[]>("/leader-profiles/simple");
   return data;
 }
 
@@ -44,45 +51,21 @@ export async function apiGetLeader(leaderId: string) {
   return data;
 }
 
-export async function apiGetLeaderByShelter(shelterId: string) {
-  const { data } = await api.get<LeaderProfile>(
-    `/leader-profiles/by-shelter/${shelterId}`
-  );
-  return data;
-}
+// Endpoints de assign/unassign/move shelter removidos - agora gerenciados via Teams
 
-export async function apiAssignShelter(
-  leaderId: string,
-  shelterId: string
-): Promise<ApiMessage> {
-  const { data } = await api.patch<ApiMessage>(
-    `/leader-profiles/${leaderId}/assign-shelter`,
-    { shelterId }
-  );
-  return data;
-}
+export type ManageLeaderTeamDto = {
+  shelterId: string;    // UUID do abrigo (obrigatório)
+  numberTeam: number;   // Número da equipe: 1, 2, 3, 4... (obrigatório, mínimo: 1)
+};
 
-export async function apiUnassignShelter(
-  leaderId: string,
-  shelterId?: string
-): Promise<ApiMessage> {
-  const payload = shelterId ? { shelterId } : {};
-  const { data } = await api.patch<ApiMessage>(
-    `/leader-profiles/${leaderId}/unassign-shelter`,
-    payload
-  );
-  return data;
-}
-
-export async function apiMoveShelter(
-  fromLeaderId: string,
-  shelterId: string,
-  toLeaderId: string
-): Promise<ApiMessage> {
-  const { data } = await api.patch<ApiMessage>(
-    `/leader-profiles/${fromLeaderId}/move-shelter`,
-    { shelterId, toLeaderId }
-  );
+/**
+ * Endpoint único para vincular líder a equipe de um abrigo
+ * - Busca a equipe com o numberTeam especificado no abrigo
+ * - Se a equipe não existir, cria uma nova equipe automaticamente
+ * - Se o líder já estiver vinculado a outra equipe, remove da anterior e vincula à nova
+ */
+export async function apiManageLeaderTeam(leaderId: string, payload: ManageLeaderTeamDto) {
+  const { data } = await api.put<LeaderProfile>(`/leader-profiles/${leaderId}`, payload);
   return data;
 }
 

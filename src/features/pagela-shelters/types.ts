@@ -3,6 +3,8 @@
 export interface ShelterDto {
   id: string;
   name: string;
+  description?: string | null;
+  teamsQuantity?: number | null;
   address: {
     id: string;
     street: string;
@@ -11,11 +13,42 @@ export interface ShelterDto {
     city: string;
     state: string;
     postalCode: string;
-    complement?: string;
+    complement?: string | null;
     createdAt: string;
     updatedAt: string;
   };
-  leader: {
+  teams?: Array<{
+    id: string;
+    numberTeam: number;
+    description?: string | null;
+    leaders: Array<{
+      id: string;
+      active: boolean;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        phone: string;
+        active: boolean;
+        completed: boolean;
+        commonUser: boolean;
+      };
+    }>;
+    teachers: Array<{
+      id: string;
+      active: boolean;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        phone: string;
+        active: boolean;
+        completed: boolean;
+        commonUser: boolean;
+      };
+    }>;
+  }>;
+  leaders: Array<{
     id: string;
     active: boolean;
     user: {
@@ -27,7 +60,7 @@ export interface ShelterDto {
       completed: boolean;
       commonUser: boolean;
     };
-  };
+  }>;
   teachers: Array<{
     id: string;
     active: boolean;
@@ -41,6 +74,7 @@ export interface ShelterDto {
       commonUser: boolean;
     };
   }>;
+  mediaItem?: any | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -49,9 +83,9 @@ export interface ShelteredDto {
   id: string;
   name: string;
   birthDate: string;
-  guardianName?: string;
+  guardianName?: string | null;
   gender: string;
-  guardianPhone?: string;
+  guardianPhone?: string | null;
   joinedAt: string;
   shelter: {
     id: string;
@@ -65,7 +99,7 @@ export interface ShelteredDto {
     city: string;
     state: string;
     postalCode: string;
-    complement?: string;
+    complement?: string | null;
   };
   createdAt: string;
   updatedAt: string;
@@ -73,15 +107,30 @@ export interface ShelteredDto {
 
 export interface PagelaDto {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  shelteredId: string;
-  teacherProfileId: string;
-  referenceDate: string;
   year: number;
   visit: number;
   present: boolean;
   notes?: string;
+  referenceDate: string;
+  sheltered: {
+    id: string;
+    name: string;
+  };
+  teacher: {
+    id: string;
+    active: boolean;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      active: boolean;
+      completed: boolean;
+      commonUser: boolean;
+    };
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Responses das APIs
@@ -119,8 +168,6 @@ export interface SheltersFilters {
   sort?: string;
   order?: 'ASC' | 'DESC';
   searchString?: string;
-  nameSearchString?: string;
-  leaderId?: string;
 }
 
 export interface ShelteredFilters {
@@ -130,17 +177,6 @@ export interface ShelteredFilters {
   order?: 'ASC' | 'DESC';
   searchString?: string;
   shelterId?: string;
-  shelterName?: string;
-  shelteredName?: string;
-  city?: string;
-  state?: string;
-  gender?: string;
-  birthDate?: string;
-  birthDateFrom?: string;
-  birthDateTo?: string;
-  joinedAt?: string;
-  joinedFrom?: string;
-  joinedTo?: string;
 }
 
 export interface PagelasFilters {
@@ -148,7 +184,4 @@ export interface PagelasFilters {
   limit?: number;
   searchString?: string;
   shelteredId?: string;
-  year?: number;
-  visit?: number;
-  present?: boolean;
 }

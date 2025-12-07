@@ -16,6 +16,9 @@ export type TeacherFilters = {
   teacherSearchString?: string;
   shelterSearchString?: string;
   hasShelter?: boolean;
+  teamId?: string;
+  teamName?: string;
+  hasTeam?: boolean;
 };
 
 export default function TeacherProfilesManager() {
@@ -30,6 +33,9 @@ export default function TeacherProfilesManager() {
     teacherSearchString: "",
     shelterSearchString: "",
     hasShelter: undefined,
+    teamId: undefined,
+    teamName: undefined,
+    hasTeam: undefined,
   });
 
   const { rows, total, loading, error, setError, fetchPage, refreshOne } =
@@ -37,6 +43,9 @@ export default function TeacherProfilesManager() {
       teacherSearchString: filters.teacherSearchString || undefined,
       shelterSearchString: filters.shelterSearchString || undefined,
       hasShelter: filters.hasShelter,
+      teamId: filters.teamId,
+      teamName: filters.teamName,
+      hasTeam: filters.hasTeam,
     });
 
   const doRefresh = React.useCallback(() => {
@@ -51,38 +60,15 @@ export default function TeacherProfilesManager() {
     refresh: refreshShelters,
   } = useSheltersIndex();
 
-  const { dialogLoading, dialogError, setDialogError, setShelter, clearShelter } =
+  const { dialogLoading, dialogError, setDialogError } =
     useTeacherMutations(fetchPage, refreshOne);
 
   const [viewing, setViewing] = React.useState<TeacherProfile | null>(null);
-  const [editing, setEditing] = React.useState<TeacherProfile | null>(null);
+  const [editingTeam, setEditingTeam] = React.useState<TeacherProfile | null>(null);
 
-  const onSetShelter = React.useCallback(
-    async (teacher: TeacherProfile | null, shelterId: string) => {
-      if (!teacher || !shelterId) return;
-      try {
-        await setShelter(teacher.id, shelterId);
-        setEditing(null);
-        setDialogError("");
-        await Promise.all([fetchPage(), refreshShelters()]);
-      } catch {
-      }
-    },
-    [setShelter, fetchPage, refreshShelters, setDialogError]
-  );
-
-  const onClearShelter = React.useCallback(
-    async (teacherId: string) => {
-      try {
-        await clearShelter(teacherId);
-        setEditing((e) => (e?.id === teacherId ? null : e));
-        setDialogError("");
-        await Promise.all([fetchPage(), refreshShelters()]);
-      } catch {
-      }
-    },
-    [clearShelter, fetchPage, refreshShelters, setDialogError]
-  );
+  const handleEditTeam = React.useCallback((teacher: TeacherProfile) => {
+    setEditingTeam(teacher);
+  }, []);
 
   const handleFiltersChange = React.useCallback(
     (updater: (prev: TeacherFilters) => TeacherFilters) => {
@@ -149,8 +135,7 @@ export default function TeacherProfilesManager() {
           sorting={sorting as any}
           setSorting={setSorting as any}
           onView={(t) => setViewing(t)}
-          onEditLinks={(t) => setEditing(t)}
-          onClearShelter={(teacherId) => onClearShelter(teacherId)}
+          onEdit={handleEditTeam}
         />
       ) : (
         <TeacherTable
@@ -163,8 +148,7 @@ export default function TeacherProfilesManager() {
           sorting={sorting as any}
           setSorting={setSorting as any}
           onView={(t) => setViewing(t)}
-          onEditLinks={(t) => setEditing(t)}
-          onClearShelter={(teacherId) => onClearShelter(teacherId)}
+          onEdit={handleEditTeam}
         />
       )}
 
@@ -175,16 +159,15 @@ export default function TeacherProfilesManager() {
       />
 
       <TeacherEditDialog
-        open={!!editing}
-        teacher={editing}
-        loading={dialogLoading}
-        error={dialogError}
-        shelters={shelters}
-        onSetShelter={(shelterId) => onSetShelter(editing, shelterId)}
-        onClearShelter={() => editing && onClearShelter(editing.id)}
-        onClose={() => {
-          setEditing(null);
-          setDialogError("");
+        open={!!editingTeam}
+        teacher={editingTeam}
+        onClose={() => setEditingTeam(null)}
+        onSuccess={async () => {
+          await fetchPage();
+          if (editingTeam) {
+            await refreshOne(editingTeam.id);
+          }
+          setEditingTeam(null);
         }}
       />
     </Box>

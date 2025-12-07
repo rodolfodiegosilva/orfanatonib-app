@@ -2,7 +2,7 @@ import React, { memo, useMemo } from "react";
 import {
   Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   TableSortLabel, Divider, Typography, Chip, Box, TablePagination,
-  useTheme, useMediaQuery, Tooltip, IconButton
+  useTheme, useMediaQuery, Tooltip, IconButton, Stack
 } from "@mui/material";
 import {
   ColumnDef,
@@ -12,11 +12,10 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Visibility, Link as LinkIcon, LinkOff, WhatsApp } from "@mui/icons-material";
+import { Visibility, Edit as EditIcon, WhatsApp } from "@mui/icons-material";
 import { TeacherProfile } from "../types";
 import { fmtDate } from "@/utils/dates";
 import { useSelector } from "react-redux";
-import { selectIsAdmin } from "@/store/selectors/routeSelectors";
 import { RootState } from "@/store/slices";
 import { buildWhatsappLink } from "@/utils/whatsapp";
 
@@ -31,24 +30,19 @@ type Props = {
   sorting: SortingState;
   setSorting: (s: SortingState) => void;
   onView: (t: TeacherProfile) => void;
-  onEditLinks: (t: TeacherProfile) => void;
-  onClearShelter: (teacherId: string) => void;
+  onEdit: (t: TeacherProfile) => void;
 };
 
 type ActionsCellProps = {
   teacher: TeacherProfile;
   onView: (t: TeacherProfile) => void;
-  onEditLinks: (t: TeacherProfile) => void;
-  onClearShelter: (teacherId: string) => void;
-  isAdmin: boolean;
+  onEdit: (t: TeacherProfile) => void;
 };
 
 const ActionsCell = memo(function ActionsCell({
   teacher,
   onView,
-  onEditLinks,
-  onClearShelter,
-  isAdmin,
+  onEdit,
 }: ActionsCellProps) {
   const { user: loggedUser } = useSelector((state: RootState) => state.auth);
   const theme = useTheme();
@@ -88,36 +82,24 @@ const ActionsCell = memo(function ActionsCell({
         </Tooltip>
       )}
 
-      <Tooltip title="Vincular / Alterar Abrigo">
+      <Tooltip title={teacher.shelter?.id ? "Gerenciar Equipes do Abrigo" : "Gerenciar Equipes"}>
         <IconButton
           size={isXs ? "small" : "medium"}
-          onClick={() => onEditLinks(teacher)}
-          aria-label="vincular ou alterar shelter"
+          onClick={() => onEdit(teacher)}
+          aria-label="gerenciar equipes"
+          color="primary"
         >
-          <LinkIcon fontSize="inherit" />
+          <EditIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
-
-      {isAdmin && (
-        <Tooltip title="Desvincular Abrigo">
-          <IconButton
-            size={isXs ? "small" : "medium"}
-            onClick={() => onClearShelter(teacher.id)}
-            aria-label="desvincular shelter"
-          >
-            <LinkOff fontSize="inherit" />
-          </IconButton>
-        </Tooltip>
-      )}
     </Box>
   );
 });
 
 export default function TeacherTable({
   rows, total, pageIndex, pageSize, setPageIndex, setPageSize,
-  sorting, setSorting, onView, onEditLinks, onClearShelter,
+  sorting, setSorting, onView, onEdit,
 }: Props) {
-  const isAdmin = useSelector(selectIsAdmin);
 
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -150,16 +132,20 @@ export default function TeacherTable({
       cell: ({ row }) => (
         <Chip size="small" label={row.original.shelter?.name ?? "—"} />
       ),
-      meta: { width: 100 },
+      meta: { width: 150 },
     },
     {
-      id: "coord",
-      header: "Líder",
+      id: "team",
+      header: "Equipe",
       cell: ({ row }) => {
-        const c = row.original.shelter?.leader?.user;
-        return <Typography noWrap>{c?.name || c?.email || "—"}</Typography>;
+        const teamNumber = row.original.shelter?.team?.numberTeam;
+        return teamNumber !== undefined ? (
+          <Chip size="small" label={`Equipe ${teamNumber}`} color="info" variant="outlined" />
+        ) : (
+          <Typography variant="body2" color="text.secondary">—</Typography>
+        );
       },
-      meta: { width: 220 },
+      meta: { width: 100 },
     },
     ...(isMdUp
       ? ([
@@ -185,14 +171,12 @@ export default function TeacherTable({
         <ActionsCell
           teacher={row.original}
           onView={onView}
-          onEditLinks={onEditLinks}
-          onClearShelter={onClearShelter}
-          isAdmin={isAdmin}
+          onEdit={onEdit}
         />
       ),
       meta: { width: isXs ? 180 : 240 },
     },
-  ], [isMdUp, isXs, isAdmin, onView, onEditLinks, onClearShelter]);
+  ], [isMdUp, isXs, onView, onEdit]);
 
   const table = useReactTable({
     data: rows,

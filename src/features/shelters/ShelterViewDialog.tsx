@@ -35,10 +35,13 @@ import {
   WhatsApp,
   Image as ImageIcon,
   DescriptionOutlined,
+  Edit as EditIcon,
+  GroupOutlined,
 } from "@mui/icons-material";
 import { ShelterResponseDto } from "./types";
 import { fmtDate } from "@/utils/dates";
 import { CopyButton, initials } from "@/utils/components";
+import TeamManagementDialog from "./components/TeamManagementDialog";
 
 type Props = {
   open: boolean;
@@ -76,10 +79,12 @@ function LineCard({
 export default function ShelterViewDialog({ open, loading, shelter, onClose }: Props) {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  const [teamManagementOpen, setTeamManagementOpen] = React.useState(false);
   
   const address = shelter?.address;
   const teachers = shelter?.teachers ?? [];
   const leaders = shelter?.leaders ?? [];
+  const teams = shelter?.teams ?? [];
 
   return (
     <Dialog
@@ -233,6 +238,15 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
                   </Typography>
                 </LineCard>
               </Grid>
+              {shelter.teamsQuantity !== undefined && (
+                <Grid item xs={12} sm={6}>
+                  <LineCard icon={<GroupOutlined fontSize="small" />} title="Quantidade de Equipes">
+                    <Typography variant="body1" fontWeight={600}>
+                      {shelter.teamsQuantity}
+                    </Typography>
+                  </LineCard>
+                </Grid>
+              )}
               <Grid item xs={12} sm={6}>
                 <LineCard icon={<UpdateIcon fontSize="small" />} title="Atualizado em">
                   <Typography variant="body1">
@@ -242,21 +256,38 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
               </Grid>
             </Grid>
 
-            {/* Status */}
+            {/* Status e Gerenciamento de Equipes */}
             <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2 }}>
-              <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
-                <Chip
-                  size="small"
-                  label={`Professores: ${teachers.length}`}
-                  color={teachers.length > 0 ? "info" : "default"}
-                  variant={teachers.length > 0 ? "filled" : "outlined"}
-                />
-                <Chip
-                  size="small"
-                  label={`Líderes: ${leaders.length}`}
-                  color={leaders.length > 0 ? "success" : "default"}
-                  variant={leaders.length > 0 ? "filled" : "outlined"}
-                />
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" flexWrap="wrap" rowGap={1}>
+                <Stack direction="row" spacing={1} flexWrap="wrap" rowGap={1}>
+                  <Chip
+                    size="small"
+                    label={`Equipes: ${teams.length}`}
+                    color={teams.length > 0 ? "primary" : "default"}
+                    variant={teams.length > 0 ? "filled" : "outlined"}
+                  />
+                  <Chip
+                    size="small"
+                    label={`Professores: ${teachers.length}`}
+                    color={teachers.length > 0 ? "info" : "default"}
+                    variant={teachers.length > 0 ? "filled" : "outlined"}
+                  />
+                  <Chip
+                    size="small"
+                    label={`Líderes: ${leaders.length}`}
+                    color={leaders.length > 0 ? "success" : "default"}
+                    variant={leaders.length > 0 ? "filled" : "outlined"}
+                  />
+                </Stack>
+                <Tooltip title="Gerenciar Equipes">
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={() => setTeamManagementOpen(true)}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Stack>
             </Paper>
 
@@ -283,7 +314,24 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
 
             <Grid container spacing={1.25}>
               <Grid item xs={12}>
-                <LineCard icon={<PersonOutline fontSize="small" />} title="Líderes">
+                <LineCard 
+                  icon={<PersonOutline fontSize="small" />} 
+                  title={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography variant="caption">Líderes</Typography>
+                      <Tooltip title="Gerenciar Equipes">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => setTeamManagementOpen(true)}
+                          sx={{ p: 0.5 }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  }
+                >
                   {leaders.length > 0 ? (
                     <Stack spacing={1}>
                       {leaders.map((leader) => (
@@ -315,7 +363,24 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
 
             <Grid container spacing={1.25}>
               <Grid item xs={12}>
-                <LineCard icon={<SchoolOutlined fontSize="small" />} title="Professores">
+                <LineCard 
+                  icon={<SchoolOutlined fontSize="small" />} 
+                  title={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography variant="caption">Professores</Typography>
+                      <Tooltip title="Gerenciar Equipes">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => setTeamManagementOpen(true)}
+                          sx={{ p: 0.5 }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  }
+                >
                   {teachers.length > 0 ? (
                     <Stack spacing={1}>
                       {teachers.map((teacher) => (
@@ -360,6 +425,18 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
           Fechar
         </Button>
       </DialogActions>
+
+      <TeamManagementDialog
+        open={teamManagementOpen}
+        shelter={shelter}
+        onClose={() => setTeamManagementOpen(false)}
+        onSuccess={async () => {
+          // Recarregar dados do abrigo se necessário
+          if (onClose) {
+            // O componente pai pode recarregar os dados
+          }
+        }}
+      />
     </Dialog>
   );
 }

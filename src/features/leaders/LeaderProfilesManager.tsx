@@ -13,7 +13,7 @@ import LeaderToolbar from "./components/LeaderToolbar";
 import LeaderTable from "./components/LeaderTable";
 import LeaderCards from "./components/LeaderCards";
 import LeaderViewDialog from "./components/LeaderViewDialog";
-import LeaderLinkDialog from "./components/LeaderLinkDialog";
+import LeaderEditDialog from "./components/LeaderEditDialog";
 import {
   useLeaderMutations,
   useLeaderProfiles,
@@ -71,48 +71,17 @@ export default function LeaderProfilesManager() {
   };
 
   const [viewing, setViewing] = React.useState<LeaderProfile | null>(null);
-  const [linking, setLinking] = React.useState<LeaderProfile | null>(null);
+  const [editingTeam, setEditingTeam] = React.useState<LeaderProfile | null>(null);
 
   const {
     dialogLoading,
     dialogError,
     setDialogError,
-    assignShelter,
-    unassignShelter,
   } = useLeaderMutations(fetchPage, refreshOne);
 
-  const closeLinkDialog = React.useCallback(() => {
-    setLinking(null);
-    setDialogError("");
-  }, [setDialogError]);
-
-  const onSetShelter = React.useCallback(
-    async (leader: LeaderProfile | null, shelterId: string) => {
-      if (!leader || !shelterId) return;
-      try {
-        const msg = await assignShelter(leader.id, shelterId);
-        showSnack(msg || "Abrigo atribuído ao líder com sucesso", "success");
-        closeLinkDialog();
-      } catch {
-        showSnack("Falha ao vincular abrigo", "error");
-      }
-    },
-    [assignShelter, closeLinkDialog, showSnack]
-  );
-
-  const onClearShelter = React.useCallback(
-    async (leaderId: string) => {
-      if (!leaderId) return;
-      try {
-        const msg = await unassignShelter(leaderId);
-        showSnack(msg || "Abrigo desvinculado do líder com sucesso", "success");
-        closeLinkDialog();
-      } catch {
-        showSnack("Falha ao desvincular abrigo", "error");
-      }
-    },
-    [unassignShelter, closeLinkDialog, showSnack]
-  );
+  const handleEditTeam = React.useCallback((leader: LeaderProfile) => {
+    setEditingTeam(leader);
+  }, []);
 
   React.useEffect(() => {
     refreshShelters();
@@ -168,7 +137,7 @@ export default function LeaderProfilesManager() {
           sorting={sorting}
           setSorting={setSorting}
           onView={(c) => setViewing(c)}
-          onLink={(c) => setLinking(c)}
+          onEdit={handleEditTeam}
         />
       ) : (
         <LeaderTable
@@ -181,7 +150,7 @@ export default function LeaderProfilesManager() {
           sorting={sorting}
           setSorting={setSorting}
           onView={(c) => setViewing(c)}
-          onLink={(c) => setLinking(c)}
+          onEdit={handleEditTeam}
         />
       )}
 
@@ -191,15 +160,17 @@ export default function LeaderProfilesManager() {
         onClose={() => setViewing(null)}
       />
 
-      <LeaderLinkDialog
-        open={!!linking}
-        leader={linking}
-        shelters={shelters}
-        onSetShelter={(shelterId) => onSetShelter(linking, shelterId)}
-        onClearShelter={() => onClearShelter(linking?.id || "")}
-        loading={dialogLoading}
-        error={dialogError}
-        onClose={closeLinkDialog}
+      <LeaderEditDialog
+        open={!!editingTeam}
+        leader={editingTeam}
+        onClose={() => setEditingTeam(null)}
+        onSuccess={async () => {
+          await fetchPage();
+          if (editingTeam) {
+            await refreshOne(editingTeam.id);
+          }
+          setEditingTeam(null);
+        }}
       />
 
       <Snackbar

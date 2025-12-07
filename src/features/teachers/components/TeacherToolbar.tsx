@@ -17,6 +17,9 @@ export type TeacherFilters = {
   teacherSearchString?: string;
   shelterSearchString?: string;
   hasShelter?: boolean;
+  teamId?: string;
+  teamName?: string;
+  hasTeam?: boolean;
 };
 
 type Props = {
@@ -42,6 +45,9 @@ export default function TeacherToolbar({
       teacherSearchString: "",
       shelterSearchString: "",
       hasShelter: undefined,
+      teamId: undefined,
+      teamName: undefined,
+      hasTeam: undefined,
     }));
   };
 

@@ -39,11 +39,43 @@ export type ShelterWithTeachers = ShelterSimple & {
   teachers?: MinimalTeacher[];
 };
 
+export type TeamSimple = {
+  id: string;
+  numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  description?: string | null;
+  shelterId: string;
+  shelter?: ShelterWithTeachers;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Tipo conforme documentação: LeaderResponseDto
 export type LeaderProfile = {
   id: string;
   active: boolean;
   user: MinimalUser;
-  shelter?: ShelterWithTeachers | null;
+  shelter?: {
+    id: string;
+    name: string;
+    team?: {
+      id: string;
+      numberTeam: number;
+      description: string | null;
+    };
+    teachers?: {           // Professores da equipe
+      id: string;
+      active: boolean;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+        phone: string;
+        active: boolean;
+        completed: boolean;
+        commonUser: boolean;
+      };
+    }[];
+  } | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -60,6 +92,9 @@ export type LeaderFilters = {
   leaderSearchString?: string;
   shelterSearchString?: string;
   hasShelter?: boolean;
+  teamId?: string;
+  teamName?: string;
+  hasTeam?: boolean;
   // Filtros legados (compatibilidade)
   searchString?: string;
   q?: string;
@@ -71,3 +106,17 @@ export type LeaderFilters = {
   sort?: "updatedAt" | "createdAt" | "name";
   order?: "asc" | "desc";
 };
+
+/**
+ * Tipo simplificado para listagem de líderes
+ * Usado no endpoint GET /leader-profiles/simple
+ * Conforme documentação: LeaderSimpleListDto
+ */
+export type LeaderSimpleListDto = {
+  leaderProfileId: string;  // UUID do perfil do líder
+  name: string;              // Nome do usuário (ou email se não tiver nome, ou "—" se não tiver nenhum)
+  vinculado: boolean;        // Se está vinculado a uma equipe/abrigo
+};
+
+// Mantido para compatibilidade (deprecated)
+export type LeaderSimpleApi = LeaderSimpleListDto;

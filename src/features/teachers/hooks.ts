@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  apiAssignTeacherToShelter,
   apiGetTeacher,
   apiListSheltersSimple,
   apiListTeachers,
-  apiUnassignTeacherFromShelter,
 } from "./api";
 import { ShelterSimple, TeacherProfile, TeacherQuery, Page } from "./types";
 import type { SortingState } from "@tanstack/react-table";
@@ -13,7 +11,7 @@ export function useTeacherProfiles(
   pageIndex: number,  
   pageSize: number,
   sorting: SortingState,
-  filters: Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter">,
+  filters: Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter" | "teamId" | "teamName" | "hasTeam">,
 ) {
   const [rows, setRows] = useState<TeacherProfile[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -26,8 +24,11 @@ export function useTeacherProfiles(
         teacherSearchString: filters.teacherSearchString ?? undefined,
         shelterSearchString: filters.shelterSearchString ?? undefined,
         hasShelter: filters.hasShelter ?? undefined,
+        teamId: filters.teamId ?? undefined,
+        teamName: filters.teamName ?? undefined,
+        hasTeam: filters.hasTeam ?? undefined,
       }),
-    [filters.teacherSearchString, filters.shelterSearchString, filters.hasShelter]
+    [filters.teacherSearchString, filters.shelterSearchString, filters.hasShelter, filters.teamId, filters.teamName, filters.hasTeam]
   );
 
   const sortParam = useMemo<Pick<TeacherQuery, "sort" | "order">>(() => {
@@ -55,7 +56,7 @@ export function useTeacherProfiles(
     setError("");
     try {
       const data: Page<TeacherProfile> = await apiListTeachers({
-        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter">),
+        ...(JSON.parse(filtersKey) as Pick<TeacherQuery, "teacherSearchString" | "shelterSearchString" | "hasShelter" | "teamId" | "teamName" | "hasTeam">),
         page: pageIndex + 1, 
         limit: pageSize,
         sort: sortParam.sort,
@@ -99,25 +100,8 @@ export function useTeacherMutations(
   const [dialogLoading, setDialogLoading] = useState(false);
   const [dialogError, setDialogError] = useState("");
 
-  const setShelter = useCallback(async (teacherId: string, shelterId: string) => {
-    setDialogLoading(true); setDialogError("");
-    try { await apiAssignTeacherToShelter(teacherId, shelterId); await refreshOne(teacherId); }
-    catch (err: any) { setDialogError(err?.response?.data?.message || err.message || "Erro ao vincular Abrigo"); throw err; }
-    finally { setDialogLoading(false); }
-  }, [refreshOne]);
-
-  const clearShelter = useCallback(async (teacherId: string) => {
-    setDialogLoading(true); setDialogError("");
-    try {
-      await apiUnassignTeacherFromShelter(teacherId);
-      await refreshOne(teacherId);
-    } catch (err: any) {
-      setDialogError(err?.response?.data?.message || err.message || "Erro ao desvincular Abrigo");
-      throw err;
-    } finally { setDialogLoading(false); }
-  }, [refreshOne]);
-
-  return { dialogLoading, dialogError, setDialogError, setShelter, clearShelter };
+  // Métodos de setShelter/clearShelter removidos - agora gerenciados via Teams
+  return { dialogLoading, dialogError, setDialogError };
 }
 
 export function useSheltersIndex() {

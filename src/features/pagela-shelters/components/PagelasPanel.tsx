@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box, 
   Stack, 
@@ -11,16 +11,21 @@ import {
   Avatar,
   Divider,
   Pagination,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import type { PagelaDto } from "../types";
 import { EmptyState } from "./common/EmptyState";
-import { fmtDate } from "../utils";
+import { fmtDate, useDebounced } from "../utils";
 
 interface PagelasPanelProps {
   pagelas: PagelaDto[];
@@ -31,6 +36,7 @@ interface PagelasPanelProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onSearchChange?: (searchString: string) => void;
 }
 
 export function PagelasPanel({
@@ -42,17 +48,25 @@ export function PagelasPanel({
   currentPage,
   totalPages,
   onPageChange,
+  onSearchChange,
 }: PagelasPanelProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const sortedPagelas = useMemo(() => {
-    return [...pagelas].sort((a, b) => {
-      // Ordenar por ano DESC, depois por visita DESC
-      if (a.year !== b.year) return b.year - a.year;
-      return b.visit - a.visit;
-    });
-  }, [pagelas]);
+  const [search, setSearch] = useState("");
+  const dq = useDebounced(search);
+
+  // Chama a API quando o debounced search muda
+  useEffect(() => {
+    if (onSearchChange) {
+      onSearchChange(dq);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dq]);
+
+  const handleSearchClear = useCallback(() => {
+    setSearch("");
+  }, []);
 
   if (error) {
     return (
@@ -103,12 +117,43 @@ export function PagelasPanel({
             variant="body2" 
             color="#333333"
             sx={{ 
+              mb: { xs: 1, sm: 1.5 },
               fontSize: { xs: '0.75rem', sm: '0.875rem' }
             }}
           >
             Abrigo: {shelterName}
           </Typography>
         )}
+        
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Buscar pagelas..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "#009933" }} />
+              </InputAdornment>
+            ),
+            endAdornment: search && (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={handleSearchClear}>
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+              },
+            },
+          }}
+        />
       </Box>
 
       <Box sx={{ flex: 1, overflow: "auto", p: { xs: 1.5, sm: 2 } }}>
@@ -118,15 +163,15 @@ export function PagelasPanel({
               <Skeleton key={index} variant="rectangular" height={80} />
             ))}
           </Stack>
-        ) : sortedPagelas.length === 0 ? (
+        ) : pagelas.length === 0 ? (
           <EmptyState
             icon={<BookmarksIcon />}
             title="Nenhuma pagela encontrada"
-            description="Não há registros de pagelas para este abrigado"
+            description={search ? "Tente ajustar os filtros de busca" : "Não há registros de pagelas para este abrigado"}
           />
         ) : (
         <Stack spacing={{ xs: 1, sm: 1.5 }}>
-            {sortedPagelas.map((pagela) => (
+            {pagelas.map((pagela) => (
             <Card
                 key={pagela.id}
               sx={{
@@ -209,6 +254,18 @@ export function PagelasPanel({
                           }}
                         >
                           {pagela.notes}
+                        </Typography>
+                      )}
+                      {pagela.teacher?.user?.name && (
+                        <Typography
+                          variant="caption"
+                          color="#666666"
+                          sx={{
+                            fontSize: { xs: '0.625rem', sm: '0.75rem' },
+                            fontStyle: 'italic'
+                          }}
+                        >
+                          Professor: {pagela.teacher.user.name}
                         </Typography>
                       )}
                       </Box>

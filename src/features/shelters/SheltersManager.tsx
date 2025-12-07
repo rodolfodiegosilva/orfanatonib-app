@@ -77,6 +77,7 @@ export default function SheltersManager() {
     setCreating({
       name: "",
       description: "",
+      teamsQuantity: 1, // Campo obrigatório (número)
       address: {
         street: "",
         district: "",
@@ -84,8 +85,6 @@ export default function SheltersManager() {
         state: "",
         postalCode: "",
       } as any,
-      leaderProfileIds: [], // Mudou de leaderProfileId para leaderProfileIds[]
-      teacherProfileIds: [],
       mediaItem: undefined,
       file: undefined,
     });
@@ -94,20 +93,21 @@ export default function SheltersManager() {
   const submitCreate = async () => {
     if (!creating) return;
 
+    // Validação: teamsQuantity é obrigatório
+    if (!creating.teamsQuantity || creating.teamsQuantity < 1) {
+      setError("A quantidade de equipes é obrigatória e deve ser maior que 0");
+      return;
+    }
+
     const { file, ...rest } = creating as any;
     
-    // Preparar payload limpo (seguindo guia do backend)
+    // Preparar payload limpo (removidos leaderProfileIds e teacherProfileIds - agora via Teams)
     const payload: any = {
       name: rest.name,
       description: rest.description,
+      teamsQuantity: rest.teamsQuantity, // Campo obrigatório
       address: rest.address,
-      leaderProfileIds: sanitizeIds(rest.leaderProfileIds),
-      teacherProfileIds: sanitizeIds(rest.teacherProfileIds),
     };
-
-    // Remover arrays vazios (backend não precisa deles)
-    if (!payload.teacherProfileIds?.length) delete payload.teacherProfileIds;
-    if (!payload.leaderProfileIds?.length) delete payload.leaderProfileIds;
 
     // Tratar mediaItem (3 cenários do guia)
     if (file) {
@@ -118,20 +118,17 @@ export default function SheltersManager() {
       const shelterData = {
         name: payload.name,
         description: payload.description,
+        teamsQuantity: payload.teamsQuantity, // Campo obrigatório
         address: payload.address,
-        leaderProfileIds: payload.leaderProfileIds,
-        teacherProfileIds: payload.teacherProfileIds,
         mediaItem: {
           title: rest.mediaItem?.title || "Foto do Abrigo",
           description: rest.mediaItem?.description || "Imagem do abrigo",
-          uploadType: "upload",
-          isLocalFile: true,
-          fieldKey: "shelterImage"
+          uploadType: "UPLOAD",
         }
       };
       
       formData.append('shelterData', JSON.stringify(shelterData));
-      formData.append('shelterImage', file);
+      formData.append('image', file); // Campo conforme documentação
       
       await createShelter(formData);
     } else if (rest.mediaItem?.url) {
@@ -159,9 +156,8 @@ export default function SheltersManager() {
       id: c.id,
       name: c.name,
       description: c.description || "",
+      teamsQuantity: c.teamsQuantity || 1, // Campo obrigatório - usar valor atual ou padrão 1
       address: c.address,
-      leaderProfileIds: (c.leaders ?? []).map((l) => l.id), // Mudou de leader?.id para leaders.map
-      teacherProfileIds: (c.teachers ?? []).map((t) => t.id),
       mediaItem: c.mediaItem ? {
         title: c.mediaItem.title,
         description: c.mediaItem.description,
@@ -170,30 +166,27 @@ export default function SheltersManager() {
         isLocalFile: c.mediaItem.isLocalFile,
       } : undefined,
       file: undefined,
-      _originalLeaders: c.leaders ?? [], // Guardar líderes originais
-      _originalTeachers: c.teachers ?? [], // Guardar professores originais
     } as any);
   };
 
   const submitEdit = async () => {
     if (!editing) return;
 
-    const { id, file, _originalLeaders, _originalTeachers, ...rest } = editing as any;
-    const leaderIds = sanitizeIds(rest.leaderProfileIds) ?? [];
-    const teacherIds = sanitizeIds(rest.teacherProfileIds) ?? [];
+    // Validação: teamsQuantity é obrigatório
+    if (!editing.teamsQuantity || editing.teamsQuantity < 1) {
+      setError("A quantidade de equipes é obrigatória e deve ser maior que 0");
+      return;
+    }
 
-    // ✅ Preparar payload limpo (seguindo guia: apenas campos que mudaram)
+    const { id, file, ...rest } = editing as any;
+
+    // ✅ Preparar payload limpo (removidos leaderProfileIds e teacherProfileIds - agora via Teams)
     const payload: any = {
       name: rest.name,
       description: rest.description,
+      teamsQuantity: rest.teamsQuantity, // Campo obrigatório
       address: rest.address,
-      leaderProfileIds: leaderIds,
-      teacherProfileIds: teacherIds,
     };
-
-    // Remover arrays vazios
-    if (!payload.teacherProfileIds?.length) delete payload.teacherProfileIds;
-    if (!payload.leaderProfileIds?.length) delete payload.leaderProfileIds;
 
     // ⚠️ IMPORTANTE: Só incluir mediaItem se realmente mudou
     if (file) {
@@ -204,20 +197,17 @@ export default function SheltersManager() {
       const shelterData = {
         name: payload.name,
         description: payload.description,
+        teamsQuantity: payload.teamsQuantity, // Campo obrigatório
         address: payload.address,
-        leaderProfileIds: payload.leaderProfileIds,
-        teacherProfileIds: payload.teacherProfileIds,
         mediaItem: {
           title: rest.mediaItem?.title || "Foto do Abrigo",
           description: rest.mediaItem?.description || "Imagem do abrigo",
-          uploadType: "upload",
-          isLocalFile: true,
-          fieldKey: "shelterImage"
+          uploadType: "UPLOAD",
         }
       };
       
       formData.append('shelterData', JSON.stringify(shelterData));
-      formData.append('shelterImage', file);
+      formData.append('image', file); // Campo conforme documentação
       
       await updateShelter(id, formData);
     } else if (rest.mediaItem && !rest.mediaItem.id) {

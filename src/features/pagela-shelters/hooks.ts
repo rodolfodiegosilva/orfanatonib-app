@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PagelaSheltersApi } from './api';
 import type {
   SheltersResponse,
@@ -16,16 +16,16 @@ export const useShelters = (filters: SheltersFilters = {}) => {
   const [data, setData] = useState<SheltersResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastFilters, setLastFilters] = useState<string>('');
+  const lastFiltersRef = useRef<string>('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchShelters = useCallback(async (newFilters?: SheltersFilters, page: number = 1) => {
     const currentFilters = newFilters || filters;
     
     const filtersKey = JSON.stringify({ ...currentFilters, page });
-    if (filtersKey === lastFilters) return;
+    if (filtersKey === lastFiltersRef.current) return;
     
-    setLastFilters(filtersKey);
+    lastFiltersRef.current = filtersKey;
     setLoading(true);
     setError(null);
     
@@ -33,7 +33,7 @@ export const useShelters = (filters: SheltersFilters = {}) => {
       const result = await PagelaSheltersApi.getShelters({
         ...currentFilters,
         page,
-        limit: 5,
+        limit: 8,
       });
       setData(result);
       setCurrentPage(page);
@@ -42,11 +42,14 @@ export const useShelters = (filters: SheltersFilters = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [lastFilters]);
+  }, [filters]);
 
   useEffect(() => {
-    fetchShelters(filters);
-  }, [fetchShelters, filters]);
+    const filtersKey = JSON.stringify({ ...filters, page: filters.page || 1 });
+    if (filtersKey !== lastFiltersRef.current) {
+      fetchShelters(filters, filters.page || 1);
+    }
+  }, [filters, fetchShelters]);
 
   const handlePageChange = (page: number) => {
     fetchShelters(filters, page);
@@ -57,7 +60,7 @@ export const useShelters = (filters: SheltersFilters = {}) => {
     loading,
     error,
     currentPage,
-    totalPages: Math.ceil((data?.total || 0) / 10),
+    totalPages: Math.ceil((data?.total || 0) / 8),
     refetch: fetchShelters,
     handlePageChange,
   };
@@ -85,7 +88,7 @@ export const useSheltered = (filters: ShelteredFilters | undefined = undefined, 
       const result = await PagelaSheltersApi.getSheltered({
         ...currentFilters,
         page,
-        limit: 20,
+        limit: 8,
       });
       setData(result);
       setCurrentPage(page);
@@ -145,7 +148,7 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
       const result = await PagelaSheltersApi.getPagelas({
         ...currentFilters,
         page,
-        limit: 5,
+        limit: 8, // Padrão: 8 itens
       });
       setData(result);
       setCurrentPage(page);
@@ -154,11 +157,14 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
     } finally {
       setLoading(false);
     }
-  }, [enabled, lastFilters, filters]);
+  }, [enabled, filters, lastFilters]);
 
   useEffect(() => {
     if (enabled && filters) {
-      fetchPagelas(filters);
+      const filtersKey = JSON.stringify({ ...filters, page: filters.page || 1 });
+      if (filtersKey !== lastFilters) {
+        fetchPagelas(filters, filters.page || 1);
+      }
     } else {
       setData(null);
       setError(null);
@@ -166,7 +172,7 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
       setLastFilters('');
       setCurrentPage(1);
     }
-  }, [enabled, filters, fetchPagelas]);
+  }, [enabled, filters, lastFilters, fetchPagelas]);
 
   const handlePageChange = (page: number) => {
     fetchPagelas(filters, page);
@@ -177,7 +183,7 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
     loading,
     error,
     currentPage,
-    totalPages: Math.ceil((data?.total || 0) / 20),
+    totalPages: Math.ceil((data?.total || 0) / (data?.limit || 8)),
     refetch: fetchPagelas,
     handlePageChange,
   };
@@ -207,9 +213,6 @@ export const usePagelaSheltersManager = () => {
     ? { 
         ...pagelasFilters, 
         shelteredId: selectedSheltered.id,
-        year: 2025, // Ano padrão
-        visit: 6, // Visita padrão
-        present: true // Presente padrão
       }
     : undefined;
   
@@ -239,7 +242,7 @@ export const usePagelaSheltersManager = () => {
   const handleSheltersSearchChange = (searchString: string) => {
     setSheltersFilters(prev => ({
       ...prev,
-      nameSearchString: searchString,
+      searchString: searchString,
       page: 1,
     }));
   };
@@ -247,10 +250,18 @@ export const usePagelaSheltersManager = () => {
   const handleShelteredSearchChange = (searchString: string) => {
     setShelteredFilters(prev => ({
       ...prev,
-      shelteredName: searchString,
+      searchString: searchString,
       page: 1,
     }));
   };
+
+  const handlePagelasSearchChange = useCallback((searchString: string) => {
+    setPagelasFilters(prev => ({
+      ...prev,
+      searchString: searchString,
+      page: 1,
+    }));
+  }, []);
 
   return {
     // Estado
@@ -276,5 +287,6 @@ export const usePagelaSheltersManager = () => {
     setPagelasFilters,
     handleSheltersSearchChange,
     handleShelteredSearchChange,
+    handlePagelasSearchChange,
   };
 };

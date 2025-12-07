@@ -5,13 +5,9 @@ import {
   apiFetchShelter,
   apiFetchShelters,
   apiListLeadersSimple,
-  apiListTeachersSimple,
   apiUpdateShelter,
-  apiAssignLeaderToShelter,
-  apiUnassignLeaderFromShelter,
-  apiAssignTeacherToShelter,
-  apiUnassignTeacherFromShelter,
 } from "./api";
+import { apiListTeachersSimple } from "../teachers/api";
 import {
   ShelterResponseDto,
   CreateShelterForm,
@@ -225,74 +221,4 @@ export function useOptions() {
   return { leaders, teachers, loading, reloadOptions, loadRefs };
 }
 
-// Novo hook para operações de atribuição/remoção
-export function useShelterAssignments(onSuccess?: () => Promise<void>) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const assignLeader = useCallback(async (leaderId: string, shelterId: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiAssignLeaderToShelter(leaderId, { shelterId });
-      if (onSuccess) await onSuccess();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao atribuir líder");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
-
-  const unassignLeader = useCallback(async (leaderId: string, shelterId: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiUnassignLeaderFromShelter(leaderId, { shelterId });
-      if (onSuccess) await onSuccess();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao desatribuir líder");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
-
-  const assignTeacher = useCallback(async (teacherId: string, shelterId: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiAssignTeacherToShelter(teacherId, { shelterId });
-      if (onSuccess) await onSuccess();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao atribuir professor");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
-
-  const unassignTeacher = useCallback(async (teacherId: string, shelterId: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiUnassignTeacherFromShelter(teacherId, { shelterId });
-      if (onSuccess) await onSuccess();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Erro ao desatribuir professor");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
-
-  return {
-    loading,
-    error,
-    setError,
-    assignLeader,
-    unassignLeader,
-    assignTeacher,
-    unassignTeacher,
-  };
-}
+// Hook de atribuições removido - agora gerenciado via Teams
