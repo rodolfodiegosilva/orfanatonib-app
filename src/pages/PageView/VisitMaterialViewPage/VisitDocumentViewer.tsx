@@ -21,7 +21,7 @@ interface Props {
   document: MediaItem;
 }
 
-export default function WeekDocumentViewer({ document }: Props) {
+export default function VisitDocumentViewer({ document }: Props) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

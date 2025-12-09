@@ -21,10 +21,12 @@ import {
   MenuItem,
   Chip,
   Stack,
+  Paper,
 } from '@mui/material';
-import { Search, Clear, Edit, Delete, Add } from '@mui/icons-material';
+import { Search, Clear, Edit, Delete, Add, Lightbulb } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { motion } from 'framer-motion';
 import IdeasSectionCard from './components/IdeasSectionCard';
 import IdeasSectionDetailsModal from './components/IdeasSectionDetailsModal';
 import { deleteIdeasSection } from './api';
@@ -105,12 +107,32 @@ export default function IdeasSectionManager() {
   const hasQuery = Boolean(searchTerm);
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
-      <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Ideias compartilhadas" />
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ maxWidth: 560, flex: 1, mr: 2 }}>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="💡 Ideias Compartilhadas" />
+        </motion.div>
+
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
             <TextField
               fullWidth
               placeholder="Buscar por título ou descrição..."
@@ -118,19 +140,26 @@ export default function IdeasSectionManager() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               inputProps={{ 'aria-label': 'Buscar Ideias compartilhadas' }}
-              size="small"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search fontSize="small" />
+                    <Search sx={{ color: 'text.secondary' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    {isFiltering && <CircularProgress size={18} sx={{ mr: hasQuery ? 1 : 0 }} />}
+                    {isFiltering && <CircularProgress size={20} sx={{ mr: hasQuery ? 1 : 0 }} />}
                     {hasQuery && (
-                      <Tooltip title="Limpar">
-                        <IconButton size="small" onClick={() => setSearchTerm('')}>
+                      <Tooltip title="Limpar busca">
+                        <IconButton
+                          size="small"
+                          onClick={() => setSearchTerm('')}
+                          sx={{
+                            '&:hover': {
+                              bgcolor: 'action.hover',
+                            },
+                          }}
+                        >
                           <Clear fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -138,35 +167,119 @@ export default function IdeasSectionManager() {
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                  '&.Mui-focused': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderWidth: 2,
+                    },
+                  },
+                },
+              }}
             />
-          </Box>
-        </Box>
+          </Paper>
+        </motion.div>
 
-        {isBusy ? (
-          <Box textAlign="center" mt={10}><CircularProgress /></Box>
+        {/* Content Section */}
+        {isBusy && filteredSections.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
+          </Box>
         ) : error ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="error" onClose={() => setError('')}>{error}</Alert>
-          </Box>
-        ) : filteredSections.length === 0 ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="info">
-              {hasQuery ? 'Nenhuma seção encontrada com os filtros aplicados.' : 'Nenhuma seção de ideias cadastrada.'}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              onClose={() => setError('')}
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
+            >
+              {error}
             </Alert>
-          </Box>
+          </motion.div>
+        ) : filteredSections.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Lightbulb sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhuma seção encontrada
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {hasQuery
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há seções de ideias compartilhadas cadastradas.'}
+              </Typography>
+            </Paper>
+          </motion.div>
         ) : (
-          <Grid container spacing={3} alignItems="stretch">
-            {filteredSections.map((section) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={section.id} sx={{ display: 'flex' }}>
-                <IdeasSectionCard
-                  section={section}
-                  onDelete={(section) => setSectionToDelete(section)}
-                  onEdit={handleEdit}
-                  onViewDetails={(section) => setSelectedSection(section)}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <>
+            {(loading || isFiltering) && filteredSections.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filteredSections.map((section, index) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={section.id}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <IdeasSectionCard
+                    section={section}
+                    onDelete={(section) => setSectionToDelete(section)}
+                    onEdit={handleEdit}
+                    onViewDetails={(section) => setSelectedSection(section)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
         )}
 
         <DeleteConfirmDialog

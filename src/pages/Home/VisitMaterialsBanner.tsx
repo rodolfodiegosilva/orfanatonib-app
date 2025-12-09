@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MediaTargetType } from 'store/slices/types';
 
-const WeekMaterialsBanner: React.FC = () => {
+const VisitMaterialsBanner: React.FC = () => {
   const routes = useSelector((state: RootState) => state.routes.routes);
   const { user } = useSelector((state: RootState) => state.auth);
-  const currentWeekRoute = routes.find(
-    (route) => route.entityType === MediaTargetType.WeekMaterialsPage && route.current === true
+  const currentVisitRoute = routes.find(
+    (route) => route.entityType === MediaTargetType.VisitMaterialsPage && route.current === true
   );
   
-  if (!currentWeekRoute) return null;
+  if (!currentVisitRoute) return null;
 
   // Função para determinar a parte do mês
   const getMonthPart = () => {
@@ -149,7 +149,7 @@ const WeekMaterialsBanner: React.FC = () => {
           </Typography>
         </motion.div>
 
-        {currentWeekRoute.subtitle && (
+        {currentVisitRoute.subtitle && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ const WeekMaterialsBanner: React.FC = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.8)',
               }}
             >
-              {currentWeekRoute.subtitle}
+              {currentVisitRoute.subtitle}
             </Typography>
           </motion.div>
         )}
@@ -197,7 +197,7 @@ const WeekMaterialsBanner: React.FC = () => {
               variant="contained"
               size="large"
               component={Link}
-              to={`/${currentWeekRoute.path}`}
+              to={`/${currentVisitRoute.path}`}
               sx={{
                 px: { xs: 4, md: 6 },
                 py: { xs: 2, md: 2.5 },
@@ -264,4 +264,4 @@ const WeekMaterialsBanner: React.FC = () => {
   );
 };
 
-export default WeekMaterialsBanner;
+export default VisitMaterialsBanner;

@@ -16,7 +16,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import api from "@/config/axiosConfig";
-import { WeekMaterialPageData } from "@/store/slices/week-material/weekMaterialSlice";
+import { VisitMaterialPageData } from "@/store/slices/visit-material/visitMaterialSlice";
 import { MediaItem } from "store/slices/types";
 import MediaDocumentPreviewModal from "@/utils/MediaDocumentPreviewModal";
 import Slider from "react-slick";
@@ -34,7 +34,7 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import WeekVideoPlayer from "../PageView/WeekMaterialViewPage/WeekVideoPlayerView";
+import VisitVideoPlayer from "../PageView/VisitMaterialViewPage/VisitVideoPlayerView";
 
 const theme = createTheme({
   palette: {
@@ -128,7 +128,7 @@ const PrevArrow = (props: any) => {
 };
 
 const SpecialFamilyDayPage: React.FC = () => {
-  const [data, setData] = useState<WeekMaterialPageData | null>(null);
+  const [data, setData] = useState<VisitMaterialPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -138,8 +138,8 @@ const SpecialFamilyDayPage: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await api.get<WeekMaterialPageData>(
-          `/week-material-pages/${defaultSectionId}`
+        const response = await api.get<VisitMaterialPageData>(
+          `/visit-material-pages/${defaultSectionId}`
         );
         setData(response.data);
       } catch {
@@ -410,7 +410,7 @@ const SpecialFamilyDayPage: React.FC = () => {
               <Grid container spacing={3} justifyContent="center">
                 {data.videos.map((video) => (
                   <Grid key={video.id} item xs={12} sm={6} md={4}>
-                    <WeekVideoPlayer video={video} />
+                    <VisitVideoPlayer video={video} />
                   </Grid>
                 ))}
               </Grid>

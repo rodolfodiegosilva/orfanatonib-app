@@ -5,25 +5,25 @@ import {
   IconButton, Divider, Paper, Grid,
 } from '@mui/material';
 import { ContentCopy, Close } from '@mui/icons-material';
-import { WeekMaterialPageData } from 'store/slices/week-material/weekMaterialSlice';
-import { formatDate } from '../../week-materials/utils';
+import { VisitMaterialPageData } from 'store/slices/visit-material/visitMaterialSlice';
+import { formatDate } from '../../visit-materials/utils';
 import DeleteConfirmDialog from '@/components/common/modal/DeleteConfirmDialog';
 
-interface WeekMaterialDetailsModalProps {
-  material: WeekMaterialPageData | null;
+interface VisitMaterialDetailsModalProps {
+  material: VisitMaterialPageData | null;
   open: boolean;
   onClose: () => void;
   deletable?: boolean;
   onDelete?: () => Promise<void>;
 }
 
-export default function WeekMaterialDetailsModal({
+export default function VisitMaterialDetailsModal({
   material,
   open,
   onClose,
   deletable = false,
   onDelete,
-}: WeekMaterialDetailsModalProps) {
+}: VisitMaterialDetailsModalProps) {
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -71,7 +71,7 @@ export default function WeekMaterialDetailsModal({
         <DialogTitle
           sx={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.5rem', color: '#333', p: 2 }}
         >
-          Detalhes dos Materiais Semanais
+          Detalhes dos Materiais de Visita
         </DialogTitle>
 
         <DialogContent sx={{ px: 2, py: 1 }}>
@@ -92,6 +92,13 @@ export default function WeekMaterialDetailsModal({
                       <strong>Subtítulo:</strong> {material.subtitle || 'Sem Subtítulo'}
                     </Typography>
                   </Grid>
+                  {material.testament && (
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="body1">
+                        <strong>Testamento:</strong> {material.testament === 'OLD_TESTAMENT' ? 'Antigo Testamento' : 'Novo Testamento'}
+                      </Typography>
+                    </Grid>
+                  )}
                   <Grid item xs={12}>
                     <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                       <strong>Descrição:</strong> {material.description || 'Sem Descrição'}
@@ -222,3 +229,4 @@ export default function WeekMaterialDetailsModal({
     </>
   );
 }
+

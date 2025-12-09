@@ -16,7 +16,7 @@ interface Props {
   audio: MediaItem;
 }
 
-export default function WeekAudioPlayerView({ audio }: Props) {
+export default function VisitAudioPlayerView({ audio }: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 

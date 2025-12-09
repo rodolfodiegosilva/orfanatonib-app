@@ -9,8 +9,10 @@ import {
   InputAdornment,
   IconButton,
   Tooltip,
+  Paper,
+  Typography,
 } from '@mui/material';
-import { Search, Clear } from '@mui/icons-material';
+import { Search, Clear, Collections } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '@/store/slices';
@@ -24,6 +26,7 @@ import { deleteImageSection } from './api';
 import { useImageSections } from './hooks';
 import BackHeader from '@/components/common/header/BackHeader';
 import DeleteConfirmDialog from '@/components/common/modal/DeleteConfirmDialog';
+import { motion } from 'framer-motion';
 
 export default function ImageSectionManager() {
   const dispatch = useDispatch<AppDispatch>();
@@ -63,63 +66,179 @@ export default function ImageSectionManager() {
   const hasQuery = Boolean(searchTerm);
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
-      <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Imagens dos Abrigos" />
-        <Box sx={{ maxWidth: 560, mx: 'auto', mt: 2, mb: 4, position: 'relative' }}>
-          <TextField
-            fullWidth
-            placeholder="Buscar por legenda ou descrição..."
-            label="Buscar por legenda ou descrição"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            inputProps={{ 'aria-label': 'Buscar seções de imagens' }}
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search fontSize="small" />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  {isFiltering && <CircularProgress size={18} sx={{ mr: hasQuery ? 1 : 0 }} />}
-                  {hasQuery && (
-                    <Tooltip title="Limpar">
-                      <IconButton size="small" onClick={() => setSearchTerm('')}>
-                        <Clear fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="📸 Imagens dos Abrigos" />
+        </motion.div>
 
-        {isBusy ? (
-          <Box textAlign="center" mt={10}><CircularProgress /></Box>
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <TextField
+              fullWidth
+              placeholder="Buscar por legenda ou descrição..."
+              label="Buscar galerias"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              inputProps={{ 'aria-label': 'Buscar seções de imagens' }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {isFiltering && <CircularProgress size={20} sx={{ mr: hasQuery ? 1 : 0 }} />}
+                    {hasQuery && (
+                      <Tooltip title="Limpar busca">
+                        <IconButton
+                          size="small"
+                          onClick={() => setSearchTerm('')}
+                          sx={{
+                            '&:hover': {
+                              bgcolor: 'action.hover',
+                            },
+                          }}
+                        >
+                          <Clear fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  '&:hover': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                  '&.Mui-focused': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderWidth: 2,
+                    },
+                  },
+                },
+              }}
+            />
+          </Paper>
+        </motion.div>
+
+        {/* Content Section */}
+        {isBusy && filteredSections.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
+          </Box>
         ) : error ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="error" onClose={() => setError('')}>{error}</Alert>
-          </Box>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              onClose={() => setError('')}
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
+            >
+              {error}
+            </Alert>
+          </motion.div>
         ) : filteredSections.length === 0 ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="info">Sem imagens dos shelters para mostrar.</Alert>
-          </Box>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Collections sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhuma galeria encontrada
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {hasQuery
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há galerias de imagens dos abrigos cadastradas.'}
+              </Typography>
+            </Paper>
+          </motion.div>
         ) : (
-          <Grid container spacing={{ xs: 2, md: 3 }} alignItems="stretch">
-            {filteredSections.map((section) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={section.id} sx={{ display: 'flex' }}>
-                <ImagePageCard
-                  section={section}
-                  onDelete={setSectionToDelete}
-                  onEdit={handleEdit}
-                  onViewDetails={setSelectedSection}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <>
+            {(loading || isFiltering) && filteredSections.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filteredSections.map((section, index) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={section.id}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <ImagePageCard
+                    section={section}
+                    onDelete={setSectionToDelete}
+                    onEdit={handleEdit}
+                    onViewDetails={setSelectedSection}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
         )}
 
         <DeleteConfirmDialog

@@ -8,7 +8,7 @@ import authReducer from './auth/authSlice';
 import routesReducer from './route/routeSlice';
 import videoReducer from './video/videoSlice';
 import meditationReducer from './meditation/meditationSlice';
-import weekMaterialReducer from './week-material/weekMaterialSlice';
+import visitMaterialReducer from './visit-material/visitMaterialSlice';
 import eventsReducer from './events/eventsSlice';
 import commentsReducer from './comment/commentsSlice';
 import documentReducer from './documents/documentSlice';
@@ -30,7 +30,7 @@ const rootReducer = combineReducers({
   routes: routesReducer,
   video: videoReducer,
   meditation: meditationReducer,
-  weekMaterial: weekMaterialReducer,
+  visitMaterial: visitMaterialReducer,
   events: eventsReducer,
   comments: commentsReducer,
   document: documentReducer,

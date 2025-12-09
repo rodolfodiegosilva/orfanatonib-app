@@ -16,12 +16,12 @@ import { ReactElement } from 'react';
 import VideoPageCreator from '@/components/Adm/PageCreator/Templates/VideoPageCreator/VideoPageCreator';
 import PhotoPageCreator from '@/components/Adm/PageCreator/Templates/ImagePageCreator/ImagePageCreator';
 import MeditationPageCreator from '@/components/Adm/PageCreator/Templates/MeditationPageCreator/MeditationPageCreator';
-import WeekMaterialPageCreator from '@/components/Adm/PageCreator/Templates/WeekMaterialPageCreator/WeekMaterialPageCreator';
+import VisitMaterialPageCreator from '@/components/Adm/PageCreator/Templates/VisitMaterialPageCreator/VisitMaterialPageCreator';
 import { IdeasMaterialPageCreator } from '@/components/Adm/PageCreator/Templates/IdeasMaterialPageCreator/IdeasMaterialPageCreator';
 import BackHeader from '@/components/common/header/BackHeader';
 
 enum Options {
-  WEEK_MATERIALS = 'Adicionar Materiais da Semana',
+  VISIT_MATERIALS = 'Adicionar Materiais de Visita',
   MEDITATION = 'Adicionar meditação da Semana',
   GALLERY = 'Adicionar galeria de Fotos',
   VIDEOS = 'Adicionar galeria de Videos',
@@ -33,7 +33,7 @@ const componentMap: Record<keyof typeof Options, () => ReactElement> = {
   VIDEOS: () => <VideoPageCreator fromTemplatePage={true} />,
   MEDITATION: () => <MeditationPageCreator fromTemplatePage={true} />,
   IDEAS: () => <IdeasMaterialPageCreator fromTemplatePage={true} />,
-  WEEK_MATERIALS: () => <WeekMaterialPageCreator fromTemplatePage={true} />,
+  VISIT_MATERIALS: () => <VisitMaterialPageCreator fromTemplatePage={true} />,
 };
 
 export default function SelecPageTemplate() {

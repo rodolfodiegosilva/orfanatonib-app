@@ -33,7 +33,7 @@ export const useShelters = (filters: SheltersFilters = {}) => {
       const result = await PagelaSheltersApi.getShelters({
         ...currentFilters,
         page,
-        limit: 8,
+        limit: 6,
       });
       setData(result);
       setCurrentPage(page);
@@ -60,7 +60,7 @@ export const useShelters = (filters: SheltersFilters = {}) => {
     loading,
     error,
     currentPage,
-    totalPages: Math.ceil((data?.total || 0) / 8),
+    totalPages: Math.ceil((data?.total || 0) / 6),
     refetch: fetchShelters,
     handlePageChange,
   };
@@ -88,7 +88,7 @@ export const useSheltered = (filters: ShelteredFilters | undefined = undefined, 
       const result = await PagelaSheltersApi.getSheltered({
         ...currentFilters,
         page,
-        limit: 8,
+        limit: 6,
       });
       setData(result);
       setCurrentPage(page);
@@ -148,7 +148,7 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
       const result = await PagelaSheltersApi.getPagelas({
         ...currentFilters,
         page,
-        limit: 8, // Padrão: 8 itens
+        limit: 6, // Padrão: 6 itens
       });
       setData(result);
       setCurrentPage(page);
@@ -183,7 +183,7 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
     loading,
     error,
     currentPage,
-    totalPages: Math.ceil((data?.total || 0) / (data?.limit || 8)),
+    totalPages: Math.ceil((data?.total || 0) / (data?.limit || 6)),
     refetch: fetchPagelas,
     handlePageChange,
   };

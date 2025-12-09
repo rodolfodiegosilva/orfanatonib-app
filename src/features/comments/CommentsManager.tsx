@@ -1,6 +1,6 @@
 import React from "react";
-import { Box } from "@mui/material";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { Box, Container } from "@mui/material";
+import { motion } from "framer-motion";
 
 import { CommentData } from "store/slices/comment/commentsSlice";
 import { useCommentActions, useCommentsData, useCommentsFilter } from "./hooks";
@@ -24,8 +24,6 @@ export default function CommentsManager() {
 
   const [editValue, setEditValue] = React.useState<EditState>({ name: "", comment: "", shelter: "", neighborhood: "" });
   const [editErrors, setEditErrors] = React.useState({ comment: false, shelter: false, neighborhood: false });
-
-  const theme = useTheme();
 
   const openEdit = (c: CommentData) => {
     setToEdit(c);
@@ -52,26 +50,42 @@ export default function CommentsManager() {
   };
 
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 }, mt: { xs: 0, md: 2 }, bgcolor: "#f9fafb", minHeight: "100vh" }}>
-      <BackHeader title="Gerenciar Comentários" />
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="💬 Gerenciar Comentários" />
+        </motion.div>
 
-      <CommentsToolbar
-        search={search}
-        onSearchChange={onSearchChange}
-        status={status}
-        setStatus={setStatus}
-        isFiltering={isFiltering}
-      />
+        {/* Toolbar Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <CommentsToolbar
+            search={search}
+            onSearchChange={onSearchChange}
+            status={status}
+            setStatus={setStatus}
+            isFiltering={isFiltering}
+          />
+        </motion.div>
 
-      <CommentsGrid
-        comments={filtered}
-        loading={loading}
-        error={error}
-        onView={(c) => setSelected(c)}
-        onEdit={openEdit}
-        onAskPublish={(c) => setToPublish(c)}
-        onAskDelete={(c) => setToDelete(c)}
-      />
+        {/* Grid Section */}
+        <CommentsGrid
+          comments={filtered}
+          loading={loading}
+          error={error}
+          onView={(c) => setSelected(c)}
+          onEdit={openEdit}
+          onAskPublish={(c) => setToPublish(c)}
+          onAskDelete={(c) => setToDelete(c)}
+        />
 
       <DeleteConfirmDialog
         open={!!toDelete}
@@ -115,6 +129,7 @@ export default function CommentsManager() {
         open={!!selected}
         onClose={() => setSelected(null)}
       />
+      </Container>
     </Box>
   );
 }

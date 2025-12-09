@@ -179,7 +179,14 @@ function SheltersTableDesktop(props: Props) {
   const rowModel = table.getRowModel();
 
   return (
-    <Paper>
+    <Paper
+      sx={{
+        borderRadius: 2,
+        boxShadow: 2,
+        overflow: "hidden",
+        bgcolor: "background.paper",
+      }}
+    >
       <TableContainer>
         <Table size="medium" stickyHeader>
           <TableHead>
@@ -190,12 +197,31 @@ function SheltersTableDesktop(props: Props) {
                   const width = (header.column.columnDef.meta as any)?.width;
                   const isActions = header.column.id === "actions";
                   return (
-                    <TableCell key={header.id} sx={{ width }}>
+                    <TableCell
+                      key={header.id}
+                      sx={{
+                        width,
+                        bgcolor: "background.default",
+                        fontWeight: 600,
+                        fontSize: "0.875rem",
+                        color: "text.primary",
+                        borderBottom: "2px solid",
+                        borderColor: "divider",
+                      }}
+                    >
                       {!isActions ? (
                         <TableSortLabel
                           active={!!sorted}
                           direction={sorted === "asc" ? "asc" : sorted === "desc" ? "desc" : "asc"}
                           onClick={header.column.getToggleSortingHandler()}
+                          sx={{
+                            "&.Mui-active": {
+                              color: "primary.main",
+                            },
+                            "& .MuiTableSortLabel-icon": {
+                              color: "primary.main !important",
+                            },
+                          }}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </TableSortLabel>
@@ -211,15 +237,37 @@ function SheltersTableDesktop(props: Props) {
           <TableBody>
             {rowModel.rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} align="center">
-                  <Typography variant="body2" color="text.secondary">Nenhum abrigo encontrado.</Typography>
+                <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhum abrigo encontrado.
+                  </Typography>
                 </TableCell>
               </TableRow>
             ) : (
               rowModel.rows.map((row) => (
-                <TableRow key={row.id} hover>
+                <TableRow
+                  key={row.id}
+                  hover
+                  sx={{
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                    "&:last-child td": {
+                      borderBottom: 0,
+                    },
+                    transition: "background-color 0.2s ease",
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell
+                      key={cell.id}
+                      sx={{
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -234,9 +282,17 @@ function SheltersTableDesktop(props: Props) {
         page={pageIndex}
         onPageChange={(_, p) => setPageIndex(p)}
         rowsPerPage={pageSize}
-        onRowsPerPageChange={(e) => { setPageSize(parseInt(e.target.value, 10)); setPageIndex(0); }}
+        onRowsPerPageChange={(e) => {
+          setPageSize(parseInt(e.target.value, 10));
+          setPageIndex(0);
+        }}
         rowsPerPageOptions={[12, 24, 50]}
         labelRowsPerPage="Linhas por página"
+        sx={{
+          "& .MuiTablePagination-toolbar": {
+            px: 2,
+          },
+        }}
       />
     </Paper>
   );

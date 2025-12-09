@@ -82,19 +82,21 @@ export function PagelasPanel({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "rgba(255, 255, 255, 0.9)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(0, 153, 51, 0.2)",
+        bgcolor: "background.paper",
+        borderRadius: { xs: 3, sm: 4 },
+        boxShadow: { xs: 1, sm: "0 4px 20px rgba(0, 0, 0, 0.1)" },
+        border: "1px solid",
+        borderColor: "divider",
       }}
     >
-      <Box sx={{ p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+      <Box sx={{ p: { xs: 2, sm: 3 }, borderBottom: "1px solid", borderColor: "divider" }}>
         <Typography 
           variant="h6" 
           fontWeight="bold" 
-          color="#000000" 
+          color="text.primary" 
           sx={{ 
             mb: { xs: 1, sm: 1.5 },
-            fontSize: { xs: '1rem', sm: '1.25rem' },
+            fontSize: { xs: '1.1rem', sm: '1.25rem' },
             display: { xs: 'none', sm: 'block' } // Esconde no mobile
           }}
         >
@@ -103,7 +105,7 @@ export function PagelasPanel({
         {shelteredName && (
           <Typography 
             variant="body2" 
-            color="#333333" 
+            color="text.secondary" 
             sx={{ 
               mb: { xs: 0.5, sm: 1 },
               fontSize: { xs: '0.75rem', sm: '0.875rem' }
@@ -115,7 +117,7 @@ export function PagelasPanel({
         {shelterName && (
           <Typography 
             variant="body2" 
-            color="#333333"
+            color="text.secondary"
             sx={{ 
               mb: { xs: 1, sm: 1.5 },
               fontSize: { xs: '0.75rem', sm: '0.875rem' }
@@ -128,13 +130,14 @@ export function PagelasPanel({
         <TextField
           fullWidth
           size="small"
+          label="Buscar pagelas"
           placeholder="Buscar pagelas..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: "#009933" }} />
+                <SearchIcon sx={{ color: "text.secondary" }} />
               </InputAdornment>
             ),
             endAdornment: search && (
@@ -147,9 +150,16 @@ export function PagelasPanel({
           }}
           sx={{
             "& .MuiOutlinedInput-root": {
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              borderRadius: 2,
               "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "primary.main",
+                },
+              },
+              "&.Mui-focused": {
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderWidth: 2,
+                },
               },
             },
           }}
@@ -160,7 +170,7 @@ export function PagelasPanel({
         {loading ? (
           <Stack spacing={2}>
             {[...Array(6)].map((_, index) => (
-              <Skeleton key={index} variant="rectangular" height={80} />
+              <Skeleton key={index} variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
             ))}
           </Stack>
         ) : pagelas.length === 0 ? (
@@ -175,17 +185,29 @@ export function PagelasPanel({
             <Card
                 key={pagela.id}
               sx={{
-                  border: "1px solid rgba(0, 153, 51, 0.2)",
-                  backgroundColor: pagela.present 
-                    ? "rgba(0, 153, 51, 0.05)" 
-                    : "rgba(255, 0, 0, 0.05)",
-                  transition: "all 0.2s ease",
+                  border: "1px solid",
+                  borderColor: pagela.present 
+                    ? "rgba(76, 175, 80, 0.3)" 
+                    : "rgba(211, 47, 47, 0.3)",
+                  bgcolor: pagela.present 
+                    ? "rgba(76, 175, 80, 0.08)" 
+                    : "rgba(211, 47, 47, 0.08)",
+                  borderRadius: 3,
+                  transition: "all 0.3s ease",
                   "&:hover": {
-                    backgroundColor: pagela.present 
-                      ? "rgba(0, 153, 51, 0.1)" 
-                      : "rgba(255, 0, 0, 0.1)",
-                    transform: "translateY(-1px)",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    bgcolor: "action.hover",
+                    borderColor: pagela.present 
+                      ? "rgba(76, 175, 80, 0.5)" 
+                      : "rgba(211, 47, 47, 0.5)",
+                    transform: { xs: "none", sm: "translateY(-4px)" },
+                    boxShadow: { xs: 2, sm: 4 },
+                  },
+                  "@media (hover: none)": {
+                    "&:hover": {
+                      bgcolor: pagela.present 
+                        ? "rgba(76, 175, 80, 0.08)" 
+                        : "rgba(211, 47, 47, 0.08)",
+                    },
                   },
                 }}
               >
@@ -193,7 +215,7 @@ export function PagelasPanel({
                   <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} alignItems="center">
                     <Avatar
                       sx={{
-                        bgcolor: pagela.present ? "#009933" : "#FF0000",
+                        bgcolor: pagela.present ? "success.main" : "error.main",
                         width: { xs: 36, sm: 40 },
                         height: { xs: 36, sm: 40 },
                       }}
@@ -210,7 +232,7 @@ export function PagelasPanel({
                         <Typography
                           variant="subtitle2"
                           fontWeight="bold"
-                          color="#000000"
+                          color="text.primary"
                           sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                         >
                           Ano {pagela.year} - Visita {pagela.visit}
@@ -218,21 +240,18 @@ export function PagelasPanel({
                       <Chip
                           label={pagela.present ? "Presente" : "Ausente"}
                         size="small"
+                          color={pagela.present ? "success" : "error"}
                           sx={{
-                            backgroundColor: pagela.present 
-                              ? "rgba(0, 153, 51, 0.1)" 
-                              : "rgba(255, 0, 0, 0.1)",
-                            color: pagela.present ? "#009933" : "#FF0000",
-                            fontWeight: 500,
+                            fontWeight: 600,
                             fontSize: { xs: '0.625rem', sm: '0.75rem' },
-                            height: { xs: 18, sm: 20 }
+                            height: { xs: 20, sm: 24 }
                           }}
                       />
                     </Stack>
 
                       <Typography
                         variant="body2"
-                        color="#333333"
+                        color="text.secondary"
                         sx={{ 
                           mb: 0.5,
                           fontSize: { xs: '0.75rem', sm: '0.875rem' }
@@ -244,7 +263,7 @@ export function PagelasPanel({
                       {pagela.notes && (
                         <Typography
                           variant="caption"
-                          color="#666666"
+                          color="text.secondary"
                           sx={{
                             display: "-webkit-box",
                             WebkitLineClamp: 2,
@@ -259,7 +278,7 @@ export function PagelasPanel({
                       {pagela.teacher?.user?.name && (
                         <Typography
                           variant="caption"
-                          color="#666666"
+                          color="text.secondary"
                           sx={{
                             fontSize: { xs: '0.625rem', sm: '0.75rem' },
                             fontStyle: 'italic'
@@ -279,7 +298,7 @@ export function PagelasPanel({
 
             {/* Paginação no rodapé */}
             {totalPages > 1 && (
-                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid", borderColor: "divider" }}>
         <Pagination
                         count={totalPages}
                         page={currentPage}
@@ -289,16 +308,6 @@ export function PagelasPanel({
                         sx={{
                             display: "flex",
                             justifyContent: "center",
-                            "& .MuiPaginationItem-root": {
-                                color: "#009933",
-                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                                minWidth: { xs: 28, sm: 32 },
-                                height: { xs: 28, sm: 32 },
-                                "&.Mui-selected": {
-                                    backgroundColor: "#009933",
-                                    color: "white",
-                                },
-                            },
                         }}
                     />
                 </Box>

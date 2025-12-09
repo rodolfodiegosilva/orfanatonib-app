@@ -84,10 +84,11 @@ export default function ImagePageCard({ section, onDelete, onEdit, onViewDetails
               position: 'absolute',
               top: 8,
               left: 8,
-              bgcolor: section.public ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)',
+              bgcolor: section.public ? 'success.main' : 'error.main',
               color: 'white',
-              fontSize: '0.7rem',
-              height: 24,
+              fontSize: { xs: '0.7rem', sm: '0.75rem' },
+              height: { xs: 24, sm: 28 },
+              fontWeight: 600,
               '& .MuiChip-icon': {
                 color: 'white',
                 fontSize: '0.8rem',
@@ -97,16 +98,18 @@ export default function ImagePageCard({ section, onDelete, onEdit, onViewDetails
 
           {/* Contador de Imagens */}
           <Chip
-            label={`${section.mediaItems?.length || 0} imagens`}
+            label={`${section.mediaItems?.length || 0} ${section.mediaItems?.length === 1 ? 'imagem' : 'imagens'}`}
             size="small"
             sx={{
               position: 'absolute',
               bottom: 8,
               right: 8,
-              bgcolor: 'rgba(0, 0, 0, 0.7)',
+              bgcolor: 'rgba(0, 0, 0, 0.75)',
               color: 'white',
-              fontSize: '0.7rem',
-              height: 24,
+              fontSize: { xs: '0.7rem', sm: '0.75rem' },
+              height: { xs: 24, sm: 28 },
+              fontWeight: 600,
+              backdropFilter: 'blur(10px)',
             }}
           />
 
@@ -118,15 +121,14 @@ export default function ImagePageCard({ section, onDelete, onEdit, onViewDetails
                 position: 'absolute',
                 top: 8,
                 right: 8,
-                bgcolor: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                bgcolor: 'error.main',
+                color: 'white',
                 '&:hover': { 
-                  bgcolor: 'rgba(255,255,255,1)',
+                  bgcolor: 'error.dark',
                   transform: 'scale(1.1)',
                 },
-                color: '#d32f2f',
                 transition: 'all 0.2s ease',
+                boxShadow: 2,
               }}
               aria-label="Excluir galeria"
             >
@@ -185,50 +187,48 @@ export default function ImagePageCard({ section, onDelete, onEdit, onViewDetails
           >
             <Button
               variant="contained"
-              size={isMobile ? "medium" : "small"}
+              size="small"
               startIcon={<Visibility fontSize="small" />}
               onClick={() => onViewDetails(section)}
               fullWidth
               sx={{
                 borderRadius: 2,
-                fontSize: { xs: '0.8rem', md: '0.75rem' },
+                textTransform: 'none',
+                fontSize: { xs: '0.875rem', sm: '0.75rem' },
                 fontWeight: 600,
-                py: { xs: 1, md: 0.75 },
-                background: 'linear-gradient(45deg, #3b82f6, #1d4ed8)',
-                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
+                py: { xs: 1, sm: 0.75 },
                 '&:hover': {
-                  background: 'linear-gradient(45deg, #2563eb, #1e40af)',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)',
-                  transform: 'translateY(-1px)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: 4,
                 },
                 transition: 'all 0.2s ease',
               }}
             >
-              {isMobile ? '👁️ Ver Galeria' : 'Ver detalhes'}
+              Ver
             </Button>
             
             <Button
               variant="outlined"
-              size={isMobile ? "medium" : "small"}
+              size="small"
               startIcon={<EditIcon fontSize="small" />}
               onClick={() => onEdit(section)}
               fullWidth
               sx={{
                 borderRadius: 2,
-                fontSize: { xs: '0.8rem', md: '0.75rem' },
+                textTransform: 'none',
+                fontSize: { xs: '0.875rem', sm: '0.75rem' },
                 fontWeight: 600,
-                py: { xs: 1, md: 0.75 },
-                borderColor: '#10b981',
-                color: '#10b981',
+                py: { xs: 1, sm: 0.75 },
+                borderWidth: 2,
                 '&:hover': {
-                  borderColor: '#059669',
-                  backgroundColor: 'rgba(16, 185, 129, 0.04)',
-                  transform: 'translateY(-1px)',
+                  borderWidth: 2,
+                  transform: 'translateY(-2px)',
+                  boxShadow: 2,
                 },
                 transition: 'all 0.2s ease',
               }}
             >
-              {isMobile ? '✏️ Editar' : 'Editar e publicar'}
+              Editar
             </Button>
           </Stack>
         </CardActions>

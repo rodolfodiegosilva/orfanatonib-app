@@ -28,18 +28,18 @@ import api from '@/config/axiosConfig';
 import { fetchRoutes } from 'store/slices/route/routeSlice';
 import { RootState, AppDispatch } from 'store/slices';
 import {
-  setWeekMaterialData,
-  WeekMaterialPageData,
-} from 'store/slices/week-material/weekMaterialSlice';
-import WeekDocumentViewer from './WeekDocumentViewer';
-import WeekImageGalleryView from './WeekImageGalleryView';
-import WeekAudioPlayerView from './WeekAudioPlayerView';
-import WeekVideoPlayerView from './WeekVideoPlayerView';
+  setVisitMaterialData,
+  VisitMaterialPageData,
+} from 'store/slices/visit-material/visitMaterialSlice';
+import VisitDocumentViewer from './VisitDocumentViewer';
+import VisitImageGalleryView from './VisitImageGalleryView';
+import VisitAudioPlayerView from './VisitAudioPlayerView';
+import VisitVideoPlayerView from './VisitVideoPlayerView';
 import { MediaItem } from 'store/slices/types';
 import { UserRole } from '@/store/slices/auth/authSlice';
 import DeleteConfirmDialog from '@/components/common/modal/DeleteConfirmDialog';
 
-interface WeekMaterialsPageViewProps {
+interface VisitMaterialsPageViewProps {
   idToFetch: string;
 }
 
@@ -52,10 +52,10 @@ interface MediaType {
   color: string;
 }
 
-export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageViewProps) {
+export default function VisitMaterialsPageView({ idToFetch }: VisitMaterialsPageViewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [studyMaterials, setWeekMaterials] = useState<WeekMaterialPageData | null>(null);
+  const [visitMaterials, setVisitMaterials] = useState<VisitMaterialPageData | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -71,9 +71,9 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(`/week-material-pages/${idToFetch}`);
-        setWeekMaterials(response.data);
-        dispatch(setWeekMaterialData(response.data));
+        const response = await api.get(`/visit-material-pages/${idToFetch}`);
+        setVisitMaterials(response.data);
+        dispatch(setVisitMaterialData(response.data));
       } catch (err) {
         console.error('Erro ao buscar materiais de estudo:', err);
         setError('Erro ao carregar os materiais de estudo. Tente novamente mais tarde.');
@@ -88,9 +88,9 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
   const handleDeletePage = async () => {
     try {
       setIsDeleting(true);
-      await api.delete(`/week-material-pages/${idToFetch}`);
+      await api.delete(`/visit-material-pages/${idToFetch}`);
       dispatch(fetchRoutes());
-      navigate('/adm/gerenciar-materiais-semana');
+      navigate('/adm/paginas-materiais-visita');
     } catch (error) {
       console.error('Erro ao deletar página:', error);
     } finally {
@@ -100,11 +100,11 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
   };
 
   const handleEditPage = () => {
-    navigate('/adm/editar-pagina-semana');
+    navigate('/adm/editar-pagina-visita');
   };
 
   const handleBack = () => {
-    console.log('handleBack called in WeekMaterialsPageView');
+    console.log('handleBack called in VisitMaterialsPageView');
     navigate(-1);
   };
 
@@ -133,7 +133,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
     );
   }
 
-  if (!studyMaterials) {
+  if (!visitMaterials) {
     return (
       <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 } }}>
         <Alert severity="info">
@@ -146,32 +146,32 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
   const mediaTypes: MediaType[] = [
     {
       label: 'Vídeos',
-      items: studyMaterials.videos || [],
-      component: WeekVideoPlayerView,
+      items: visitMaterials.videos || [],
+      component: VisitVideoPlayerView,
       propName: 'video' as const,
       icon: () => <Typography>🎥</Typography>,
       color: '#ff5722',
     },
     {
       label: 'Documentos',
-      items: studyMaterials.documents || [],
-      component: WeekDocumentViewer,
+      items: visitMaterials.documents || [],
+      component: VisitDocumentViewer,
       propName: 'document' as const,
       icon: () => <Typography>📄</Typography>,
       color: '#2196f3',
     },
     {
       label: 'Imagens',
-      items: studyMaterials.images || [],
-      component: WeekImageGalleryView,
+      items: visitMaterials.images || [],
+      component: VisitImageGalleryView,
       propName: 'image' as const,
       icon: () => <Typography>🖼️</Typography>,
       color: '#4caf50',
     },
     {
       label: 'Áudios',
-      items: studyMaterials.audios || [],
-      component: WeekAudioPlayerView,
+      items: visitMaterials.audios || [],
+      component: VisitAudioPlayerView,
       propName: 'audio' as const,
       icon: () => <Typography>🎵</Typography>,
       color: '#9c27b0',
@@ -366,11 +366,11 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
                       letterSpacing: '0.5px',
                     }}
                   >
-                    📚 {studyMaterials.title}
+                    📚 {visitMaterials.title}
                   </Typography>
                 </motion.div>
 
-                {studyMaterials.subtitle && (
+                {visitMaterials.subtitle && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -387,7 +387,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
                         letterSpacing: '0.3px',
                       }}
                     >
-                      {studyMaterials.subtitle}
+                      {visitMaterials.subtitle}
                     </Typography>
                   </motion.div>
                 )}
@@ -397,7 +397,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
-                  {studyMaterials.description && (
+                  {visitMaterials.description && (
                     <Typography
                       variant="body1"
                       maxWidth={{ xs: '100%', sm: '90%', md: '800px' }}
@@ -412,7 +412,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
                         letterSpacing: '0.2px',
                       }}
                     >
-                      {studyMaterials.description}
+                      {visitMaterials.description}
                     </Typography>
                   )}
                 </motion.div>
@@ -621,7 +621,7 @@ export default function WeekMaterialsPageView({ idToFetch }: WeekMaterialsPageVi
                   📚 Nenhum material disponível
                 </Typography>
                 <Typography color="text.secondary">
-                  Os materiais para esta semana ainda não foram publicados.
+                  Os materiais de visita ainda não foram publicados.
                 </Typography>
               </Paper>
             </motion.div>

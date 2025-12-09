@@ -3,3 +3,4 @@ export const truncate = (text: string, max = 100) =>
 
 export const formatDate = (date?: string) =>
   date ? new Date(date).toLocaleString('pt-BR') : 'Não disponível';
+

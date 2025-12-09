@@ -17,7 +17,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Paper,
+  IconButton,
+  Grid,
 } from '@mui/material';
+import { ArrowBack, Save } from '@mui/icons-material';
 import api from '@/config/axiosConfig';
 import { AppDispatch, RootState } from '@/store/slices';
 import { fetchRoutes } from '@/store/slices/route/routeSlice';
@@ -61,6 +65,10 @@ export default function VideoPageCreator({ fromTemplatePage = false }: VideoProp
     newVideoDescription: false,
     newVideoSrc: false,
     newVideoURL: false,
+  });
+  const [touched, setTouched] = useState({
+    pageTitle: false,
+    pageDescription: false,
   });
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -113,6 +121,7 @@ export default function VideoPageCreator({ fromTemplatePage = false }: VideoProp
   };
 
   const handleSavePage = async () => {
+    setTouched({ pageTitle: true, pageDescription: true });
     if (!validate()) return;
 
     setLoading(true);
@@ -289,71 +298,199 @@ export default function VideoPageCreator({ fromTemplatePage = false }: VideoProp
   };
 
   return (
-    <Container maxWidth={false} sx={{ mt: { xs: 0, md: 6 } }}>
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        mb={{ xs: 2, md: 3 }}
-        textAlign="center"
-        sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}
-      >
-        {fromTemplatePage ? 'Criar Galeria de Vídeos' : 'Editar Galeria de Vídeos'}
-      </Typography>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: { xs: 2, md: 4 },
+      }}
+    >
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+            {fromTemplatePage ? '🎥 Criar Galeria de Vídeos' : '✏️ Editar Galeria de Vídeos'}
+          </Typography>
+        </Box>
 
-      <Box mb={2}>
-        <TextField
-          fullWidth
-          label="Título da Galeria"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          margin="normal"
-          error={errors.pageTitle}
-          helperText={errors.pageTitle ? 'Campo obrigatório' : ''}
-        />
-        <TextField
-          fullWidth
-          label="Descrição da Galeria"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          multiline
-          rows={3}
-          error={errors.pageDescription}
-          helperText={errors.pageDescription ? 'Campo obrigatório' : ''}
-        />
-        <FormControlLabel
-          control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
-          label="Página pública"
-          sx={{ mt: 1 }}
-        />
-      </Box>
-
-      <VideoForm
-        newVideo={newVideo}
-        errors={errors}
-        setNewVideo={setNewVideo}
-        handleUploadFile={handleUploadFile}
-        handleAddVideo={handleAddVideo}
-        isEditing={editingIndex !== null}
-        uploadProgress={uploadProgress}
-      />
-
-      <VideoList
-        videos={videos}
-        handleRemoveVideo={handleOpenDeleteDialog}
-        handleEditVideo={handleEditVideo}
-      />
-
-      <Box mt={3} display="flex" justifyContent="center">
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleSavePage}
-          disabled={loading || !areUploadsComplete()}
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+        {/* Form Section */}
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
         >
-          {loading ? 'Salvando...' : 'Salvar Página'}
-        </Button>
-      </Box>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            Informações Básicas
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Título da Galeria"
+                required
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (touched.pageTitle) setTouched((prev) => ({ ...prev, pageTitle: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, pageTitle: true }))}
+                error={touched.pageTitle && errors.pageTitle}
+                helperText={touched.pageTitle && errors.pageTitle ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Descrição da Galeria"
+                required
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (touched.pageDescription) setTouched((prev) => ({ ...prev, pageDescription: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, pageDescription: true }))}
+                error={touched.pageDescription && errors.pageDescription}
+                helperText={touched.pageDescription && errors.pageDescription ? 'Campo obrigatório' : ''}
+                multiline
+                rows={4}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
+                label="Página pública"
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <VideoForm
+          newVideo={newVideo}
+          errors={errors}
+          setNewVideo={setNewVideo}
+          handleUploadFile={handleUploadFile}
+          handleAddVideo={handleAddVideo}
+          isEditing={editingIndex !== null}
+          uploadProgress={uploadProgress}
+        />
+
+        <VideoList
+          videos={videos}
+          handleRemoveVideo={handleOpenDeleteDialog}
+          handleEditVideo={handleEditVideo}
+        />
+
+        {/* Save Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+                transform: 'translateY(-2px)',
+                boxShadow: 2,
+                bgcolor: 'action.hover',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            onClick={handleSavePage}
+            disabled={loading || !areUploadsComplete()}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              '&:hover:not(:disabled)': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4,
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {loading ? 'Salvando...' : 'Salvar Página'}
+          </Button>
+        </Box>
+      </Container>
 
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
@@ -377,6 +514,6 @@ export default function VideoPageCreator({ fromTemplatePage = false }: VideoProp
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 }

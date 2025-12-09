@@ -10,8 +10,9 @@ import {
   Box,
   Fab,
   Typography,
+  InputAdornment,
 } from "@mui/material";
-import { Add, Refresh, CleaningServices } from "@mui/icons-material";
+import { Add, Refresh, CleaningServices, Search as SearchIcon, Clear } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { ShelterFilters } from "./types";
 import { selectIsAdmin } from "@/store/selectors/routeSelectors";
@@ -81,24 +82,29 @@ export default function SheltersToolbar({
     }));
   };
 
+  const hasFilters = Boolean(
+    filters.shelterSearchString || filters.userSearchString || filters.city
+  );
+
   return (
     <Paper
       sx={{
         p: { xs: 2, md: 3 },
-        mb: 2,
-        borderRadius: 3,
+        mb: 3,
+        borderRadius: 2,
+        boxShadow: 2,
+        bgcolor: "background.paper",
       }}
-      elevation={3}
     >
       <Typography
-        variant="subtitle1"
-        fontWeight={700}
-        sx={{ mb: 2, color: "text.primary" }}
+        variant="h6"
+        fontWeight={600}
+        sx={{ mb: 3, color: "text.primary", fontSize: { xs: "1.1rem", md: "1.25rem" } }}
       >
         Pesquisar
       </Typography>
 
-      <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems="center">
+      <Grid container spacing={{ xs: 2, md: 2.5 }} alignItems="center">
         <Grid item xs={12} md={4}>
           <TextField
             fullWidth
@@ -107,6 +113,35 @@ export default function SheltersToolbar({
             value={filters.shelterSearchString ?? ""}
             onChange={(e) => handleChange("shelterSearchString", e.target.value || undefined)}
             placeholder="Nome do abrigo"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.shelterSearchString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("shelterSearchString", undefined)}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -118,6 +153,35 @@ export default function SheltersToolbar({
             value={filters.userSearchString ?? ""}
             onChange={(e) => handleChange("userSearchString", e.target.value || undefined)}
             placeholder="Nome, email ou telefone"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.userSearchString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("userSearchString", undefined)}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -129,6 +193,35 @@ export default function SheltersToolbar({
             value={filters.city ?? ""}
             onChange={(e) => handleChange("city", e.target.value || undefined)}
             placeholder="Rua, bairro, cidade, estado ou CEP"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.city && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("city", undefined)}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -144,37 +237,40 @@ export default function SheltersToolbar({
                   zIndex: 9999,
                 }}
               >
-                <Stack spacing={1} alignItems="flex-end">
-                  <Tooltip title="Limpar filtros">
-                    <Fab
-                      size="small"
-                      color="secondary"
-                      aria-label="Limpar filtros"
-                      onClick={handleClear}
-                      sx={{ boxShadow: 6 }}
-                    >
-                      <CleaningServices fontSize="small" />
-                    </Fab>
-                  </Tooltip>
+                <Stack spacing={1.5} alignItems="flex-end">
+                  {hasFilters && (
+                    <Tooltip title="Limpar filtros">
+                      <Fab
+                        size="medium"
+                        color="secondary"
+                        aria-label="Limpar filtros"
+                        onClick={handleClear}
+                        sx={{ boxShadow: 4 }}
+                      >
+                        <CleaningServices />
+                      </Fab>
+                    </Tooltip>
+                  )}
 
                   <Tooltip title="Recarregar">
                     <Fab
-                      size="small"
+                      size="medium"
                       aria-label="Recarregar"
                       onClick={onRefreshClick}
-                      sx={{ boxShadow: 6 }}
+                      sx={{ boxShadow: 4 }}
                     >
-                      <Refresh fontSize="small" />
+                      <Refresh />
                     </Fab>
                   </Tooltip>
 
                   {isAdmin && (
                     <Tooltip title="Criar Abrigo">
                       <Fab
+                        size="medium"
                         color="primary"
                         aria-label="Criar Abrigo"
                         onClick={onCreateClick}
-                        sx={{ boxShadow: 6 }}
+                        sx={{ boxShadow: 4 }}
                       >
                         <Add />
                       </Fab>
@@ -189,18 +285,36 @@ export default function SheltersToolbar({
               spacing={1.5}
               justifyContent="flex-end"
               alignItems="center"
+              flexWrap="wrap"
+              useFlexGap
             >
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<CleaningServices />}
-                onClick={handleClear}
-              >
-                Limpar
-              </Button>
+              {hasFilters && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<CleaningServices />}
+                  onClick={handleClear}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    px: 2,
+                  }}
+                >
+                  Limpar Filtros
+                </Button>
+              )}
 
               <Tooltip title="Recarregar">
-                <IconButton onClick={onRefreshClick}>
+                <IconButton
+                  onClick={onRefreshClick}
+                  sx={{
+                    borderRadius: 2,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
                   <Refresh />
                 </IconButton>
               </Tooltip>
@@ -208,10 +322,21 @@ export default function SheltersToolbar({
               {isAdmin && (
                 <Button
                   variant="contained"
+                  color="primary"
                   startIcon={<Add />}
                   onClick={onCreateClick}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    px: 3,
+                    boxShadow: 2,
+                    "&:hover": {
+                      boxShadow: 4,
+                    },
+                  }}
                 >
-                  Criar
+                  Criar Abrigo
                 </Button>
               )}
             </Stack>

@@ -6,7 +6,11 @@ import {
   CircularProgress,
   Alert,
   Button,
+  Container,
+  Paper,
 } from '@mui/material';
+import { Lightbulb } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 
 import DeleteConfirmDialog from '@/components/common/modal/DeleteConfirmDialog';
 import { IdeasPageData } from 'store/slices/ideas/ideasSlice';
@@ -38,65 +42,157 @@ export default function IdeasManager() {
   const anyError = error || mutError;
 
   return (
-    <Box
-      sx={{
-        px: { xs: 2, md: 4 },
-        bgcolor: '#f5f7fa',
-        minHeight: '100vh',
-      }}
-    >
-      <BackHeader title="Páginas de Ideias" />
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="💡 Páginas de Ideias" />
+        </motion.div>
 
-      <IdeasToolbar
-        search={searchTerm}
-        onSearch={setSearchTerm}
-        onRefresh={fetchPages}
-        isFiltering={isFiltering}
-      />
-
-      {loading ? (
-        <Box textAlign="center" mt={10}>
-          <CircularProgress aria-label="Carregando páginas" />
-          <Typography variant="body2" mt={2}>
-            Carregando páginas de ideias...
-          </Typography>
-        </Box>
-      ) : anyError ? (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {anyError}
-          <Button onClick={fetchPages} sx={{ ml: 2 }}>
-            Tentar novamente
-          </Button>
-        </Alert>
-      ) : filtered.length === 0 ? (
-        <Alert severity="info">
-          Nenhuma página encontrada para o termo pesquisado.
-        </Alert>
-      ) : (
-        <Grid container spacing={3}>
-          {filtered.map((page) => (
-            <IdeasPageCard
-              key={page.id}
-              page={page}
-              onView={() => setSelectedPage(page)}
-              onDelete={() => setPageToDelete(page)}
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <IdeasToolbar
+              search={searchTerm}
+              onSearch={setSearchTerm}
+              onRefresh={fetchPages}
+              isFiltering={isFiltering}
             />
-          ))}
-        </Grid>
-      )}
+          </Paper>
+        </motion.div>
 
-      <IdeasPageDetailsModal
-        page={selectedPage}
-        open={!!selectedPage}
-        onClose={() => setSelectedPage(null)}
-      />
+        {/* Content Section */}
+        {loading && filtered.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} aria-label="Carregando páginas" />
+            <Typography variant="body2" mt={2} color="text.secondary">
+              Carregando páginas de ideias...
+            </Typography>
+          </Box>
+        ) : anyError ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
+              action={
+                <Button onClick={fetchPages} color="inherit" size="small">
+                  Tentar novamente
+                </Button>
+              }
+            >
+              {anyError}
+            </Alert>
+          </motion.div>
+        ) : filtered.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Lightbulb sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhuma página encontrada
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {searchTerm
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há páginas de ideias cadastradas.'}
+              </Typography>
+            </Paper>
+          </motion.div>
+        ) : (
+          <>
+            {(loading || isFiltering) && filtered.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filtered.map((page, index) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={page.id}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <IdeasPageCard
+                    page={page}
+                    onView={() => setSelectedPage(page)}
+                    onDelete={() => setPageToDelete(page)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
+        )}
 
-      <DeleteConfirmDialog
-        open={!!pageToDelete}
-        title={pageToDelete?.title}
-        onClose={() => setPageToDelete(null)}
-        onConfirm={handleDeleteConfirm}
-      />
+        <IdeasPageDetailsModal
+          page={selectedPage}
+          open={!!selectedPage}
+          onClose={() => setSelectedPage(null)}
+        />
+
+        <DeleteConfirmDialog
+          open={!!pageToDelete}
+          title={pageToDelete?.title}
+          onClose={() => setPageToDelete(null)}
+          onConfirm={handleDeleteConfirm}
+        />
+      </Container>
     </Box>
   );
 }

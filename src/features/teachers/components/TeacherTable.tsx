@@ -201,7 +201,14 @@ export default function TeacherTable({
   });
 
   return (
-    <Paper>
+    <Paper
+      sx={{
+        borderRadius: 2,
+        boxShadow: 2,
+        overflow: "hidden",
+        bgcolor: "background.paper",
+      }}
+    >
       <TableContainer>
         <Table size={isXs ? "small" : "medium"} stickyHeader>
           <TableHead>
@@ -212,7 +219,18 @@ export default function TeacherTable({
                   const width = (h.column.columnDef.meta as any)?.width;
                   const isActions = h.column.id === "actions";
                   return (
-                    <TableCell key={h.id} sx={{ width }}>
+                    <TableCell
+                      key={h.id}
+                      sx={{
+                        width,
+                        bgcolor: "background.default",
+                        fontWeight: 600,
+                        fontSize: "0.875rem",
+                        color: "text.primary",
+                        borderBottom: "2px solid",
+                        borderColor: "divider",
+                      }}
+                    >
                       {!isActions ? (
                         <TableSortLabel
                           active={!!sorted}
@@ -221,6 +239,14 @@ export default function TeacherTable({
                               sorted === "desc" ? "desc" : "asc"
                           }
                           onClick={h.column.getToggleSortingHandler()}
+                          sx={{
+                            "&.Mui-active": {
+                              color: "primary.main",
+                            },
+                            "& .MuiTableSortLabel-icon": {
+                              color: "primary.main !important",
+                            },
+                          }}
                         >
                           {flexRender(h.column.columnDef.header, h.getContext())}
                         </TableSortLabel>
@@ -237,7 +263,7 @@ export default function TeacherTable({
           <TableBody>
             {table.getRowModel().rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} align="center">
+                <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
                   <Typography variant="body2" color="text.secondary">
                     Nenhum professor (com profile) encontrado nesta página.
                   </Typography>
@@ -245,9 +271,27 @@ export default function TeacherTable({
               </TableRow>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} hover>
+                <TableRow
+                  key={row.id}
+                  hover
+                  sx={{
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                    "&:last-child td": {
+                      borderBottom: 0,
+                    },
+                    transition: "background-color 0.2s ease",
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      sx={{
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -272,6 +316,11 @@ export default function TeacherTable({
         }}
         rowsPerPageOptions={isXs ? [6, 12, 24] : [12, 24, 50]}
         labelRowsPerPage={isXs ? "Linhas" : "Linhas por página"}
+        sx={{
+          "& .MuiTablePagination-toolbar": {
+            px: 2,
+          },
+        }}
       />
     </Paper>
   );

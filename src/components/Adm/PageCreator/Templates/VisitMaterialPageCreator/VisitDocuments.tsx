@@ -25,7 +25,7 @@ interface Props {
   setDocuments: (docs: MediaItem[]) => void;
 }
 
-export default function WeekDocuments({ documents, setDocuments }: Props) {
+export default function VisitDocuments({ documents, setDocuments }: Props) {
   const [newDoc, setNewDoc] = useState<MediaItem>({
     title: '',
     description: '',

@@ -12,10 +12,14 @@ import {
   Alert,
   CircularProgress,
   IconButton,
+  Container,
+  Grid,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import Save from '@mui/icons-material/Save';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from 'store/slices';
@@ -40,6 +44,7 @@ export function IdeasMaterialPageCreator({ fromTemplatePage }: PageCreatorProps)
   const [sections, setSections] = useState<IdeasSection[]>([]);
   const [expandedSectionIndex, setExpandedSectionIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState({ title: false, description: false });
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -98,6 +103,9 @@ export function IdeasMaterialPageCreator({ fromTemplatePage }: PageCreatorProps)
   };
 
   const handleSavePage = async () => {
+    // Marcar todos os campos como touched ao tentar salvar
+    setTouched({ title: true, description: true });
+    
     if (Object.values(errors).some(Boolean)) {
       setSnackbar({
         open: true,
@@ -173,106 +181,251 @@ export function IdeasMaterialPageCreator({ fromTemplatePage }: PageCreatorProps)
   return (
     <Box
       sx={{
-        py: { xs: 0, md: 4 },
-        px: { xs: 0, md: 4 },
-        mt: { xs: 0, md: 4 },
-        mb: { xs: 0, md: 0 },
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: { xs: 2, md: 4 },
       }}
     >
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
-        sx={{
-          mb: { xs: 4, md: 6 },
-          fontWeight: 'bold',
-          fontSize: { xs: '1.5rem', md: '2.5rem' },
-        }}
-      >
-        {fromTemplatePage ? 'Nova Página de Ideias' : 'Editar Página de Ideias'}
-      </Typography>
-
-      <Paper elevation={2} sx={{ p: { xs: 1, md: 4 }, mx: { xs: 0, md: 4 }, mb: 4 }}>
-        <TextField
-          label="Título da Página"
-          fullWidth
-          value={pageTitle}
-          onChange={(e) => setPageTitle(e.target.value)}
-          error={errors.title}
-          helperText={errors.title ? 'Campo obrigatório' : ''}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Descrição da Página"
-          fullWidth
-          multiline
-          rows={4}
-          value={pageDescription}
-          onChange={(e) => setPageDescription(e.target.value)}
-          error={errors.description}
-          helperText={errors.description ? 'Campo obrigatório' : ''}
-        />
-      </Paper>
-
-      {sections.length > 0 && (
-        <Fragment>
-          <Typography variant="h5" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Seções
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+            {fromTemplatePage ? '💡 Nova Página de Ideias' : '✏️ Editar Página de Ideias'}
           </Typography>
-          {sections.map((section, index) => (
-            <Accordion
-              key={index}
-              expanded={expandedSectionIndex === index}
-              onChange={() => setExpandedSectionIndex(expandedSectionIndex === index ? null : index)}
-              sx={{ mb: 2, borderRadius: 2 }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  {section.title || `Seção ${index + 1}`}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <IdeasMaterialSection
-                  section={section}
-                  onUpdate={(updatedSection) => handleUpdateSection(index, updatedSection)}
-                />
-              </AccordionDetails>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-                <IconButton
-                  color="error"
-                  onClick={() => handleDeleteSectionClick(index)}
+        </Box>
+
+        {/* Form Section */}
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            Informações Básicas
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                label="Título da Página"
+                fullWidth
+                required
+                value={pageTitle}
+                onChange={(e) => {
+                  setPageTitle(e.target.value);
+                  if (touched.title) setTouched((prev) => ({ ...prev, title: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
+                error={touched.title && errors.title}
+                helperText={touched.title && errors.title ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Descrição da Página"
+                fullWidth
+                required
+                multiline
+                rows={4}
+                value={pageDescription}
+                onChange={(e) => {
+                  setPageDescription(e.target.value);
+                  if (touched.description) setTouched((prev) => ({ ...prev, description: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
+                error={touched.description && errors.description}
+                helperText={touched.description && errors.description ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Sections */}
+        {sections.length > 0 && (
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+              📚 Seções ({sections.length})
+            </Typography>
+            {sections.map((section, index) => (
+              <Accordion
+                key={index}
+                expanded={expandedSectionIndex === index}
+                onChange={() => setExpandedSectionIndex(expandedSectionIndex === index ? null : index)}
+                sx={{ mb: 2, borderRadius: 2, '&:before': { display: 'none' } }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{
+                    borderRadius: 2,
+                    '&.Mui-expanded': {
+                      borderBottomLeftRadius: 0,
+                      borderBottomRightRadius: 0,
+                    },
+                  }}
                 >
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </Accordion>
-          ))}
-        </Fragment>
-      )}
+                  <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
+                    {section.title || `Seção ${index + 1}`}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <IdeasMaterialSection
+                    section={section}
+                    onUpdate={(updatedSection) => handleUpdateSection(index, updatedSection)}
+                  />
+                </AccordionDetails>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1, borderTop: 1, borderColor: 'divider' }}>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDeleteSectionClick(index)}
+                    sx={{
+                      '&:hover': {
+                        bgcolor: 'error.lighter',
+                      },
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              </Accordion>
+            ))}
+          </Paper>
+        )}
 
-      <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <Button
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={handleAddSection}
-          sx={{ borderRadius: 20 }}
-        >
-          Adicionar Seção
-        </Button>
-      </Box>
+        {/* Add Section Button */}
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={handleAddSection}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+                transform: 'translateY(-2px)',
+                boxShadow: 3,
+                bgcolor: 'action.hover',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Adicionar Seção
+          </Button>
+        </Box>
 
-      <Box sx={{ textAlign: 'center', mt: 6 }}>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSavePage}
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size={20} /> : null}
-          sx={{ borderRadius: 20, px: 4 }}
-        >
-          {loading ? 'Salvando...' : 'Salvar Página'}
-        </Button>
-      </Box>
+        {/* Save Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleSavePage}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              '&:hover:not(:disabled)': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4,
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {loading ? 'Salvando...' : 'Salvar Página'}
+          </Button>
+        </Box>
+      </Container>
 
       <ConfirmDeleteDialog
         open={deleteDialogOpen}

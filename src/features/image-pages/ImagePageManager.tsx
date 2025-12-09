@@ -7,9 +7,13 @@ import {
   CircularProgress,
   Alert,
   Container,
+  Paper,
+  Typography,
 } from '@mui/material';
+import { PhotoLibrary } from '@mui/icons-material';
 import { AppDispatch } from '@/store/slices';
 import { setImageData, ImagePageData } from 'store/slices/image/imageSlice';
+import { motion } from 'framer-motion';
 
 import { useImagePages } from './hooks';
 import ImagePageToolbar from './components/ImagePageToolbar';
@@ -61,39 +65,130 @@ export default function ImagePageManager() {
   const isBusy = loading || isFiltering;
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
-      <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Páginas de Imagens" />
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="📸 Páginas de Imagens" />
+        </motion.div>
 
-        <ImagePageToolbar search={search} onSearchChange={setSearch} loading={isFiltering} />
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <ImagePageToolbar search={search} onSearchChange={setSearch} loading={isFiltering} />
+          </Paper>
+        </motion.div>
 
-        {isBusy ? (
-          <Box textAlign="center" mt={10}>
-            <CircularProgress />
+        {/* Content Section */}
+        {isBusy && filtered.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
           </Box>
         ) : error ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="error" onClose={() => setError('')}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              onClose={() => setError('')}
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
+            >
               {error}
             </Alert>
-          </Box>
+          </motion.div>
         ) : filtered.length === 0 ? (
-          <Box textAlign="center" mt={10}>
-            <Alert severity="info">Nenhuma página de imagens encontrada.</Alert>
-          </Box>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <PhotoLibrary sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhuma página encontrada
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {search
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há páginas de imagens cadastradas.'}
+              </Typography>
+            </Paper>
+          </motion.div>
         ) : (
-          <Grid container spacing={3} alignItems="stretch">
-            {filtered.map((page) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={page.id} sx={{ display: 'flex' }}>
-                <ImagePageCard
-                  page={page}
-                  onDelete={setPageToDelete}
-                  onEdit={handleEdit}
-                  onViewDetails={setSelectedPage}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <>
+            {(loading || isFiltering) && filtered.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filtered.map((page, index) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={page.id}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <ImagePageCard
+                    page={page}
+                    onDelete={setPageToDelete}
+                    onEdit={handleEdit}
+                    onViewDetails={setSelectedPage}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
         )}
 
         <DeleteConfirmDialog

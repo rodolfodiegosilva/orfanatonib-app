@@ -28,7 +28,7 @@ const getGoogleDriveThumbnailUrl = (url: string): string | null => {
   return match ? `https://drive.google.com/thumbnail?id=${match[1]}` : null;
 };
 
-export default function WeekImageGallery({ image }: Props) {
+export default function VisitImageGallery({ image }: Props) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

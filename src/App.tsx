@@ -22,7 +22,7 @@ import ShelterFeedView from './pages/PageView/ShelterFeedView/ShelterFeedView';
 import MeditationPageCreator from './components/Adm/PageCreator/Templates/MeditationPageCreator/MeditationPageCreator';
 import ImagePageCreator from './components/Adm/PageCreator/Templates/ImagePageCreator/ImagePageCreator';
 import VideoPageCreator from './components/Adm/PageCreator/Templates/VideoPageCreator/VideoPageCreator';
-import WeekMaterialPageCreator from './components/Adm/PageCreator/Templates/WeekMaterialPageCreator/WeekMaterialPageCreator';
+import VisitMaterialPageCreator from './components/Adm/PageCreator/Templates/VisitMaterialPageCreator/VisitMaterialPageCreator';
 import SelecPageTemplate from './components/Adm/PageCreator/SelectPageTemplate/SelecPageTemplate';
 
 import AdminDashboardPage from './components/Adm/AdminDashboardPage';
@@ -35,7 +35,7 @@ import type { RouteData as DynamicRouteType } from './store/slices/route/routeSl
 import type { RootState as RootStateType, AppDispatch as AppDispatchType } from './store/slices';
 
 import { IdeasMaterialPageCreator } from 'components/Adm/PageCreator/Templates/IdeasMaterialPageCreator/IdeasMaterialPageCreator';
-import { WeekMaterialsList } from './pages/TeacherArea/components';
+import { VisitMaterialsList } from './pages/TeacherArea/components';
 import ImageSectionPage from './pages/TeacherArea/ImageSection/ImageSectionPage';
 import ImageSectionEditorAdmin from './features/image-sections/ImageSectionEditorAdmin';
 import { SiteFeedbackForm } from './pages/TeacherArea/components';
@@ -61,7 +61,7 @@ import IdeasSectionPage from './pages/TeacherArea/IdeasSection/IdeasSectionPage'
 import DocumentsManager from './features/documents/DocumentsManager';
 import IdeasManager from './features/ideas-pages/IdeasManager';
 import VideosManager from './features/video-pages/VideosManager';
-import WeekMaterialManager from './features/week-materials/WeekMaterialManager';
+import VisitMaterialManager from './features/visit-materials/VisitMaterialManager';
 
 function App() {
   const dispatch = useDispatch<AppDispatchType>();
@@ -119,7 +119,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/area-do-professor" element={<TeacherArea />} />
                 <Route path="/imagens-shelter" element={<ImageSectionPage />} />
-                <Route path="/lista-materias-semanais" element={<WeekMaterialsList />} />
+                <Route path="/lista-materias-visita" element={<VisitMaterialsList />} />
                 <Route path="/avaliar-site" element={<SiteFeedbackForm />} />
                 <Route path="/area-dos-abrigados" element={<ShelteredBrowserPage />} />
                 <Route path="/area-dos-abrigados/:shelteredId" element={<ShelteredPagelasPage />} />
@@ -135,7 +135,7 @@ function App() {
                   <Route path="informativos" element={<InformativeBannerLManager />} />
                   <Route path="feedbacks" element={<FeedbackManager />} />
                   <Route path="contatos" element={<ContactsManager />} />
-                  <Route path="paginas-materiais-semanais" element={<WeekMaterialManager />} />
+                  <Route path="paginas-materiais-visita" element={<VisitMaterialManager />} />
                   <Route path="paginas-fotos" element={<ImagePageManager />} />
                   <Route path="fotos-abrigos" element={<ImageSectionManager />} />
                   <Route path="ideias-compartilhadas" element={<IdeasSectionManager  />} />
@@ -152,7 +152,7 @@ function App() {
                   <Route path="editar-meditacao" element={<MeditationPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-imagens" element={<ImagePageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-videos" element={<VideoPageCreator fromTemplatePage={false} />} />
-                  <Route path="editar-pagina-semana" element={<WeekMaterialPageCreator fromTemplatePage={false} />} />
+                  <Route path="editar-pagina-visita" element={<VisitMaterialPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-pagina-ideias" element={<IdeasMaterialPageCreator fromTemplatePage={false} />} />
                   <Route path="editar-imagens-shelter" element={<ImageSectionEditorAdmin />} />
                   <Route path="editar-ideias-compartilhadas" element={<IdeasSectionPage  />} />

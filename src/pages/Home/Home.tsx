@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { gradients } from '@/theme';
 import { HeroSection, FeaturesSection, TestimonialsSection, CTASection } from './components';
-import WeekMaterialsBanner from './WeekMaterialsBanner';
+import VisitMaterialsBanner from './VisitMaterialsBanner';
 import CardsSection from './CardsSection';
 import SheltersSection from './SheltersSection';
 import { FEATURES } from './constants';
@@ -23,7 +23,7 @@ const Home: React.FC = () => {
       }}
     >
       <HeroSection isAuthenticated={isAuthenticated} />
-      {isAuthenticated && <WeekMaterialsBanner />}
+      {isAuthenticated && <VisitMaterialsBanner />}
       <SheltersSection />
       <CardsSection />
       <FeaturesSection features={FEATURES} />

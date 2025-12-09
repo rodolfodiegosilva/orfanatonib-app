@@ -17,7 +17,7 @@ const CardsSection: React.FC = () => {
       (card) =>
         card.public &&
         card.idToFetch !== feedImageGalleryId &&
-        card.entityType !== MediaTargetType.WeekMaterialsPage &&
+        card.entityType !== MediaTargetType.VisitMaterialsPage &&
         card.entityType !== MediaTargetType.Document &&
         card.entityType !== MediaTargetType.Informative &&
         card.entityType !== MediaTargetType.Meditation &&

@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
-import { Alert, Box, CircularProgress } from "@mui/material";
+import { Alert, Box, CircularProgress, Container, Paper, Typography } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { motion } from "framer-motion";
+import SearchIcon from "@mui/icons-material/Search";
 import SheltersToolbar from "./SheltersToolbar";
 import SheltersTable from "./SheltersTable";
 import ShelterViewDialog from "./ShelterViewDialog";
@@ -242,52 +244,107 @@ export default function SheltersManager() {
   return (
     <Box
       sx={{
-        px: { xs: 2, md: 0 },
-        py: { xs: 0, md: 0 },
         minHeight: "100vh",
-        bgcolor: "#f9fafb",
+        bgcolor: "background.default",
+        pb: 4,
       }}
     >
-      <BackHeader title="Gerenciar Abrigos" />
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 3 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <BackHeader title="Gerenciar Abrigos" />
+        </motion.div>
 
-      <SheltersToolbar
-        filters={filters}
-        onChange={(updater) => {
-          setFilters(updater);
-          setPageIndex(0);
-        }}
-        onCreateClick={() => openCreate()}
-        onRefreshClick={doRefresh}
-        isXs={isXs}
-      />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <SheltersToolbar
+            filters={filters}
+            onChange={(updater) => {
+              setFilters(updater);
+              setPageIndex(0);
+            }}
+            onCreateClick={() => openCreate()}
+            onRefreshClick={doRefresh}
+            isXs={isXs}
+          />
+        </motion.div>
 
-      {loading && !rows.length && (
-        <Box textAlign="center" my={6}>
-          <CircularProgress />
-        </Box>
-      )}
-      {error && !loading && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
-          {error}
-        </Alert>
-      )}
+        {loading && !rows.length && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              py: 8,
+            }}
+          >
+            <CircularProgress size={48} />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Carregando abrigos...
+            </Typography>
+          </Box>
+        )}
 
-      <SheltersTable
-        isAdmin={isAdmin}
-        rows={rows}
-        total={total}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        setPageIndex={setPageIndex}
-        setPageSize={setPageSize}
-        sorting={sorting ? ([sorting] as any) : []}
-        setSorting={(s) =>
-          setSorting(Array.isArray(s) ? (s[0] ?? null) : (s as any))
-        }
-        onOpenView={handleOpenView}
-        onStartEdit={(shelter) => startEdit(shelter)}
-        onAskDelete={askDelete}
-      />
+        {error && !loading && (
+          <Alert
+            severity="error"
+            sx={{ mb: 2, borderRadius: 2 }}
+            onClose={() => setError("")}
+          >
+            {error}
+          </Alert>
+        )}
+
+        {!loading && !error && rows.length === 0 && (
+          <Paper
+            sx={{
+              p: 6,
+              textAlign: "center",
+              borderRadius: 2,
+              bgcolor: "background.paper",
+            }}
+          >
+            <SearchIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              Nenhum abrigo encontrado
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Tente ajustar os filtros de busca ou criar um novo abrigo.
+            </Typography>
+          </Paper>
+        )}
+
+        {!loading && rows.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <SheltersTable
+              isAdmin={isAdmin}
+              rows={rows}
+              total={total}
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+              setPageIndex={setPageIndex}
+              setPageSize={setPageSize}
+              sorting={sorting ? ([sorting] as any) : []}
+              setSorting={(s) =>
+                setSorting(Array.isArray(s) ? (s[0] ?? null) : (s as any))
+              }
+              onOpenView={handleOpenView}
+              onStartEdit={(shelter) => startEdit(shelter)}
+              onAskDelete={askDelete}
+            />
+          </motion.div>
+        )}
 
       <ShelterViewDialog
         open={!!viewing}
@@ -337,6 +394,7 @@ export default function SheltersManager() {
         }}
         onConfirm={submitDelete}
       />
+      </Container>
     </Box>
   );
 }

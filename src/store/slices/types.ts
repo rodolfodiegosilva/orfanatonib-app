@@ -19,7 +19,7 @@ export enum MediaPlatform {
 }
 
 export enum MediaTargetType {
-  WeekMaterialsPage = 'WeekMaterialsPage',
+  VisitMaterialsPage = 'VisitMaterialsPage',
   VideosPage = 'VideosPage',
   ImagesPage = 'ImagesPage',
   Meditation = 'Meditation',

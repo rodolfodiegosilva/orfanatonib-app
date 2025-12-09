@@ -96,8 +96,8 @@ const FofinhoButton: React.FC<FofinhoButtonProps & { fullWidth?: boolean }> = ({
 
 const buttonMap: Record<string, FofinhoButtonProps> = {
   materials: {
-    to: '/lista-materias-semanais',
-    label: 'Materiais semanais',
+    to: '/lista-materias-visita',
+    label: 'Materiais de visita',
     icon: MenuBookIcon,
     color: 'primary',
   },

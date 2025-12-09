@@ -1,56 +1,79 @@
 import React from 'react';
-import { Box, TextField, IconButton, Tooltip, InputAdornment } from '@mui/material';
+import { Box, TextField, IconButton, Tooltip, InputAdornment, CircularProgress } from '@mui/material';
 import { Refresh, Search, Clear } from '@mui/icons-material';
 
 type Props = {
   search: string;
   onSearch: (v: string) => void;
   onRefresh: () => void;
+  isFiltering?: boolean;
 };
 
-export default function VideoPageToolbar({ search, onSearch, onRefresh }: Props) {
+export default function VideoPageToolbar({ search, onSearch, onRefresh, isFiltering }: Props) {
   const hasQuery = Boolean(search);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-      }}
-    >
+    <Box display="flex" gap={1} alignItems="center">
       <TextField
+        fullWidth
+        label="Buscar páginas"
         placeholder="Buscar por título..."
         value={search}
         onChange={(e) => onSearch(e.target.value)}
-        sx={{ maxWidth: 520, width: '100%' }}
-        size="small"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <Search fontSize="small" />
+              <Search sx={{ color: 'text.secondary' }} />
             </InputAdornment>
           ),
-          endAdornment: hasQuery ? (
+          endAdornment: (
             <InputAdornment position="end">
-              <Tooltip title="Limpar">
-                <IconButton size="small" onClick={() => onSearch('')}>
-                  <Clear fontSize="small" />
-                </IconButton>
-              </Tooltip>
+              {isFiltering && <CircularProgress size={20} sx={{ mr: hasQuery ? 1 : 0 }} />}
+              {hasQuery && (
+                <Tooltip title="Limpar busca">
+                  <IconButton
+                    size="small"
+                    onClick={() => onSearch('')}
+                    sx={{
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      },
+                    }}
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
             </InputAdornment>
-          ) : undefined,
+          ),
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            '&:hover': {
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'primary.main',
+              },
+            },
+            '&.Mui-focused': {
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderWidth: 2,
+              },
+            },
+          },
         }}
       />
-
       <Tooltip title="Recarregar">
-        <span>
-          <IconButton onClick={onRefresh} sx={{ ml: 0.5 }}>
-            <Refresh />
-          </IconButton>
-        </span>
+        <IconButton
+          onClick={onRefresh}
+          sx={{
+            '&:hover': {
+              bgcolor: 'action.hover',
+            },
+          }}
+        >
+          <Refresh />
+        </IconButton>
       </Tooltip>
     </Box>
   );

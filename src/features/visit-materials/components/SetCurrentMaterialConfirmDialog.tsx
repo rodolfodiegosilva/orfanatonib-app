@@ -11,7 +11,7 @@ interface Props {
   onConfirm: () => Promise<void>;
 }
 
-export default function SetCurrentWeekConfirmDialog({
+export default function SetCurrentMaterialConfirmDialog({
   open, materialTitle, onClose, onConfirm,
 }: Props) {
   return (
@@ -28,7 +28,7 @@ export default function SetCurrentWeekConfirmDialog({
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Deseja realmente tornar <strong>{materialTitle}</strong> o material da semana atual?
+          Deseja realmente tornar <strong>{materialTitle}</strong> o material atual de visita?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -40,3 +40,4 @@ export default function SetCurrentWeekConfirmDialog({
     </Dialog>
   );
 }
+

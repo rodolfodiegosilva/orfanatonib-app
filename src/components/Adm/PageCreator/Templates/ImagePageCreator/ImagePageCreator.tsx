@@ -16,7 +16,11 @@ import {
   Typography,
   FormControlLabel,
   Switch,
+  Paper,
+  IconButton,
+  Grid,
 } from '@mui/material';
+import { ArrowBack, Save } from '@mui/icons-material';
 import { ImagePageData } from '@/store/slices/image/imageSlice';
 import ImageSection from './ImageSection';
 import { MediaItem, MediaPlatform, MediaType, MediaUploadType } from 'store/slices/types';
@@ -46,6 +50,7 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
+  const [touched, setTouched] = useState({ title: false, description: false });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -93,6 +98,7 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
   };
 
   const handleSaveAll = async () => {
+    setTouched({ title: true, description: true });
     if (!validate()) return;
 
     try {
@@ -232,26 +238,34 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
   };
 
   return (
-    <Container
-      maxWidth={false}
+    <Box
       sx={{
-        mt: { xs: 0, md: 4 },
-        pb: { xs: 0, md: 2 },
-        pt: 0,
-        px: 0,
-        mb: 0,
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: { xs: 2, md: 4 },
       }}
     >
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        mb={3}
-        textAlign="center"
-        sx={{ fontSize: { xs: '1.2rem', md: '2.5rem' } }}
-      >
-
-        {fromTemplatePage ? 'Criar Galeria de Fotos' : 'Editar Galeria de Fotos'}
-      </Typography>
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+            {fromTemplatePage ? '📸 Criar Galeria de Fotos' : '✏️ Editar Galeria de Fotos'}
+          </Typography>
+        </Box>
 
       <LoadingSpinner open={isSaving} />
 
@@ -280,28 +294,102 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
         onClose={() => setErrorSnackbarOpen(false)}
       />
 
-      <Box mb={2}>
-        <TextField
-          fullWidth
-          label="Título da Galeria"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Descrição da Galeria"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          multiline
-          rows={3}
-        />
-        <FormControlLabel
-          control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
-          label="Página pública"
-          sx={{ mt: 1 }}
-        />
-      </Box>
+        {/* Form Section */}
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            Informações Básicas
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Título da Galeria"
+                required
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (touched.title) setTouched((prev) => ({ ...prev, title: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
+                error={touched.title && !title.trim()}
+                helperText={touched.title && !title.trim() ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Descrição da Galeria"
+                required
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (touched.description) setTouched((prev) => ({ ...prev, description: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
+                error={touched.description && !description.trim()}
+                helperText={touched.description && !description.trim() ? 'Campo obrigatório' : ''}
+                multiline
+                rows={4}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
+                label="Página pública"
+              />
+            </Grid>
+          </Grid>
+        </Paper>
 
       {sections.map((section, index) => (
         <ImageSection
@@ -319,16 +407,78 @@ export default function ImagePageCreator({ fromTemplatePage }: ImageProps) {
         />
       ))}
 
-      <Box mt={3} display="flex" gap={2} flexWrap="wrap">
-        <Button variant="contained" onClick={addSection}>
-          + Nova Seção
-        </Button>
-        <Button variant="contained" color="success" onClick={handleSaveAll}>
-          Salvar
-        </Button>
-      </Box>
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+                transform: 'translateY(-2px)',
+                boxShadow: 2,
+                bgcolor: 'action.hover',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={addSection}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: 3,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            + Nova Seção
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            startIcon={<Save />}
+            onClick={handleSaveAll}
+            disabled={isSaving}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              '&:hover:not(:disabled)': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4,
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {isSaving ? 'Salvando...' : 'Salvar'}
+          </Button>
+        </Box>
 
-      <AddImageModal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} />
-    </Container>
+        <AddImageModal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} />
+      </Container>
+    </Box>
   );
 }

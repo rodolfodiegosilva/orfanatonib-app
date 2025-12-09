@@ -60,7 +60,7 @@ const cardData: CardData[] = [
   { title: "Documentos", description: "Gerencie documentos para professores.", icon: <Description fontSize="large" color="primary" />, path: "/adm/documentos", section: "conteudos" },
   { title: "Informativos", description: "Gerencie banners informativos do site.", icon: <Campaign fontSize="large" color="primary" />, path: "/adm/informativos", section: "conteudos" },
 
-  { title: "Páginas de Materiais", description: "Gerencie conteúdos semanais.", icon: <EventNote fontSize="large" color="primary" />, path: "/adm/paginas-materiais-semanais", section: "pages" },
+  { title: "Páginas de Materiais de Visita", description: "Gerencie materiais de visita.", icon: <EventNote fontSize="large" color="primary" />, path: "/adm/paginas-materiais-visita", section: "pages" },
   { title: "Páginas de Fotos", description: "Organize e edite galerias de imagens do site.", icon: <PhotoLibrary fontSize="large" color="primary" />, path: "/adm/paginas-fotos", section: "pages" },
   { title: "Fotos dos Abrigos", description: "Organize e edite galerias de fotos dos abrigos.", icon: <Collections fontSize="large" color="primary" />, path: "/adm/fotos-abrigos", section: "pages" },
   { title: "Ideias compartilhadas", description: "Gerencie Ideias compartilhadas pelos Abrigos", icon: <Lightbulb fontSize="large" color="primary" />, path: "/adm/ideias-compartilhadas", section: "pages" },

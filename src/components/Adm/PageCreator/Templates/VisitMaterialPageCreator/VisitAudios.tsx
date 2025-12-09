@@ -24,7 +24,7 @@ interface Props {
   setAudios: (a: MediaItem[]) => void;
 }
 
-export default function WeekAudios({ audios, setAudios }: Props) {
+export default function VisitAudios({ audios, setAudios }: Props) {
   const [newAudio, setNewAudio] = useState<MediaItem>({
     title: '',
     description: '',

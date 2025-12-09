@@ -15,7 +15,7 @@ interface Props {
   document: MediaItem | null;
 }
 
-export default function WeekDocumentModal({ open, onClose, document }: Props) {
+export default function VisitDocumentModal({ open, onClose, document }: Props) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 

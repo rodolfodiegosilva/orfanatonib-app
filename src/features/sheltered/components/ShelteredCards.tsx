@@ -100,28 +100,21 @@ export default function ShelteredrenCards(props: Props) {
               <Card
                 variant="outlined"
                 sx={{
-                  borderRadius: 3,
+                  borderRadius: 2,
                   overflow: "hidden",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transition: "all 0.2s ease",
                   "&:hover": {
-                    boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
-                    transform: "translateY(-2px)",
+                    boxShadow: 4,
+                    transform: { xs: "none", sm: "translateY(-2px)" },
                     "& .sheltered-avatar": {
-                      transform: "scale(1.1)",
+                      transform: "scale(1.05)",
                     }
                   },
                   bgcolor: "background.paper",
                   position: "relative",
                   maxHeight: !expanded ? { xs: 170, sm: 170 } : "none",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                    background: "linear-gradient(90deg, #ff5722 0%, #ff9800 100%)",
-                  }
+                  border: "1px solid",
+                  borderColor: "divider",
                 }}
               >
                 <Stack
@@ -142,10 +135,10 @@ export default function ShelteredrenCards(props: Props) {
                       height: { xs: 40, sm: 48 },
                       bgcolor: c.shelter ? "primary.main" : "grey.500",
                       color: "white",
-                      fontWeight: 800,
+                      fontWeight: 700,
                       fontSize: { xs: 14, sm: 16 },
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                      transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow: 2,
+                      transition: "transform 0.2s ease",
                       flexShrink: 0,
                     }}
                     aria-label={`Avatar do abrigado ${c.name}`}
@@ -216,9 +209,9 @@ export default function ShelteredrenCards(props: Props) {
                     mb: 0.5,
                     p: { xs: 0.75, sm: 1 },
                     borderRadius: 2,
-                    bgcolor: "grey.50",
+                    bgcolor: "background.default",
                     border: "1px solid",
-                    borderColor: "grey.200",
+                    borderColor: "divider",
                   }}
                 >
                   <Stack spacing={0.75}>
@@ -351,9 +344,9 @@ export default function ShelteredrenCards(props: Props) {
                           sx={{
                             p: 1.25,
                             borderRadius: 2,
-                            bgcolor: "grey.50",
+                            bgcolor: "background.default",
                             border: "1px solid",
-                            borderColor: "grey.200",
+                            borderColor: "divider",
                           }}
                         >
                           <Stack spacing={1}>
@@ -400,9 +393,9 @@ export default function ShelteredrenCards(props: Props) {
                           sx={{
                             p: 1.25,
                             borderRadius: 2,
-                            bgcolor: "grey.50",
+                            bgcolor: "background.default",
                             border: "1px solid",
-                            borderColor: "grey.200",
+                            borderColor: "divider",
                           }}
                         >
                           <Stack spacing={1}>
@@ -484,9 +477,9 @@ export default function ShelteredrenCards(props: Props) {
                     px: { xs: 1, sm: 1.25 },
                     pb: { xs: 0.75, sm: 1 },
                     pt: 0.75,
-                    bgcolor: "grey.50",
+                    bgcolor: "background.default",
                     borderTop: "1px solid",
-                    borderColor: "grey.200",
+                    borderColor: "divider",
                   }}
                 >
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>

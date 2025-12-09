@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, TextField, Typography, Tabs, Tab } from '@mui/material';
+import { Box, TextField, Typography, Tabs, Tab, Grid } from '@mui/material';
 import { IdeasSection } from 'store/slices/ideas/ideasSlice';
 import { IdeasMaterialDocuments } from './IdeasMaterialDocuments';
 import { IdeasMaterialImages } from './IdeasMaterialImages';
@@ -50,62 +50,68 @@ export function IdeasMaterialSection({ section, onUpdate, isCreationMode = false
   const videos = medias.filter((i) => i.mediaType === MediaType.VIDEO);
 
   return (
-    <Box sx={{
-      p: 0,
-      '& .MuiTextField-root': {
-        '& .MuiOutlinedInput-root': {
-          borderRadius: '12px',
-        },
-      },
-    }}>
-      <Box sx={{
-        display: 'flex',
-        gap: 3,
-        mb: 4,
-        flexDirection: { xs: 'column', md: 'row' }
-      }}>
-        <TextField
-          label={isCreationMode ? "Título da sua ideia brilhante" : "Título da Seção"}
-          fullWidth
-          value={title}
-          onChange={handleTitleChange}
-          sx={{
-            flex: { xs: 1, md: '0 0 40%' },
-            maxWidth: { xs: '100%', md: '40%' },
-            '& .MuiInputLabel-root': {
-              fontSize: { xs: '0.9rem', md: '1rem' },
-              fontWeight: 500,
-            },
-          }}
-        />
-        <TextField
-          label={isCreationMode ? "Descreva sua ideia (brincadeira, versículo, história, etc.)" : "Descrição da Seção"}
-          fullWidth
-          multiline
-          rows={4}
-          value={description}
-          onChange={handleDescriptionChange}
-          sx={{
-            flex: { xs: 1, md: '0 0 60%' },
-            maxWidth: { xs: '100%', md: '60%' },
-            '& .MuiInputLabel-root': {
-              fontSize: { xs: '0.9rem', md: '1rem' },
-              fontWeight: 500,
-            },
-          }}
-        />
-      </Box>
+    <Box>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={5}>
+          <TextField
+            label={isCreationMode ? "Título da sua ideia brilhante" : "Título da Seção"}
+            fullWidth
+            value={title}
+            onChange={handleTitleChange}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover:not(.Mui-error)': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                },
+                '&.Mui-focused': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderWidth: 2,
+                  },
+                },
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} md={7}>
+          <TextField
+            label={isCreationMode ? "Descreva sua ideia (brincadeira, versículo, história, etc.)" : "Descrição da Seção"}
+            fullWidth
+            multiline
+            rows={4}
+            value={description}
+            onChange={handleDescriptionChange}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover:not(.Mui-error)': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                },
+                '&.Mui-focused': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderWidth: 2,
+                  },
+                },
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
 
       <Typography
-        variant="h5"
+        variant="h6"
         sx={{
           mb: 3,
           fontWeight: 'bold',
-          color: 'primary.main',
           display: 'flex',
           alignItems: 'center',
           gap: 1,
-          fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.5rem' },
         }}
       >
         📎 Itens de Mídia
@@ -114,21 +120,25 @@ export function IdeasMaterialSection({ section, onUpdate, isCreationMode = false
       <Tabs
         value={tabIndex}
         onChange={handleChangeTab}
-        variant="fullWidth"
+        variant="scrollable"
         scrollButtons="auto"
         sx={{
           mb: 3,
-          '& .MuiTab-root': {
-            fontSize: { xs: '0.75rem', md: '1rem' },
-            fontWeight: 500,
-            textTransform: 'none',
-            minHeight: { xs: 40, md: 48 },
-            px: { xs: 0.5, md: 3 },
-            flex: { xs: 'none', md: 1 },
+          borderBottom: 1,
+          borderColor: 'divider',
+          '& .MuiTabs-indicator': {
+            height: 3,
+            borderRadius: '3px 3px 0 0',
           },
-          '& .Mui-selected': {
-            color: 'primary.main',
-            fontWeight: 'bold',
+          '& .MuiTab-root': {
+            fontSize: { xs: '0.875rem', md: '1rem' },
+            fontWeight: 600,
+            textTransform: 'none',
+            minHeight: 56,
+            px: { xs: 2, md: 3 },
+            '&.Mui-selected': {
+              color: 'primary.main',
+            },
           },
         }}
       >

@@ -4,7 +4,7 @@ import {
   InputAdornment, Popover, ToggleButtonGroup, ToggleButton, Box, Typography, Fab,
   FormControl, InputLabel, Select, MenuItem
 } from "@mui/material";
-import { CleaningServices, Refresh, Add, Event, Close } from "@mui/icons-material";
+import { CleaningServices, Refresh, Add, Event, Close, Search as SearchIcon, Clear } from "@mui/icons-material";
 import { ShelteredFilters } from "../types";
 
 type Props = {
@@ -178,9 +178,36 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
       joinedTo: "",
     }));
 
+  const hasFilters = Boolean(
+    filters.shelteredSearchingString ||
+    filters.shelterSearchingString ||
+    filters.addressFilter ||
+    filters.gender ||
+    filters.birthDateFrom ||
+    filters.birthDateTo ||
+    filters.joinedFrom ||
+    filters.joinedTo
+  );
+
   return (
-    <Paper sx={{ p: { xs: 1.5, md: 2 }, mb: 2 }}>
-      <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems="center">
+    <Paper
+      sx={{
+        p: { xs: 2, md: 3 },
+        mb: 3,
+        borderRadius: 2,
+        boxShadow: 2,
+        bgcolor: "background.paper",
+      }}
+    >
+      <Typography
+        variant="h6"
+        fontWeight={600}
+        sx={{ mb: 3, color: "text.primary", fontSize: { xs: "1.1rem", md: "1.25rem" } }}
+      >
+        Pesquisar
+      </Typography>
+
+      <Grid container spacing={{ xs: 2, md: 2.5 }} alignItems="center">
         <Grid item xs={12} md={4}>
           <TextField
             fullWidth
@@ -189,6 +216,35 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
             value={filters.shelteredSearchingString ?? ""}
             onChange={e => set("shelteredSearchingString", e.target.value)}
             placeholder="Nome do abrigado, responsável ou telefone"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.shelteredSearchingString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => set("shelteredSearchingString", "")}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -200,6 +256,35 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
             value={filters.shelterSearchingString ?? ""}
             onChange={e => set("shelterSearchingString", e.target.value)}
             placeholder="Nome, endereço, cidade, estado"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.shelterSearchingString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => set("shelterSearchingString", "")}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -211,6 +296,35 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
             value={filters.addressFilter ?? ""}
             onChange={e => set("addressFilter", e.target.value)}
             placeholder="Rua, bairro, cidade"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.addressFilter && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => set("addressFilter", "")}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
+            }}
           />
         </Grid>
 
@@ -298,17 +412,53 @@ export default function ShelteredrenToolbar({ filters, onChange, onCreateClick, 
               </Box>
             </>
           ) : (
-            <Stack direction="row" spacing={1.5} justifyContent="flex-end">
-              <Button variant="contained" color="secondary" startIcon={<CleaningServices />} onClick={clear}>
-                Limpar
-              </Button>
+            <Stack direction="row" spacing={1.5} justifyContent="flex-end" flexWrap="wrap" useFlexGap>
+              {hasFilters && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<CleaningServices />}
+                  onClick={clear}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    px: 2,
+                  }}
+                >
+                  Limpar
+                </Button>
+              )}
               <Tooltip title="Recarregar">
-                <IconButton onClick={onRefreshClick}>
+                <IconButton
+                  onClick={onRefreshClick}
+                  sx={{
+                    borderRadius: 2,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
                   <Refresh />
                 </IconButton>
               </Tooltip>
-              <Button variant="contained" startIcon={<Add />} onClick={onCreateClick}>
-                Criar
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Add />}
+                onClick={onCreateClick}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  px: 3,
+                  boxShadow: 2,
+                  "&:hover": {
+                    boxShadow: 4,
+                  },
+                }}
+              >
+                Criar Abrigado
               </Button>
             </Stack>
           )}

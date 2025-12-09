@@ -8,7 +8,11 @@ import {
   TextField,
   Stack,
   Paper,
+  Container,
+  IconButton,
+  Grid,
 } from '@mui/material';
+import { ArrowBack, Save } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '@/config/axiosConfig';
@@ -51,6 +55,7 @@ export default function MeditationPageCreator({ fromTemplatePage }: Props) {
   const [endDate, setEndDate] = useState('');
   const [days, setDays] = useState<DayItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState({ topic: false, startDate: false, endDate: false });
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -88,6 +93,8 @@ export default function MeditationPageCreator({ fromTemplatePage }: Props) {
   }, [fromTemplatePage, meditationData]);
 
   const handleSave = async () => {
+    setTouched({ topic: true, startDate: true, endDate: true });
+    
     if (!topic || !startDate || !endDate) {
       setSnackbar({
         open: true,
@@ -194,64 +201,228 @@ export default function MeditationPageCreator({ fromTemplatePage }: Props) {
   };
 
   return (
-    <Box    >
-      <Typography variant="h4" mb={3} fontWeight="bold" textAlign="center" sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }}>
-        {fromTemplatePage ? 'Criar Meditação da Semana' : 'Editar Meditação'}
-      </Typography>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        py: { xs: 2, md: 4 },
+      }}
+    >
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+            {fromTemplatePage ? '🧘 Criar Meditação da Semana' : '✏️ Editar Meditação'}
+          </Typography>
+        </Box>
 
-      <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, mb: 5 }}>
-        <Stack spacing={3}>
-          <TextField
-            fullWidth
-            label="Tema da Meditação"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-          />
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              fullWidth
-              type="date"
-              label="Data de Início"
-              InputLabelProps={{ shrink: true }}
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <TextField
-              fullWidth
-              type="date"
-              label="Data de Término"
-              InputLabelProps={{ shrink: true }}
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </Stack>
-
-          <MediaManager
-            uploadType={uploadType}
-            setUploadType={setUploadType}
-            file={file}
-            setFile={setFile}
-            url={url}
-            setUrl={setUrl}
-            platformType={platformType}
-            setPlatformType={setPlatformType}
-          />
-        </Stack>
-      </Paper>
-
-      <MeditationForm days={days} onDaysChange={setDays} />
-
-      <Box textAlign="center" mt={6}>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSave}
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+        {/* Form Section */}
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
         >
-          {loading ? 'Salvando...' : 'Salvar Meditação'}
-        </Button>
-      </Box>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            Informações Básicas
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Tema da Meditação"
+                required
+                value={topic}
+                onChange={(e) => {
+                  setTopic(e.target.value);
+                  if (touched.topic) setTouched((prev) => ({ ...prev, topic: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, topic: true }))}
+                error={touched.topic && !topic.trim()}
+                helperText={touched.topic && !topic.trim() ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Data de Início"
+                required
+                InputLabelProps={{ shrink: true }}
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  if (touched.startDate) setTouched((prev) => ({ ...prev, startDate: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, startDate: true }))}
+                error={touched.startDate && !startDate}
+                helperText={touched.startDate && !startDate ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Data de Término"
+                required
+                InputLabelProps={{ shrink: true }}
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  if (touched.endDate) setTouched((prev) => ({ ...prev, endDate: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, endDate: true }))}
+                error={touched.endDate && !endDate}
+                helperText={touched.endDate && !endDate ? 'Campo obrigatório' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MediaManager
+                uploadType={uploadType}
+                setUploadType={setUploadType}
+                file={file}
+                setFile={setFile}
+                url={url}
+                setUrl={setUrl}
+                platformType={platformType}
+                setPlatformType={setPlatformType}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <MeditationForm days={days} onDaysChange={setDays} />
+
+        {/* Save Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+                transform: 'translateY(-2px)',
+                boxShadow: 2,
+                bgcolor: 'action.hover',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleSave}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 4,
+              py: 1.5,
+              '&:hover:not(:disabled)': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4,
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {loading ? 'Salvando...' : 'Salvar Meditação'}
+          </Button>
+        </Box>
+      </Container>
 
       <Snackbar
         open={snackbar.open}

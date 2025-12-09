@@ -10,8 +10,10 @@ import {
   Box,
   MenuItem,
   Fab,
+  Typography,
+  InputAdornment,
 } from "@mui/material";
-import { Refresh, Clear } from "@mui/icons-material";
+import { Refresh, Clear, Search as SearchIcon, CleaningServices } from "@mui/icons-material";
 
 export type TeacherFilters = {
   teacherSearchString?: string;
@@ -51,18 +53,28 @@ export default function TeacherToolbar({
     }));
   };
 
+  const hasFilters = Boolean(
+    filters.teacherSearchString || filters.shelterSearchString || filters.hasShelter !== undefined
+  );
+
   return (
-    <Paper 
-      elevation={0}
-      sx={{ 
-        p: { xs: 2, md: 3 }, 
-        mb: 2, 
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.paper"
+    <Paper
+      sx={{
+        p: { xs: 2, md: 3 },
+        mb: 3,
+        borderRadius: 2,
+        boxShadow: 2,
+        bgcolor: "background.paper",
       }}
     >
+      <Typography
+        variant="h6"
+        fontWeight={600}
+        sx={{ mb: 3, color: "text.primary", fontSize: { xs: "1.1rem", md: "1.25rem" } }}
+      >
+        Pesquisar
+      </Typography>
+
       <Grid container spacing={{ xs: 2, md: 2.5 }} alignItems="flex-end">
         {/* Busca por Professor */}
         <Grid item xs={12} sm={6} md={4}>
@@ -74,10 +86,34 @@ export default function TeacherToolbar({
             onChange={(e) => handleChange("teacherSearchString", e.target.value || undefined)}
             placeholder="Nome, email, telefone do professor"
             inputProps={{ "aria-label": "Campo de busca por professor" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.teacherSearchString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("teacherSearchString", undefined)}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
-              }
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
             }}
           />
         </Grid>
@@ -92,10 +128,34 @@ export default function TeacherToolbar({
             onChange={(e) => handleChange("shelterSearchString", e.target.value || undefined)}
             placeholder="Todos os campos do abrigo"
             inputProps={{ "aria-label": "Campo de busca por abrigo" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: filters.shelterSearchString && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleChange("shelterSearchString", undefined)}
+                    edge="end"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
-              }
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "primary.main",
+                  },
+                },
+              },
             }}
           />
         </Grid>
@@ -133,38 +193,35 @@ export default function TeacherToolbar({
           {isXs ? (
             <Box sx={{ height: 40 }} />
           ) : (
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                color="secondary"
-                startIcon={<Clear />}
-                onClick={handleClear}
-                size="small"
-                sx={{ 
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  px: 2
-                }}
-              >
-                Limpar
-              </Button>
+            <Stack direction="row" spacing={1.5} justifyContent="flex-end" flexWrap="wrap" useFlexGap>
+              {hasFilters && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<CleaningServices />}
+                  onClick={handleClear}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    px: 2,
+                  }}
+                >
+                  Limpar Filtros
+                </Button>
+              )}
               <Tooltip title="Recarregar dados">
-                <IconButton 
-                  onClick={onRefreshClick} 
+                <IconButton
+                  onClick={onRefreshClick}
                   aria-label="Recarregar"
                   sx={{
                     borderRadius: 2,
-                    bgcolor: "primary.main",
-                    color: "white",
-                    "&:hover": { 
-                      bgcolor: "primary.dark",
-                      transform: "scale(1.05)"
+                    "&:hover": {
+                      bgcolor: "action.hover",
                     },
-                    transition: "all 0.2s ease-in-out"
                   }}
                 >
-                  <Refresh fontSize="small" />
+                  <Refresh />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -190,38 +247,25 @@ export default function TeacherToolbar({
               size="medium"
               aria-label="Recarregar"
               onClick={onRefreshClick}
-              sx={{
-                bgcolor: "primary.main",
-                color: "white",
-                boxShadow: 4,
-                "&:hover": { 
-                  bgcolor: "primary.dark",
-                  transform: "scale(1.05)"
-                },
-                transition: "all 0.2s ease-in-out"
-              }}
+              sx={{ boxShadow: 4 }}
             >
               <Refresh />
             </Fab>
           </Tooltip>
           
-          <Tooltip title="Limpar filtros" placement="left">
-            <Fab
-              size="medium"
-              color="secondary"
-              aria-label="Limpar filtros"
-              onClick={handleClear}
-              sx={{
-                boxShadow: 4,
-                "&:hover": { 
-                  transform: "scale(1.05)"
-                },
-                transition: "all 0.2s ease-in-out"
-              }}
-            >
-              <Clear />
-            </Fab>
-          </Tooltip>
+          {hasFilters && (
+            <Tooltip title="Limpar filtros" placement="left">
+              <Fab
+                size="medium"
+                color="secondary"
+                aria-label="Limpar filtros"
+                onClick={handleClear}
+                sx={{ boxShadow: 4 }}
+              >
+                <CleaningServices />
+              </Fab>
+            </Tooltip>
+          )}
         </Box>
       )}
     </Paper>

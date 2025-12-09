@@ -19,35 +19,55 @@ export default function ImagePageToolbar({ search, onSearchChange, loading }: Pr
   const hasQuery = Boolean(search);
 
   return (
-    <Box sx={{ maxWidth: 560, mx: 'auto', mt: 2, mb: 4, position: 'relative' }}>
-      <TextField
-        fullWidth
-        label="Buscar por título…"
-        placeholder="Buscar por título…"
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        size="small"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search fontSize="small" />
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              {loading && <CircularProgress size={18} sx={{ mr: hasQuery ? 1 : 0 }} />}
-              {hasQuery && (
-                <Tooltip title="Limpar">
-                  <IconButton size="small" onClick={() => onSearchChange('')}>
-                    <Clear fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </InputAdornment>
-          ),
-        }}
-        inputProps={{ 'aria-label': 'Buscar páginas de imagens' }}
-      />
-    </Box>
+    <TextField
+      fullWidth
+      label="Buscar"
+      placeholder="Buscar por título..."
+      value={search}
+      onChange={(e) => onSearchChange(e.target.value)}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <Search sx={{ color: 'text.secondary' }} />
+          </InputAdornment>
+        ),
+        endAdornment: (
+          <InputAdornment position="end">
+            {loading && <CircularProgress size={20} sx={{ mr: hasQuery ? 1 : 0 }} />}
+            {hasQuery && (
+              <Tooltip title="Limpar busca">
+                <IconButton
+                  size="small"
+                  onClick={() => onSearchChange('')}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'action.hover',
+                    },
+                  }}
+                >
+                  <Clear fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </InputAdornment>
+        ),
+      }}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 2,
+          '&:hover': {
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'primary.main',
+            },
+          },
+          '&.Mui-focused': {
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderWidth: 2,
+            },
+          },
+        },
+      }}
+      inputProps={{ 'aria-label': 'Buscar páginas de imagens' }}
+    />
   );
 }

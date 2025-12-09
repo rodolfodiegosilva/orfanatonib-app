@@ -1,6 +1,8 @@
 import React from 'react';
-import { Grid, Card, CardContent, CardActions, Typography, IconButton, Tooltip, Box } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Grid, Card, CardContent, CardActions, Typography, IconButton, Tooltip, Box, Chip } from '@mui/material';
+import { Edit, Delete, Public, Lock } from '@mui/icons-material';
+import { motion } from 'framer-motion';
+import { useTheme, useMediaQuery } from '@mui/material';
 import type { InformativeBannerData } from 'store/slices/informative/informativeBannerSlice';
 
 type Props = {
@@ -10,26 +12,78 @@ type Props = {
 };
 
 export default function BannerGrid({ items, onEdit, onDeleteAsk }: Props) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Grid container spacing={3} alignItems="stretch">
-      {items.map((banner) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={banner.id}>
+      {items.map((banner, index) => (
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+          lg={3}
+          key={banner.id}
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: index * 0.05 }}
+          sx={{ display: 'flex' }}
+        >
           <Card
-            variant="outlined"
+            component={motion.div}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
             sx={{
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
-              borderRadius: 2,
-              transition: 'transform .2s, box-shadow .2s',
-              '&:hover': { transform: 'translateY(-3px)', boxShadow: 4 },
+              borderRadius: 4,
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              overflow: 'hidden',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+                borderColor: 'primary.main',
+              },
             }}
           >
-            <CardContent sx={{ pb: 1, flexGrow: 1 }}>
+            {/* Header with Status */}
+            <Box
+              sx={{
+                p: { xs: 1.5, sm: 2 },
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                bgcolor: 'background.default',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Chip
+                icon={banner.public ? <Public fontSize="small" /> : <Lock fontSize="small" />}
+                label={banner.public ? 'Público' : 'Privado'}
+                size="small"
+                color={banner.public ? 'success' : 'warning'}
+                sx={{
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                  height: { xs: 24, sm: 28 },
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+
+            <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
               <Typography
                 variant="h6"
-                fontWeight={700}
+                fontWeight="bold"
                 sx={{
+                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                  lineHeight: 1.3,
+                  mb: 1,
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: 'vertical',
@@ -44,37 +98,57 @@ export default function BannerGrid({ items, onEdit, onDeleteAsk }: Props) {
                 variant="body2"
                 color="text.secondary"
                 sx={{
-                  mt: 1,
                   display: '-webkit-box',
                   WebkitLineClamp: 3,
                   WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
+                  lineHeight: 1.6,
+                  fontSize: { xs: '0.8rem', sm: '0.85rem' },
                 }}
                 title={banner.description}
               >
                 {banner.description}
               </Typography>
-
-              <Box sx={{ mt: 1.5 }}>
-                <Typography
-                  variant="caption"
-                  color={banner.public ? 'success.main' : 'warning.main'}
-                  sx={{ fontWeight: 500 }}
-                >
-                  {banner.public ? 'Público' : 'Privado'}
-                </Typography>
-              </Box>
             </CardContent>
 
-            <CardActions sx={{ pt: 0, px: 2, pb: 2, justifyContent: 'flex-end' }}>
-              <Tooltip title="Editar banner">
-                <IconButton size="small" color="primary" onClick={() => onEdit(banner)}>
-                  <Edit fontSize="small" />
+            <CardActions
+              sx={{
+                p: { xs: 1.5, sm: 2 },
+                pt: 0,
+                gap: { xs: 0.5, sm: 1 },
+                justifyContent: 'flex-end',
+              }}
+            >
+              <Tooltip title="Editar">
+                <IconButton
+                  size={isMobile ? 'small' : 'medium'}
+                  color="primary"
+                  onClick={() => onEdit(banner)}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'primary.lighter',
+                      transform: 'scale(1.1)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Edit fontSize={isMobile ? 'small' : 'medium'} />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Excluir banner">
-                <IconButton size="small" color="error" onClick={() => onDeleteAsk(banner)}>
-                  <Delete fontSize="small" />
+              <Tooltip title="Excluir">
+                <IconButton
+                  size={isMobile ? 'small' : 'medium'}
+                  color="error"
+                  onClick={() => onDeleteAsk(banner)}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'error.lighter',
+                      transform: 'scale(1.1)',
+                    },
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Delete fontSize={isMobile ? 'small' : 'medium'} />
                 </IconButton>
               </Tooltip>
             </CardActions>

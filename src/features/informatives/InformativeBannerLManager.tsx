@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Box, CircularProgress, Alert, Typography, Stack, Container } from '@mui/material';
+import { Box, CircularProgress, Alert, Typography, Stack, Container, Paper } from '@mui/material';
+import { Campaign } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'store/slices';
 import { setInformativeBanner, InformativeBannerData } from 'store/slices/informative/informativeBannerSlice';
@@ -56,38 +58,130 @@ export default function InformativeBannerLManager() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f7fa', minHeight: '100vh' }}>
-      <Container sx={{ maxWidth: { xs: '100%', md: '100%' }, px: { xs: 2, md: 3 }, pt: { xs: 0, md: 4 }, pb: 4 }}>
-        <BackHeader title="Banners Informativos" />
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'stretch', md: 'center' }}
-          justifyContent="space-between"
-          spacing={2}
-          sx={{ mt: 2, mb: 2 }}
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <BannerSearch value={searchTerm} onChange={setSearchTerm} loading={isFiltering} />
-          <BannerToolbar onCreate={handleOpenCreate} />
-        </Stack>
+          <BackHeader title="📢 Banners Informativos" />
+        </motion.div>
 
-        {loading ? (
-          <Box textAlign="center" mt={10}>
-            <CircularProgress />
-            <Typography variant="body2" mt={2}>
+        {/* Search and Add Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+            >
+              <BannerSearch value={searchTerm} onChange={setSearchTerm} loading={isFiltering} />
+              <BannerToolbar onCreate={handleOpenCreate} />
+            </Stack>
+          </Paper>
+        </motion.div>
+
+        {/* Content Section */}
+        {loading && filtered.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
+            <Typography variant="body2" mt={2} color="text.secondary">
               Carregando banners informativos...
             </Typography>
           </Box>
         ) : error ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-            <Box component="span" sx={{ ml: 2, textDecoration: 'underline', cursor: 'pointer' }} onClick={fetchBanners}>
-              Tentar novamente
-            </Box>
-          </Alert>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
+              action={
+                <Box
+                  component="span"
+                  sx={{
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                  onClick={fetchBanners}
+                >
+                  Tentar novamente
+                </Box>
+              }
+            >
+              {error}
+            </Alert>
+          </motion.div>
         ) : filtered.length === 0 ? (
-          <Alert severity="info">Nenhum banner encontrado para o termo pesquisado.</Alert>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Campaign sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhum banner encontrado
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {searchTerm
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há banners informativos cadastrados.'}
+              </Typography>
+            </Paper>
+          </motion.div>
         ) : (
-          <BannerGrid items={filtered} onEdit={handleOpenEdit} onDeleteAsk={setDeleteTarget} />
+          <>
+            {isFiltering && filtered.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <BannerGrid items={filtered} onEdit={handleOpenEdit} onDeleteAsk={setDeleteTarget} />
+          </>
         )}
 
         <InformativeBannerModal

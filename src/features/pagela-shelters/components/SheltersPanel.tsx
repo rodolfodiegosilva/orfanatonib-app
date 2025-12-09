@@ -77,19 +77,21 @@ export function SheltersPanel({
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                background: "rgba(255, 255, 255, 0.9)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(0, 153, 51, 0.2)",
+                bgcolor: "background.paper",
+                borderRadius: { xs: 3, sm: 4 },
+                boxShadow: { xs: 1, sm: "0 4px 20px rgba(0, 0, 0, 0.1)" },
+                border: "1px solid",
+                borderColor: "divider",
             }}
         >
-            <Box sx={{ p: { xs: 1.5, sm: 2 }, borderBottom: "1px solid rgba(0, 153, 51, 0.1)" }}>
+            <Box sx={{ p: { xs: 2, sm: 3 }, borderBottom: "1px solid", borderColor: "divider" }}>
                 <Typography 
                     variant="h6" 
                     fontWeight="bold" 
-                    color="#000000" 
+                    color="text.primary" 
                     sx={{ 
                         mb: { xs: 1.5, sm: 2 },
-                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                        fontSize: { xs: '1.1rem', sm: '1.25rem' },
                         display: { xs: 'none', sm: 'block' } // Esconde no mobile
                     }}
                 >
@@ -99,13 +101,14 @@ export function SheltersPanel({
             <TextField
                     fullWidth
                 size="small"
+                    label="Buscar abrigos"
                     placeholder="Buscar abrigos..."
                 value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                                <SearchIcon sx={{ color: "#009933" }} />
+                                <SearchIcon sx={{ color: "text.secondary" }} />
                         </InputAdornment>
                     ),
                         endAdornment: search && (
@@ -118,9 +121,16 @@ export function SheltersPanel({
                 }}
                     sx={{
                         "& .MuiOutlinedInput-root": {
-                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            borderRadius: 2,
                             "&:hover": {
-                                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "primary.main",
+                                },
+                            },
+                            "&.Mui-focused": {
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                    borderWidth: 2,
+                                },
                             },
                         },
                     }}
@@ -131,7 +141,7 @@ export function SheltersPanel({
                 {loading ? (
                     <Stack spacing={2}>
                         {[...Array(6)].map((_, index) => (
-                            <Skeleton key={index} variant="rectangular" height={80} />
+                            <Skeleton key={index} variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
                         ))}
                     </Stack>
                 ) : shelters.length === 0 ? (
@@ -147,16 +157,20 @@ export function SheltersPanel({
                                 key={shelter.id}
                                     sx={{
                                     border: selectedShelter?.id === shelter.id 
-                                        ? "2px solid #009933" 
-                                        : "1px solid rgba(0, 153, 51, 0.2)",
-                                    backgroundColor: selectedShelter?.id === shelter.id 
-                                        ? "rgba(0, 153, 51, 0.1)" 
-                                        : "rgba(255, 255, 255, 0.8)",
-                                    transition: "all 0.2s ease",
+                                        ? "2px solid" 
+                                        : "1px solid",
+                                    borderColor: selectedShelter?.id === shelter.id 
+                                        ? "primary.main" 
+                                        : "divider",
+                                    bgcolor: selectedShelter?.id === shelter.id 
+                                        ? "rgba(25, 118, 210, 0.08)" 
+                                        : "background.paper",
+                                    borderRadius: 3,
+                                    transition: "all 0.3s ease",
                                         "&:hover": {
-                                        backgroundColor: "rgba(0, 153, 51, 0.05)",
-                                        transform: "translateY(-1px)",
-                                        boxShadow: "0 4px 8px rgba(0, 153, 51, 0.2)",
+                                        bgcolor: "action.hover",
+                                        transform: { xs: "none", sm: "translateY(-4px)" },
+                                        boxShadow: { xs: 2, sm: 4 },
                                         },
                                     }}
                                 >
@@ -167,7 +181,7 @@ export function SheltersPanel({
                                             <Stack direction="row" justifyContent="space-between" alignItems="center">
                                             <Avatar
                                                 sx={{
-                                                    bgcolor: "#009933",
+                                                    bgcolor: "primary.main",
                                                         width: { xs: 32, sm: 36 },
                                                         height: { xs: 32, sm: 36 },
                                                     }}
@@ -184,8 +198,8 @@ export function SheltersPanel({
                                             
                                                 <Typography
                                                     variant="caption"
-                                                    color="#009933"
-                                                    fontWeight="500"
+                                                    color="primary.main"
+                                                    fontWeight="600"
                                                     sx={{
                                                         fontSize: { xs: '0.625rem', sm: '0.75rem' },
                                                         textAlign: 'right'
@@ -199,7 +213,7 @@ export function SheltersPanel({
                                             <Typography
                                                 variant="subtitle2"
                                                 fontWeight="bold"
-                                                color="#000000"
+                                                color="text.primary"
                                                 sx={{
                                                     fontSize: { xs: '0.875rem', sm: '1rem' },
                                                     lineHeight: 1.3,
@@ -214,7 +228,7 @@ export function SheltersPanel({
                                             {/* Terceira linha: Cidade, Estado */}
                                                 <Typography
                                                 variant="caption"
-                                                    color="#333333"
+                                                    color="text.secondary"
                                                     sx={{
                                                     fontSize: { xs: '0.75rem', sm: '0.875rem' },
                                                     lineHeight: 1.3,
@@ -229,7 +243,7 @@ export function SheltersPanel({
                                             {/* Quarta linha: Bairro */}
                                             <Typography
                                                 variant="caption"
-                                                color="#666666"
+                                                color="text.secondary"
                                                 sx={{
                                                     fontSize: { xs: '0.625rem', sm: '0.75rem' },
                                                     lineHeight: 1.3,
@@ -245,7 +259,7 @@ export function SheltersPanel({
                                             {shelter.leaders && shelter.leaders.length > 0 && (
                                                 <Typography
                                                     variant="caption"
-                                                    color="#666666"
+                                                    color="text.secondary"
                                                     sx={{
                                                         fontSize: { xs: '0.625rem', sm: '0.75rem' },
                                                         lineHeight: 1.3,
@@ -268,7 +282,7 @@ export function SheltersPanel({
             
             {/* Paginação no rodapé */}
             {totalPages > 1 && (
-                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid rgba(0, 153, 51, 0.1)" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2 }, borderTop: "1px solid", borderColor: "divider" }}>
                     <Pagination
                         count={totalPages}
                         page={currentPage}
@@ -278,16 +292,6 @@ export function SheltersPanel({
                         sx={{
                             display: "flex",
                             justifyContent: "center",
-                            "& .MuiPaginationItem-root": {
-                                color: "#009933",
-                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                                minWidth: { xs: 28, sm: 32 },
-                                height: { xs: 28, sm: 32 },
-                                "&.Mui-selected": {
-                                    backgroundColor: "#009933",
-                                    color: "white",
-                                },
-                            },
                         }}
                     />
                 </Box>

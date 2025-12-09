@@ -18,6 +18,9 @@ import {
   InputLabel,
   Select,
   SelectChangeEvent,
+  Paper,
+  Card,
+  CardContent,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
@@ -25,7 +28,7 @@ import {
   WeekDay,
   WeekDayLabel,
 } from '@/store/slices/meditation/meditationSlice';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Visibility, Edit, Delete } from '@mui/icons-material';
 
 interface Props {
   days: DayItem[];
@@ -46,6 +49,7 @@ export default function MeditationForm({ days, onDaysChange }: Props) {
   const [error, setError] = useState('');
   const [previewDay, setPreviewDay] = useState<DayItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [touched, setTouched] = useState({ topic: false, verse: false });
 
   const availableWeekDays = weekDays.filter(
     (day) => !days.some((d) => d.day === day) || days[editIndex || -1]?.day === day
@@ -63,6 +67,8 @@ export default function MeditationForm({ days, onDaysChange }: Props) {
   }, [editIndex, days]);
 
   const handleSaveDay = () => {
+    setTouched({ topic: true, verse: true });
+    
     if (!verse.trim() || !topic.trim()) {
       setError('Preencha todos os campos do dia.');
       return;
@@ -92,115 +98,277 @@ export default function MeditationForm({ days, onDaysChange }: Props) {
     setTopic('');
     setEditIndex(null);
     setError('');
+    setTouched({ topic: false, verse: false });
   };
 
   return (
     <Box>
       {(days.length < 5 || editIndex !== null) && (
-        <Stack spacing={3} mb={3}>
-          <FormControl fullWidth>
-            <InputLabel id="day-select-label">Dia da Semana</InputLabel>
-            <Select
-              labelId="day-select-label"
-              value={selectedDay}
-              label="Dia da Semana"
-              onChange={(e: SelectChangeEvent<WeekDay>) =>
-                setSelectedDay(e.target.value as WeekDay)
-              }
-            >
-              {availableWeekDays.map((day) => (
-                <MenuItem key={day} value={day}>
-                  {WeekDayLabel[day]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            fullWidth
-            label="Tema"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-          />
-
-          <TextField
-            fullWidth
-            label="Versículo"
-            value={verse}
-            onChange={(e) => setVerse(e.target.value)}
-          />
-
-          <Box display="flex" gap={1}>
-            <Button variant="contained" onClick={handleSaveDay}>
-              {editIndex !== null ? 'Atualizar Dia' : 'Adicionar Dia'}
-            </Button>
-            {editIndex !== null && (
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  setEditIndex(null);
-                  setVerse('');
-                  setTopic('');
-                  setSelectedDay('Monday');
-                  setError('');
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            {editIndex !== null ? '✏️ Editar Dia' : '➕ Adicionar Dia da Semana'}
+          </Typography>
+          <Stack spacing={3}>
+            <FormControl fullWidth>
+              <InputLabel id="day-select-label">Dia da Semana</InputLabel>
+              <Select
+                labelId="day-select-label"
+                value={selectedDay}
+                label="Dia da Semana"
+                onChange={(e: SelectChangeEvent<WeekDay>) =>
+                  setSelectedDay(e.target.value as WeekDay)
+                }
+                sx={{
+                  borderRadius: 2,
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderWidth: 2,
+                  },
                 }}
               >
-                Cancelar Edição
-              </Button>
-            )}
-          </Box>
+                {availableWeekDays.map((day) => (
+                  <MenuItem key={day} value={day}>
+                    {WeekDayLabel[day]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
+            <TextField
+              fullWidth
+              label="Tema *"
+              required
+              value={topic}
+              onChange={(e) => {
+                setTopic(e.target.value);
+                if (touched.topic) setTouched((prev) => ({ ...prev, topic: false }));
+              }}
+              onBlur={() => setTouched((prev) => ({ ...prev, topic: true }))}
+              error={touched.topic && !topic.trim()}
+              helperText={touched.topic && !topic.trim() ? 'Campo obrigatório' : ''}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  transition: 'all 0.2s ease',
+                  '&:hover:not(.Mui-error)': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                  '&.Mui-focused': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderWidth: 2,
+                    },
+                  },
+                },
+                '& .MuiFormHelperText-root': {
+                  marginLeft: 0,
+                  marginTop: 1,
+                  fontSize: '0.75rem',
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Versículo *"
+              required
+              multiline
+              rows={3}
+              value={verse}
+              onChange={(e) => {
+                setVerse(e.target.value);
+                if (touched.verse) setTouched((prev) => ({ ...prev, verse: false }));
+              }}
+              onBlur={() => setTouched((prev) => ({ ...prev, verse: true }))}
+              error={touched.verse && !verse.trim()}
+              helperText={touched.verse && !verse.trim() ? 'Campo obrigatório' : ''}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  transition: 'all 0.2s ease',
+                  '&:hover:not(.Mui-error)': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                  '&.Mui-focused': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderWidth: 2,
+                    },
+                  },
+                },
+                '& .MuiFormHelperText-root': {
+                  marginLeft: 0,
+                  marginTop: 1,
+                  fontSize: '0.75rem',
+                },
+              }}
+            />
+
+            <Box display="flex" gap={2} flexWrap="wrap">
+              <Button
+                variant="contained"
+                onClick={handleSaveDay}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 4,
+                  py: 1.5,
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 4,
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {editIndex !== null ? 'Atualizar Dia' : 'Adicionar Dia'}
+              </Button>
+              {editIndex !== null && (
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setEditIndex(null);
+                    setVerse('');
+                    setTopic('');
+                    setSelectedDay('Monday');
+                    setError('');
+                    setTouched({ topic: false, verse: false });
+                  }}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1.5,
+                    borderWidth: 2,
+                    '&:hover': {
+                      borderWidth: 2,
+                    },
+                  }}
+                >
+                  Cancelar Edição
+                </Button>
+              )}
+            </Box>
+
+            {error && (
+              <Alert severity="error" sx={{ borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
+          </Stack>
+        </Paper>
       )}
 
-      <Divider sx={{ mb: 2 }} />
-
-      <Grid container spacing={2}>
-        {days.map((day, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Box
-              sx={{
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                p: 2,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box>
-                <Typography fontWeight="bold" mb={1}>
-                  {isValidWeekDay(day.day) ? WeekDayLabel[day.day] : day.day}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {day.topic}
-                </Typography>
-              </Box>
-
-              <Box display="flex" gap={1} mt={2}>
-                <Tooltip title="Visualizar">
-                  <IconButton onClick={() => setPreviewDay(day)}>
-                    <Eye size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Editar">
-                  <IconButton onClick={() => setEditIndex(index)}>
-                    <Pencil size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Remover">
-                  <IconButton onClick={() => setDeleteConfirm(index)}>
-                    <Trash2 size={18} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
+      {days.length > 0 && (
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+            📅 Dias da Semana ({days.length}/5)
+          </Typography>
+          <Grid container spacing={3}>
+            {days.map((day, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    borderRadius: 3,
+                    boxShadow: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      boxShadow: 4,
+                      transform: 'translateY(-4px)',
+                    },
+                  }}
+                >
+                  <CardContent sx={{ flex: 1, p: 2.5 }}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      {isValidWeekDay(day.day) ? WeekDayLabel[day.day] : day.day}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      <strong>Tópico:</strong> {day.topic}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                      <strong>Versículo:</strong> {day.verse}
+                    </Typography>
+                  </CardContent>
+                  <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    gap={1}
+                    p={1.5}
+                    borderTop={1}
+                    borderColor="divider"
+                  >
+                    <Tooltip title="Visualizar">
+                      <IconButton
+                        size="small"
+                        onClick={() => setPreviewDay(day)}
+                        sx={{
+                          '&:hover': {
+                            bgcolor: 'primary.lighter',
+                          },
+                        }}
+                      >
+                        <Visibility fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Editar">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => setEditIndex(index)}
+                        sx={{
+                          '&:hover': {
+                            bgcolor: 'primary.lighter',
+                          },
+                        }}
+                      >
+                        <Edit fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Remover">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => setDeleteConfirm(index)}
+                        sx={{
+                          '&:hover': {
+                            bgcolor: 'error.lighter',
+                          },
+                        }}
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </Paper>
+      )}
 
       <Dialog open={!!previewDay} onClose={() => setPreviewDay(null)} fullWidth maxWidth="sm">
         <DialogTitle>

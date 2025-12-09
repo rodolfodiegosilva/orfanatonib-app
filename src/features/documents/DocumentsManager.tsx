@@ -2,10 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box, Button, Paper, Grid, Stack, Snackbar, Alert,
   Dialog, DialogTitle, DialogContent, IconButton, TextField,
-  CircularProgress, Tooltip, useMediaQuery, useTheme, Fab
+  CircularProgress, Tooltip, useMediaQuery, useTheme, Container,
+  Typography, InputAdornment,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
 import { clearDocumentData, clearMedia, setDocumentData, setMedia } from 'store/slices/documents/documentSlice';
 import { AppDispatch } from 'store/slices';
@@ -31,6 +36,7 @@ const DocumentsManager: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFiltering, setIsFiltering] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [formOpen, setFormOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -48,10 +54,13 @@ const DocumentsManager: React.FC = () => {
 
   const fetchDocuments = async () => {
     try {
+      setLoading(true);
       const data = await listDocuments();
       setDocuments(data);
     } catch {
       setSnackbar({ open: true, message: 'Erro ao carregar documentos.', severity: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,75 +116,235 @@ const DocumentsManager: React.FC = () => {
 
   const handleCloseSnackbar = () => setSnackbar((p) => ({ ...p, open: false }));
 
+  const hasQuery = Boolean(searchTerm);
+
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 0, md: 4 }, mt: { xs: 0, md: 4 }, mb: { xs: 4, md: 2 }, width: '95%', mx: 'auto' }}>
-      <BackHeader title="Gerenciar Documentos" />
-
-      <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={2}
-          justifyContent="space-between"
-          alignItems={{ xs: 'stretch', sm: 'center' }}
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <TextField
-            fullWidth
-            placeholder="Buscar por nome..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <BackHeader title="📄 Gerenciar Documentos" />
+        </motion.div>
 
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreate}
-            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+        {/* Search and Add Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
           >
-            Documento
-          </Button>
-        </Stack>
-      </Paper>
-
-      {isXs && (
-        <Tooltip title="Novo Documento">
-          <Fab
-            color="primary"
-            aria-label="Novo Documento"
-            onClick={handleCreate}
-            sx={{ position: 'fixed', right: 24, bottom: 24, zIndex: 1200 }}
-          >
-            <AddIcon />
-          </Fab>
-        </Tooltip>
-      )}
-
-      {isFiltering ? (
-        <Box display="flex" justifyContent="center" mt={5}><CircularProgress /></Box>
-      ) : (
-        <Grid container spacing={3}>
-          {filteredDocuments.map((doc) => (
-            <Grid item xs={12} sm={6} md={4} key={doc.id}>
-              <DocumentCard
-                document={doc}
-                onEdit={handleEdit}
-                onDelete={(d) => setDeleteModalOpen({ id: d.id, name: d.name })}
-                onViewDetails={setDetailsModalOpen}
-                onPreviewFile={setViewModalOpen}
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+            >
+              <TextField
+                fullWidth
+                label="Buscar documentos"
+                placeholder="Buscar por nome..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {isFiltering && <CircularProgress size={20} sx={{ mr: hasQuery ? 1 : 0 }} />}
+                      {hasQuery && (
+                        <Tooltip title="Limpar busca">
+                          <IconButton
+                            size="small"
+                            onClick={() => setSearchTerm('')}
+                            sx={{
+                              '&:hover': {
+                                bgcolor: 'action.hover',
+                              },
+                            }}
+                          >
+                            <ClearIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                }}
               />
-            </Grid>
-          ))}
-        </Grid>
-      )}
 
-      <Dialog open={formOpen} onClose={() => setFormOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 2 }}>
-          {isEditing ? 'Editar Documento' : 'Novo Documento'}
-          <IconButton onClick={() => setFormOpen(false)} size="small"><CloseIcon /></IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <DocumentForm isEditing={isEditing} onSuccess={handleFormSuccess} />
-        </DialogContent>
-      </Dialog>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleCreate}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 4,
+                  py: 1.5,
+                  whiteSpace: 'nowrap',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 4,
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                + Documento
+              </Button>
+            </Stack>
+          </Paper>
+        </motion.div>
+
+        {/* Content Section */}
+        {loading && filteredDocuments.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
+          </Box>
+        ) : filteredDocuments.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <DescriptionIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhum documento encontrado
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {hasQuery
+                  ? 'Tente ajustar sua busca ou limpar os filtros.'
+                  : 'Ainda não há documentos cadastrados.'}
+              </Typography>
+            </Paper>
+          </motion.div>
+        ) : (
+          <>
+            {isFiltering && filteredDocuments.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filteredDocuments.map((doc, index) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={doc.id}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <DocumentCard
+                    document={doc}
+                    onEdit={handleEdit}
+                    onDelete={(d) => setDeleteModalOpen({ id: d.id, name: d.name })}
+                    onViewDetails={setDetailsModalOpen}
+                    onPreviewFile={setViewModalOpen}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </>
+        )}
+
+        <Dialog
+          open={formOpen}
+          onClose={() => setFormOpen(false)}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              pr: 2,
+              pb: 2,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              {isEditing ? '✏️ Editar Documento' : '➕ Novo Documento'}
+            </Typography>
+            <IconButton
+              onClick={() => setFormOpen(false)}
+              size="small"
+              sx={{
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent sx={{ pt: 3 }}>
+            <DocumentForm isEditing={isEditing} onSuccess={handleFormSuccess} />
+          </DialogContent>
+        </Dialog>
 
       <DocumentDetailsModal open={!!detailsModalOpen} document={detailsModalOpen} onClose={() => setDetailsModalOpen(null)} />
       <DocumentPreviewModal open={!!previewModalOpen} document={previewModalOpen} onClose={() => setPreviewModalOpen(null)} />
@@ -188,9 +357,24 @@ const DocumentsManager: React.FC = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert severity={snackbar.severity} variant="filled">{snackbar.message}</Alert>
-      </Snackbar>
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert
+            severity={snackbar.severity}
+            variant="filled"
+            onClose={handleCloseSnackbar}
+            sx={{
+              borderRadius: 2,
+            }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Container>
     </Box>
   );
 };

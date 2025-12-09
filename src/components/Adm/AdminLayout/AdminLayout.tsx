@@ -78,7 +78,7 @@ function AdminLayout() {
         id: "pages",
         title: "Páginas",
         items: [
-          { label: "Materiais semanais", to: "/adm/paginas-materiais-semanais", icon: <EventNote /> },
+          { label: "Materiais de visita", to: "/adm/paginas-materiais-visita", icon: <EventNote /> },
           { label: "Páginas de fotos", to: "/adm/paginas-fotos", icon: <PhotoLibrary /> },
           { label: "Fotos dos abrigos", to: "/adm/fotos-abrigos", icon: <Collections /> },
           { label: "Ideias compartilhadas", to: "/adm/ideias-compartilhadas", icon: <Lightbulb /> },

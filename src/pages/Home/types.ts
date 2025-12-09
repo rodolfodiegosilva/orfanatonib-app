@@ -47,7 +47,7 @@ export interface CardsSectionProps {
   cards: CardData[];
 }
 
-export interface WeekMaterialsBannerProps {
-  currentWeekRoute: CardData | null;
+export interface VisitMaterialsBannerProps {
+  currentVisitRoute: CardData | null;
   userName?: string;
 }

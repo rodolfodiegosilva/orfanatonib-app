@@ -1,6 +1,8 @@
 import React from "react";
-import { Box, Alert, CircularProgress } from "@mui/material";
+import { Box, Alert, CircularProgress, Container, Paper, Typography } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { motion } from "framer-motion";
+import SearchIcon from "@mui/icons-material/Search";
 
 import TeacherToolbar from "./components/TeacherToolbar";
 import TeacherTable from "./components/TeacherTable";
@@ -90,41 +92,89 @@ export default function TeacherProfilesManager() {
   return (
     <Box
       sx={{
-        px: { xs: 2, md: 0 },
-        py: { xs: 0, md: 0 },
         minHeight: "100vh",
-        bgcolor: "#f9fafb"
+        bgcolor: "background.default",
+        pb: 4,
       }}
     >
-      <BackHeader title="Gerenciador de Professores" />
-
-      <TeacherToolbar
-        filters={filters}
-        onChange={handleFiltersChange}
-        onRefreshClick={doRefresh}
-        isXs={isXs}
-      />
-
-      {(loading && !rows.length) || sheltersLoading ? (
-        <Box textAlign="center" my={6}>
-          <CircularProgress />
-        </Box>
-      ) : null}
-
-      {(error || sheltersError) && !(loading || sheltersLoading) && (
-        <Alert
-          severity="error"
-          sx={{ mb: 2 }}
-          onClose={() => {
-            setError("");
-            setDialogError("");
-          }}
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 3 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          {error || sheltersError}
-        </Alert>
-      )}
+          <BackHeader title="Gerenciador de Professores" />
+        </motion.div>
 
-      {isXs ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <TeacherToolbar
+            filters={filters}
+            onChange={handleFiltersChange}
+            onRefreshClick={doRefresh}
+            isXs={isXs}
+          />
+        </motion.div>
+
+        {(loading && !rows.length) || sheltersLoading ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              py: 8,
+            }}
+          >
+            <CircularProgress size={48} />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Carregando professores...
+            </Typography>
+          </Box>
+        ) : null}
+
+        {(error || sheltersError) && !(loading || sheltersLoading) && (
+          <Alert
+            severity="error"
+            sx={{ mb: 2, borderRadius: 2 }}
+            onClose={() => {
+              setError("");
+              setDialogError("");
+            }}
+          >
+            {error || sheltersError}
+          </Alert>
+        )}
+
+        {!loading && !error && !sheltersLoading && !sheltersError && rows.length === 0 && (
+          <Paper
+            sx={{
+              p: 6,
+              textAlign: "center",
+              borderRadius: 2,
+              bgcolor: "background.paper",
+            }}
+          >
+            <SearchIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              Nenhum professor encontrado
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Tente ajustar os filtros de busca.
+            </Typography>
+          </Paper>
+        )}
+
+        {!loading && !sheltersLoading && rows.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            {isXs ? (
         <TeacherCards
           rows={rows}
           total={total}
@@ -149,10 +199,12 @@ export default function TeacherProfilesManager() {
           setSorting={setSorting as any}
           onView={(t) => setViewing(t)}
           onEdit={handleEditTeam}
-        />
-      )}
+            />
+            )}
+          </motion.div>
+        )}
 
-      <TeacherViewDialog
+        <TeacherViewDialog
         open={!!viewing}
         teacher={viewing}
         onClose={() => setViewing(null)}
@@ -170,6 +222,7 @@ export default function TeacherProfilesManager() {
           setEditingTeam(null);
         }}
       />
+      </Container>
     </Box>
   );
 }

@@ -9,8 +9,8 @@ import { motion } from 'framer-motion';
 const TeacherWeekBanner: React.FC = () => {
   const routes = useSelector((state: RootState) => state.routes.routes);
   const { user } = useSelector((state: RootState) => state.auth);
-  const currentWeekRoute = routes.find(
-    (route) => route.entityType === MediaTargetType.WeekMaterialsPage && route.current === true
+  const currentVisitRoute = routes.find(
+    (route) => route.entityType === MediaTargetType.VisitMaterialsPage && route.current === true
   );
 
   // Função para determinar a parte do mês
@@ -33,7 +33,7 @@ const TeacherWeekBanner: React.FC = () => {
 
   const { part, month } = getMonthPart();
 
-  if (!currentWeekRoute) {
+  if (!currentVisitRoute) {
     return (
       <Paper
         elevation={3}
@@ -68,7 +68,7 @@ const TeacherWeekBanner: React.FC = () => {
             fontWeight: 500,
           }}
         >
-          Nenhum material semanal atual encontrado.
+          Nenhum material de visita atual encontrado.
         </Typography>
       </Paper>
     );
@@ -161,7 +161,7 @@ const TeacherWeekBanner: React.FC = () => {
             {month}
           </Typography>
 
-          {currentWeekRoute.subtitle && (
+          {currentVisitRoute.subtitle && (
             <Fragment>
               <Typography
                 variant="body1"
@@ -184,7 +184,7 @@ const TeacherWeekBanner: React.FC = () => {
                   opacity: 0.95,
                 }}
               >
-                {currentWeekRoute.subtitle}
+                {currentVisitRoute.subtitle}
               </Typography>
             </Fragment>
           )}
@@ -193,7 +193,7 @@ const TeacherWeekBanner: React.FC = () => {
             variant="contained"
             size="medium"
             component={Link}
-            to={`/${currentWeekRoute.path}`}
+            to={`/${currentVisitRoute.path}`}
             sx={{
               bgcolor: 'white',
               color: '#0073E6',

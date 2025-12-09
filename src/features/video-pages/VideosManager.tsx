@@ -9,9 +9,13 @@ import {
   Alert as MuiAlert,
   useMediaQuery,
   useTheme,
+  Container,
+  Typography,
 } from '@mui/material';
+import { VideoLibrary } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AppDispatch } from '@/store/slices';
 import { setVideoData, VideoPageData } from 'store/slices/video/videoSlice';
 
@@ -69,77 +73,170 @@ export default function VideosManager() {
   const isFiltering = pages.length > 0 && pages.length !== filtered.length;
 
   return (
-    <Box
-      sx={{
-        px: { xs: 2, md: 4 },
-        bgcolor: '#f5f7fa',
-        minHeight: '100vh',
-      }}
-    >
-      <BackHeader title="Páginas de Vídeos" />
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BackHeader title="🎥 Páginas de Vídeos" />
+        </motion.div>
 
-      <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
-        <VideoPageToolbar search={search} onSearch={setSearch} onRefresh={fetchPages} />
-      </Paper>
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Paper
+            elevation={2}
+            sx={{
+              p: { xs: 3, md: 4 },
+              mb: 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <VideoPageToolbar
+              search={search}
+              onSearch={setSearch}
+              onRefresh={fetchPages}
+              isFiltering={isFiltering}
+            />
+          </Paper>
+        </motion.div>
 
-      {loading ? (
-        <Box textAlign="center" mt={10}><CircularProgress /></Box>
-      ) : error ? (
-        <Box textAlign="center" mt={10}>
-          <Alert severity="error" onClose={() => setError('')}>{error}</Alert>
-        </Box>
-      ) : filtered.length === 0 ? (
-        <Box textAlign="center" mt={10}>
-          <Alert severity={isFiltering ? 'info' : 'warning'}>
-            {isFiltering ? 'Nenhuma página corresponde ao filtro.' : 'Nenhuma página encontrada.'}
-          </Alert>
-        </Box>
-      ) : (
-        <Grid container spacing={3} justifyContent="center">
-          {filtered.map((page) => (
-            <Grid
-              item
-              key={page.id}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              sx={{ display: 'flex' }}
+        {/* Content Section */}
+        {loading && filtered.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '50vh',
+            }}
+          >
+            <CircularProgress size={60} thickness={4} />
+          </Box>
+        ) : error ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Alert
+              severity="error"
+              onClose={() => setError('')}
+              sx={{
+                borderRadius: 3,
+                fontSize: '1rem',
+              }}
             >
-              <VideoPageCard
-                page={page}
-                onView={() => setSelectedPage(page)}
-                onEdit={() => handleEdit(page)}
-                onDelete={() => setPageToDelete(page)}
-              />
+              {error}
+            </Alert>
+          </motion.div>
+        ) : filtered.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Paper
+              elevation={1}
+              sx={{
+                p: 6,
+                textAlign: 'center',
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+              }}
+            >
+              <VideoLibrary sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                📭 Nenhuma página encontrada
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {isFiltering
+                  ? 'Nenhuma página corresponde ao filtro aplicado.'
+                  : search
+                    ? 'Tente ajustar sua busca ou limpar os filtros.'
+                    : 'Ainda não há páginas de vídeos cadastradas.'}
+              </Typography>
+            </Paper>
+          </motion.div>
+        ) : (
+          <>
+            {loading && filtered.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 2,
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
+            <Grid container spacing={3} alignItems="stretch">
+              {filtered.map((page, index) => (
+                <Grid
+                  item
+                  key={page.id}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  sx={{ display: 'flex' }}
+                >
+                  <VideoPageCard
+                    page={page}
+                    onView={() => setSelectedPage(page)}
+                    onEdit={() => handleEdit(page)}
+                    onDelete={() => setPageToDelete(page)}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      )}
+          </>
+        )}
 
-      <DeleteConfirmDialog
-        open={!!pageToDelete}
-        title={pageToDelete?.title}
-        onClose={() => setPageToDelete(null)}
-        onConfirm={handleDelete}
-      />
+        <DeleteConfirmDialog
+          open={!!pageToDelete}
+          title={pageToDelete?.title}
+          onClose={() => setPageToDelete(null)}
+          onConfirm={handleDelete}
+        />
 
-      <VideoPageDetailsModal
-        page={selectedPage}
-        open={!!selectedPage}
-        onClose={() => setSelectedPage(null)}
-      />
+        <VideoPageDetailsModal
+          page={selectedPage}
+          open={!!selectedPage}
+          onClose={() => setSelectedPage(null)}
+        />
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3500}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <MuiAlert severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </MuiAlert>
-      </Snackbar>
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3500}
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <MuiAlert
+            severity={snackbar.severity}
+            variant="filled"
+            onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+            sx={{
+              borderRadius: 2,
+            }}
+          >
+            {snackbar.message}
+          </MuiAlert>
+        </Snackbar>
+      </Container>
     </Box>
   );
 }

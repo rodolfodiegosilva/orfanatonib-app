@@ -25,7 +25,7 @@ interface Props {
   setVideos: (videos: MediaItem[]) => void;
 }
 
-export default function WeekVideos({ videos, setVideos }: Props) {
+export default function VisitVideos({ videos, setVideos }: Props) {
   const [newVideo, setNewVideo] = useState<MediaItem>({
     title: '',
     description: '',
@@ -44,6 +44,11 @@ export default function WeekVideos({ videos, setVideos }: Props) {
     description: false,
     url: false,
   });
+  const [touched, setTouched] = useState({
+    title: false,
+    description: false,
+    url: false,
+  });
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,6 +59,8 @@ export default function WeekVideos({ videos, setVideos }: Props) {
   };
 
   const handleAddOrUpdate = () => {
+    setTouched({ title: true, description: true, url: true });
+    
     const isValid =
       newVideo.uploadType === MediaUploadType.UPLOAD ||
       validateMediaURL(newVideo.url, newVideo.platformType);
@@ -89,6 +96,7 @@ export default function WeekVideos({ videos, setVideos }: Props) {
       platformType: MediaPlatform.YOUTUBE,
     });
     setFileName('');
+    setTouched({ title: false, description: false, url: false });
   };
 
   const handleEdit = (index: number) => {
@@ -111,20 +119,72 @@ export default function WeekVideos({ videos, setVideos }: Props) {
           <TextField
             label="Título do Vídeo"
             fullWidth
+            required
             value={newVideo.title}
-            onChange={(e) => setNewVideo((prev) => ({ ...prev, title: e.target.value }))}
-            error={errors.title}
-            helperText={errors.title ? 'Campo obrigatório' : ''}
+            onChange={(e) => {
+              setNewVideo((prev) => ({ ...prev, title: e.target.value }));
+              if (touched.title) setTouched((prev) => ({ ...prev, title: false }));
+            }}
+            onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
+            error={touched.title && errors.title}
+            helperText={touched.title && errors.title ? 'Campo obrigatório' : ''}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover:not(.Mui-error)': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                },
+                '&.Mui-focused': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderWidth: 2,
+                  },
+                },
+              },
+              '& .MuiFormHelperText-root': {
+                marginLeft: 0,
+                marginTop: 1,
+                fontSize: '0.75rem',
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Descrição do Vídeo"
             fullWidth
+            required
             value={newVideo.description}
-            onChange={(e) => setNewVideo((prev) => ({ ...prev, description: e.target.value }))}
-            error={errors.description}
-            helperText={errors.description ? 'Campo obrigatório' : ''}
+            onChange={(e) => {
+              setNewVideo((prev) => ({ ...prev, description: e.target.value }));
+              if (touched.description) setTouched((prev) => ({ ...prev, description: false }));
+            }}
+            onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
+            error={touched.description && errors.description}
+            helperText={touched.description && errors.description ? 'Campo obrigatório' : ''}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                '&:hover:not(.Mui-error)': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main',
+                  },
+                },
+                '&.Mui-focused': {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderWidth: 2,
+                  },
+                },
+              },
+              '& .MuiFormHelperText-root': {
+                marginLeft: 0,
+                marginTop: 1,
+                fontSize: '0.75rem',
+              },
+            }}
           />
         </Grid>
 
@@ -179,10 +239,36 @@ export default function WeekVideos({ videos, setVideos }: Props) {
               <TextField
                 label="URL do Vídeo"
                 fullWidth
+                required
                 value={newVideo.url}
-                onChange={(e) => setNewVideo((prev) => ({ ...prev, url: e.target.value }))}
-                error={errors.url}
-                helperText={errors.url ? 'URL inválida ou obrigatória' : ''}
+                onChange={(e) => {
+                  setNewVideo((prev) => ({ ...prev, url: e.target.value }));
+                  if (touched.url) setTouched((prev) => ({ ...prev, url: false }));
+                }}
+                onBlur={() => setTouched((prev) => ({ ...prev, url: true }))}
+                error={touched.url && errors.url}
+                helperText={touched.url && errors.url ? 'URL inválida ou obrigatória' : ''}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover:not(.Mui-error)': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: 2,
+                      },
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    marginLeft: 0,
+                    marginTop: 1,
+                    fontSize: '0.75rem',
+                  },
+                }}
               />
             </Grid>
           </Fragment>
@@ -203,7 +289,22 @@ export default function WeekVideos({ videos, setVideos }: Props) {
         )}
 
         <Grid item xs={12}>
-          <Button variant="contained" fullWidth onClick={handleAddOrUpdate}>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={handleAddOrUpdate}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              py: 1.5,
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: 4,
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
             {editingIndex !== null ? 'Salvar Alterações' : 'Adicionar Vídeo'}
           </Button>
         </Grid>

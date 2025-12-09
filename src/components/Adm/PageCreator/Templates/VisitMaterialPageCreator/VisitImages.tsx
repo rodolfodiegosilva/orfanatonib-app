@@ -25,7 +25,7 @@ interface Props {
   setImages: (imgs: MediaItem[]) => void;
 }
 
-export default function WeekImages({ images, setImages }: Props) {
+export default function VisitImages({ images, setImages }: Props) {
   const [newImg, setNewImg] = useState<MediaItem>({
     title: '',
     description: '',

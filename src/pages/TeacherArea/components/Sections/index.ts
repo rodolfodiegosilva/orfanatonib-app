@@ -5,4 +5,4 @@ export { default as CommentsSection } from './CommentsSection';
 export { default as DocumentsSection } from './DocumentsSection';
 export { default as IdeasGallerySection } from './IdeasGallerySection';
 export { default as TrainingVideosSection } from './TrainingVideosSection';
-export { default as WeekMaterialsList } from './WeekMaterialsList';
+export { default as VisitMaterialsList } from './VisitMaterialsList';

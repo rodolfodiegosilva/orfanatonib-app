@@ -1,11 +1,11 @@
-# WeekMaterialViewPage - Refatoração Mobile-First
+# VisitMaterialViewPage - Refatoração Mobile-First
 
 ## 🎯 Objetivo
-Refatoração completa dos componentes de visualização de materiais semanais com foco em **mobile-first**, melhorando a experiência do usuário final com interface moderna e responsiva.
+Refatoração completa dos componentes de visualização de materiais de visita com foco em **mobile-first**, melhorando a experiência do usuário final com interface moderna e responsiva.
 
 ## 📱 Componentes Refatorados
 
-### 1. **WeekMaterialsPageView.tsx** (Principal)
+### 1. **VisitMaterialsPageView.tsx** (Principal)
 **Melhorias:**
 - ✅ Layout mobile-first responsivo
 - ✅ Header com gradiente e animações Framer Motion
@@ -23,7 +23,7 @@ Refatoração completa dos componentes de visualização de materiais semanais c
 - Animações suaves de entrada
 - Design cards com hover effects
 
-### 2. **WeekDocumentViewer.tsx**
+### 2. **VisitDocumentViewer.tsx**
 **Melhorias:**
 - ✅ Card design com gradiente sutil
 - ✅ Ícone de documento destacado
@@ -38,7 +38,7 @@ Refatoração completa dos componentes de visualização de materiais semanais c
 - Interface limpa e moderna
 - Responsivo para todos os dispositivos
 
-### 3. **WeekImageGalleryView.tsx**
+### 3. **VisitImageGalleryView.tsx**
 **Melhorias:**
 - ✅ Modal de visualização em tela cheia
 - ✅ Overlay com ícone de zoom

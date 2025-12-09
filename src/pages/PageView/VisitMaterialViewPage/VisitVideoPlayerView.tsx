@@ -17,7 +17,7 @@ interface Props {
   video: MediaItem;
 }
 
-export default function WeekVideoPlayer({ video }: Props) {
+export default function VisitVideoPlayer({ video }: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
