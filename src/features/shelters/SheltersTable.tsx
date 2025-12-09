@@ -13,6 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { ShelterResponseDto, WEEKDAYS } from "./types";
 import { fmtDate } from "@/utils/dates";
 import SheltersCards from "./SheltersCards";
+import ChipsListWithExpand from "./components/ChipsListWithExpand";
 
 type Props = {
   isAdmin: boolean;
@@ -59,29 +60,17 @@ function SheltersTableDesktop(props: Props) {
         header: "Líderes",
         cell: ({ row }) => {
           const leaders = row.original.leaders ?? [];
-          if (leaders.length === 0) {
-            return <Typography noWrap color="text.secondary">—</Typography>;
-          }
-          if (leaders.length === 1) {
-            const leader = leaders[0];
-            const label = leader?.user?.name || leader?.user?.email || "—";
-            return <Typography noWrap>{label}</Typography>;
-          }
           return (
-            <Box>
-              {leaders.map((leader, index) => {
-                const label = leader?.user?.name || leader?.user?.email || "—";
-                return (
-                  <Chip
-                    key={leader.id}
-                    label={label}
-                    size="small"
-                    variant="outlined"
-                    sx={{ mr: 0.5, mb: 0.5 }}
-                  />
-                );
-              })}
-            </Box>
+            <ChipsListWithExpand
+              items={leaders.map((leader) => ({
+                id: leader.id,
+                label: leader?.user?.name || leader?.user?.email || "—",
+                color: "primary" as const,
+                variant: "outlined" as const,
+              }))}
+              maxVisible={3}
+              emptyMessage="—"
+            />
           );
         },
         meta: { width: 240 },
@@ -91,18 +80,17 @@ function SheltersTableDesktop(props: Props) {
         header: "Professores",
         cell: ({ row }) => {
           const list = row.original.teachers ?? [];
-          if (!list.length) return <Chip label="Nenhum" size="small" />;
           return (
-            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-              {list.map((t) => (
-                <Chip
-                  key={t.id}
-                  size="small"
-                  label={t.user?.name || t.user?.email || t.id}
-                  variant="outlined"
-                />
-              ))}
-            </Box>
+            <ChipsListWithExpand
+              items={list.map((t) => ({
+                id: t.id,
+                label: t.user?.name || t.user?.email || t.id,
+                color: "secondary" as const,
+                variant: "outlined" as const,
+              }))}
+              maxVisible={3}
+              emptyMessage="Nenhum"
+            />
           );
         },
       },

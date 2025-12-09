@@ -43,6 +43,7 @@ import { SiteFeedbackForm } from './pages/TeacherArea/components';
 import LeaderProfilesManager from './features/leaders/LeaderProfilesManager';
 import TeacherProfilesManager from './features/teachers/TeacherProfilesManager';
 import SheltersManager from './features/shelters/SheltersManager';
+import ShelterFormPage from './features/shelters/ShelterFormPage';
 import ContactsManager from './features/contacts/ContactsManager';
 import MeditationManager from './features/meditations/MeditationManager';
 import ShelteredManager from './features/sheltered/ShelteredManager';
@@ -147,6 +148,8 @@ function App() {
                   <Route path="professores" element={<TeacherProfilesManager />} />
                   <Route path="abrigados" element={<ShelteredManager />} />
                   <Route path="shelters" element={<SheltersManager />} />
+                  <Route path="shelters/new" element={<ShelterFormPage />} />
+                  <Route path="shelters/:id/edit" element={<ShelterFormPage />} />
                   <Route path="pagelas" element={<PagelaSheltersManager />} />
 
                   <Route path="editar-meditacao" element={<MeditationPageCreator fromTemplatePage={false} />} />

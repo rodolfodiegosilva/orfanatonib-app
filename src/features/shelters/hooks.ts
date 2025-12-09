@@ -126,8 +126,9 @@ export function useShelterMutations(
       setDialogLoading(true);
       setDialogError("");
       try {
-        await apiCreateShelter(payload);
+        const result = await apiCreateShelter(payload);
         if (onSuccess) await onSuccess();
+        return result;
       } catch (err: any) {
         setDialogError(err?.response?.data?.message || err.message || "Erro ao criar shelter");
         throw err;
@@ -143,8 +144,9 @@ export function useShelterMutations(
       setDialogLoading(true);
       setDialogError("");
       try {
-        await apiUpdateShelter(id, payload);
+        const result = await apiUpdateShelter(id, payload);
         if (onSuccess) await onSuccess();
+        return result;
       } catch (err: any) {
         setDialogError(err?.response?.data?.message || err.message || "Erro ao atualizar shelter");
         throw err;

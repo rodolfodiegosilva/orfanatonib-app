@@ -1,17 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { Alert, Box, CircularProgress, Container, Paper, Typography } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
 import SheltersToolbar from "./SheltersToolbar";
 import SheltersTable from "./SheltersTable";
 import ShelterViewDialog from "./ShelterViewDialog";
-import ShelterFormDialog from "./ShelterFormDialog";
-import { useShelterDetails, useShelterMutations, useShelters, useOptions } from "./hooks";
+import { useShelterDetails, useShelterMutations, useShelters } from "./hooks";
 import {
   ShelterResponseDto,
-  CreateShelterForm,
-  EditShelterForm,
   ShelterFilters,
   ShelterSort,
 } from "./types";
@@ -22,6 +20,7 @@ import { useSelector } from "react-redux";
 import { selectIsAdmin } from "@/store/selectors/routeSelectors";
 
 export default function SheltersManager() {
+  const navigate = useNavigate();
   const isAdmin = useSelector(selectIsAdmin);
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -49,185 +48,19 @@ export default function SheltersManager() {
     fetchShelter(shelter.id);
   };
 
-  const { leaders, teachers, loading: optionsLoading, reloadOptions, loadRefs } = useOptions();
-
   const {
-    dialogLoading,
-    dialogError,
-    setDialogError,
-    createShelter,
-    updateShelter,
     deleteShelter,
   } = useShelterMutations(async () => {
     // Recarregar dados após operações CRUD
     await fetchPage();
-    await reloadOptions();
   });
 
-  const sanitizeIds = (arr?: Array<string | null | undefined>) =>
-    Array.from(
-      new Set(
-        (arr ?? []).filter(
-          (v): v is string => typeof v === "string" && v.trim() !== ""
-        )
-      )
-    );
-
-  const [creating, setCreating] = useState<CreateShelterForm | null>(null);
-  const openCreate = async () => {
-    await loadRefs(); // Carrega opções apenas quando necessário
-    setCreating({
-      name: "",
-      description: "",
-      teamsQuantity: 1, // Campo obrigatório (número)
-      address: {
-        street: "",
-        district: "",
-        city: "",
-        state: "",
-        postalCode: "",
-      } as any,
-      mediaItem: undefined,
-      file: undefined,
-    });
+  const handleCreate = () => {
+    navigate("/adm/shelters/new");
   };
 
-  const submitCreate = async () => {
-    if (!creating) return;
-
-    // Validação: teamsQuantity é obrigatório
-    if (!creating.teamsQuantity || creating.teamsQuantity < 1) {
-      setError("A quantidade de equipes é obrigatória e deve ser maior que 0");
-      return;
-    }
-
-    const { file, ...rest } = creating as any;
-    
-    // Preparar payload limpo (removidos leaderProfileIds e teacherProfileIds - agora via Teams)
-    const payload: any = {
-      name: rest.name,
-      description: rest.description,
-      teamsQuantity: rest.teamsQuantity, // Campo obrigatório
-      address: rest.address,
-    };
-
-    // Tratar mediaItem (3 cenários do guia)
-    if (file) {
-      // Cenário 1: Upload de arquivo (form-data)
-      const formData = new FormData();
-      
-      // Seguindo formato do guia: shelterData como string JSON
-      const shelterData = {
-        name: payload.name,
-        description: payload.description,
-        teamsQuantity: payload.teamsQuantity, // Campo obrigatório
-        address: payload.address,
-        mediaItem: {
-          title: rest.mediaItem?.title || "Foto do Abrigo",
-          description: rest.mediaItem?.description || "Imagem do abrigo",
-          uploadType: "UPLOAD",
-        }
-      };
-      
-      formData.append('shelterData', JSON.stringify(shelterData));
-      formData.append('image', file); // Campo conforme documentação
-      
-      await createShelter(formData);
-    } else if (rest.mediaItem?.url) {
-      // Cenário 2: Link de URL (JSON)
-      payload.mediaItem = {
-        title: rest.mediaItem.title || "Foto do Abrigo",
-        description: rest.mediaItem.description || "Imagem do abrigo",
-        url: rest.mediaItem.url,
-        uploadType: "link",
-      };
-      await createShelter(payload);
-    } else {
-      // Cenário 3: Sem imagem (JSON)
-      await createShelter(payload);
-    }
-
-    setCreating(null);
-  };
-
-  const [editing, setEditing] = useState<EditShelterForm | null>(null);
-
-  const startEdit = async (c: ShelterResponseDto) => {
-    await loadRefs(); // Carrega opções apenas quando necessário
-    setEditing({
-      id: c.id,
-      name: c.name,
-      description: c.description || "",
-      teamsQuantity: c.teamsQuantity || 1, // Campo obrigatório - usar valor atual ou padrão 1
-      address: c.address,
-      mediaItem: c.mediaItem ? {
-        title: c.mediaItem.title,
-        description: c.mediaItem.description,
-        uploadType: c.mediaItem.uploadType,
-        url: c.mediaItem.url,
-        isLocalFile: c.mediaItem.isLocalFile,
-      } : undefined,
-      file: undefined,
-    } as any);
-  };
-
-  const submitEdit = async () => {
-    if (!editing) return;
-
-    // Validação: teamsQuantity é obrigatório
-    if (!editing.teamsQuantity || editing.teamsQuantity < 1) {
-      setError("A quantidade de equipes é obrigatória e deve ser maior que 0");
-      return;
-    }
-
-    const { id, file, ...rest } = editing as any;
-
-    // ✅ Preparar payload limpo (removidos leaderProfileIds e teacherProfileIds - agora via Teams)
-    const payload: any = {
-      name: rest.name,
-      description: rest.description,
-      teamsQuantity: rest.teamsQuantity, // Campo obrigatório
-      address: rest.address,
-    };
-
-    // ⚠️ IMPORTANTE: Só incluir mediaItem se realmente mudou
-    if (file) {
-      // Cenário 1: Upload de novo arquivo (form-data)
-      const formData = new FormData();
-      
-      // Seguindo formato do guia: shelterData como string JSON
-      const shelterData = {
-        name: payload.name,
-        description: payload.description,
-        teamsQuantity: payload.teamsQuantity, // Campo obrigatório
-        address: payload.address,
-        mediaItem: {
-          title: rest.mediaItem?.title || "Foto do Abrigo",
-          description: rest.mediaItem?.description || "Imagem do abrigo",
-          uploadType: "UPLOAD",
-        }
-      };
-      
-      formData.append('shelterData', JSON.stringify(shelterData));
-      formData.append('image', file); // Campo conforme documentação
-      
-      await updateShelter(id, formData);
-    } else if (rest.mediaItem && !rest.mediaItem.id) {
-      // Cenário 2: Nova URL de link (sem ID = nova criação)
-      payload.mediaItem = {
-        title: rest.mediaItem.title || "Foto do Abrigo",
-        description: rest.mediaItem.description || "Imagem do abrigo",
-        url: rest.mediaItem.url,
-        uploadType: "link",
-      };
-      await updateShelter(id, payload);
-    } else {
-      // Cenário 3: ✅ NÃO enviar mediaItem se não mudou
-      // Backend detecta automaticamente e ignora
-      await updateShelter(id, payload);
-    }
-
-    setEditing(null);
+  const handleEdit = (shelter: ShelterResponseDto) => {
+    navigate(`/adm/shelters/${shelter.id}/edit`);
   };
 
   const [confirmDelete, setConfirmDelete] = useState<ShelterResponseDto | null>(null);
@@ -269,7 +102,7 @@ export default function SheltersManager() {
               setFilters(updater);
               setPageIndex(0);
             }}
-            onCreateClick={() => openCreate()}
+            onCreateClick={handleCreate}
             onRefreshClick={doRefresh}
             isXs={isXs}
           />
@@ -340,7 +173,7 @@ export default function SheltersManager() {
                 setSorting(Array.isArray(s) ? (s[0] ?? null) : (s as any))
               }
               onOpenView={handleOpenView}
-              onStartEdit={(shelter) => startEdit(shelter)}
+              onStartEdit={handleEdit}
               onAskDelete={askDelete}
             />
           </motion.div>
@@ -353,44 +186,11 @@ export default function SheltersManager() {
         onClose={() => setViewing(null)}
       />
 
-      <ShelterFormDialog
-        mode="create"
-        open={!!creating}
-        value={creating}
-        onChange={(v) => setCreating(v as CreateShelterForm)}
-        onCancel={() => {
-          setCreating(null);
-          setDialogError("");
-        }}
-        onSubmit={submitCreate}
-        error={dialogError}
-        loading={dialogLoading}
-        leaderOptions={leaders}
-        teacherOptions={teachers}
-      />
-
-      <ShelterFormDialog
-        mode="edit"
-        open={!!editing}
-        value={editing}
-        onChange={(v) => setEditing(v as EditShelterForm)}
-        onCancel={() => {
-          setEditing(null);
-          setDialogError("");
-        }}
-        onSubmit={submitEdit}
-        error={dialogError}
-        loading={dialogLoading}
-        leaderOptions={leaders}
-        teacherOptions={teachers}
-      />
-
       <DeleteConfirmDialog
         open={!!confirmDelete}
         title={confirmDelete ? confirmDelete.name : ""}
         onClose={() => {
           setConfirmDelete(null);
-          setDialogError("");
         }}
         onConfirm={submitDelete}
       />

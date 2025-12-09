@@ -5,6 +5,7 @@ import {
   Divider, TablePagination, Tooltip, Collapse, ButtonBase,
   Paper, Avatar, Fade, Slide
 } from "@mui/material";
+import ChipsListWithExpand from "./components/ChipsListWithExpand";
 import {
   Visibility, Edit, Delete, SwapVert,
   ExpandMore as ExpandMoreIcon,
@@ -321,24 +322,16 @@ export default function SheltersCards(props: Props) {
                               </Typography>
                             </Stack>
 
-                            {teachers.length ? (
-                              <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
-                                {teachers.map((t) => (
-                                  <Chip
-                                    key={t.id}
-                                    size="small"
-                                    label={t.user?.name || t.user?.email || t.id}
-                                    variant="outlined"
-                                    color="primary"
-                                    sx={{ fontWeight: 500 }}
-                                  />
-                                ))}
-                              </Box>
-                            ) : (
-                              <Typography variant="body2" color="text.secondary">
-                                Nenhum professor vinculado.
-                              </Typography>
-                            )}
+                            <ChipsListWithExpand
+                              items={teachers.map((t) => ({
+                                id: t.id,
+                                label: t.user?.name || t.user?.email || t.id,
+                                color: "primary" as const,
+                                variant: "outlined" as const,
+                              }))}
+                              maxVisible={5}
+                              emptyMessage="Nenhum professor vinculado."
+                            />
                           </Stack>
                         </Paper>
 
