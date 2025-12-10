@@ -10,7 +10,7 @@ import {
   apiUpdatePagela,
   apiDeletePagela,
 } from "./api";
-import { apiFetchShelteredSimple } from "@/features/sheltered/api";
+import { apiFetchShelteredSimple, apiUpdateShelteredStatus } from "../sheltered/api";
 import type { ShelteredSimpleResponseDto } from "../sheltered/types";
 
 export type Tri = "any" | "yes" | "no";
@@ -29,6 +29,7 @@ function useDebouncedValue<T>(value: T, delay = 250) {
 export function useShelteredBrowser() {
   const [q, setQ] = useState("");
   const [acceptedJesus, setAcceptedJesus] = useState<"all" | "accepted" | "not_accepted">("all");
+  const [active, setActive] = useState<"all" | "active" | "inactive">("all");
   const [page, setPage] = useState(1);
   const [limit] = useState(10); // 10 itens por página
   const [items, setItems] = useState<ShelteredSimpleResponseDto[]>([]);
@@ -40,8 +41,14 @@ export function useShelteredBrowser() {
   const debouncedQ = useDebouncedValue(q, 500); // Debounce de 500ms para busca
   const prevDebouncedQRef = React.useRef<string>("");
   const prevAcceptedJesusRef = React.useRef<"all" | "accepted" | "not_accepted">("all");
+  const prevActiveRef = React.useRef<"all" | "active" | "inactive">("all");
 
-  const search = useCallback(async (searchTerm: string, pageNum: number = 1, acceptedJesusFilter: "all" | "accepted" | "not_accepted" = "all") => {
+  const search = useCallback(async (
+    searchTerm: string, 
+    pageNum: number = 1, 
+    acceptedJesusFilter: "all" | "accepted" | "not_accepted" = "all",
+    activeFilter: "all" | "active" | "inactive" = "all"
+  ) => {
     setLoading(true);
     setShelteredError("");
     try {
@@ -50,6 +57,7 @@ export function useShelteredBrowser() {
         limit,
         searchString: searchTerm || undefined,
         acceptedJesus: acceptedJesusFilter,
+        active: activeFilter,
       });
       setItems(response.data || []);
       setTotalItems(response.meta?.totalItems || 0);
@@ -65,25 +73,35 @@ export function useShelteredBrowser() {
 
   // Inicializar na primeira renderização
   useEffect(() => {
-    search("", 1, "all");
+    search("", 1, "all", "all");
     prevDebouncedQRef.current = "";
     prevAcceptedJesusRef.current = "all";
+    prevActiveRef.current = "all";
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Resetar página quando busca ou filtro mudar
   useEffect(() => {
-    if (prevDebouncedQRef.current !== debouncedQ || prevAcceptedJesusRef.current !== acceptedJesus) {
+    if (
+      prevDebouncedQRef.current !== debouncedQ || 
+      prevAcceptedJesusRef.current !== acceptedJesus ||
+      prevActiveRef.current !== active
+    ) {
       setPage(1);
       prevDebouncedQRef.current = debouncedQ;
       prevAcceptedJesusRef.current = acceptedJesus;
+      prevActiveRef.current = active;
     }
-  }, [debouncedQ, acceptedJesus]);
+  }, [debouncedQ, acceptedJesus, active]);
 
   // Buscar quando termo de busca, filtro ou página mudar
   useEffect(() => {
-    const currentPage = (prevDebouncedQRef.current !== debouncedQ || prevAcceptedJesusRef.current !== acceptedJesus) ? 1 : page;
-    search(debouncedQ, currentPage, acceptedJesus);
-  }, [debouncedQ, acceptedJesus, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
+    const currentPage = (
+      prevDebouncedQRef.current !== debouncedQ || 
+      prevAcceptedJesusRef.current !== acceptedJesus ||
+      prevActiveRef.current !== active
+    ) ? 1 : page;
+    search(debouncedQ, currentPage, acceptedJesus, active);
+  }, [debouncedQ, acceptedJesus, active, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onChangeQ = (v: string) => {
     setQ(v);
@@ -93,9 +111,29 @@ export function useShelteredBrowser() {
     setAcceptedJesus(v);
   };
 
+  const onChangeActive = (v: "all" | "active" | "inactive") => {
+    setActive(v);
+  };
+
+  const updateStatus = useCallback(async (id: string, newActive: boolean) => {
+    setLoading(true);
+    setShelteredError("");
+    try {
+      await apiUpdateShelteredStatus(id, newActive);
+      // Recarregar a lista após atualizar o status (usando o filtro atual)
+      await search(debouncedQ, page, acceptedJesus, active);
+    } catch (e: any) {
+      setShelteredError(
+        e?.response?.data?.message || e?.message || "Erro ao atualizar status do abrigado"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [search, debouncedQ, page, acceptedJesus, active]);
+
   const refetch = useCallback(async () => {
-    await search(debouncedQ, page, acceptedJesus);
-  }, [search, debouncedQ, page, acceptedJesus]);
+    await search(debouncedQ, page, acceptedJesus, active);
+  }, [search, debouncedQ, page, acceptedJesus, active]);
 
   const byId = useMemo(() => new Map(items.map((c) => [c.id, c])), [items]);
 
@@ -104,12 +142,15 @@ export function useShelteredBrowser() {
     onChangeQ,
     acceptedJesus,
     onChangeAcceptedJesus,
+    active,
+    onChangeActive,
     items, 
     byId, 
     loading, 
     error, 
     setError: setShelteredError, 
     refetch,
+    updateStatus,
     pagination: {
       page,
       setPage,

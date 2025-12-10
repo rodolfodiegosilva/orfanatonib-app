@@ -51,6 +51,7 @@ export async function apiFetchShelteredSimple(args?: {
   limit?: number;
   searchString?: string;
   acceptedJesus?: "all" | "accepted" | "not_accepted";
+  active?: "all" | "active" | "inactive";
 }) {
   const params: Record<string, any> = {};
   
@@ -59,6 +60,9 @@ export async function apiFetchShelteredSimple(args?: {
   if (args?.searchString?.trim()) params.searchString = args.searchString.trim();
   if (args?.acceptedJesus && args.acceptedJesus !== "all") {
     params.acceptedJesus = args.acceptedJesus;
+  }
+  if (args?.active && args.active !== "all") {
+    params.active = args.active;
   }
   
   const { data } = await api.get<{
@@ -70,6 +74,11 @@ export async function apiFetchShelteredSimple(args?: {
       totalPages: number;
     };
   }>(`/sheltered/simple`, { params });
+  return data;
+}
+
+export async function apiUpdateShelteredStatus(id: string, active: boolean) {
+  const { data } = await api.patch<ShelteredResponseDto>(`/sheltered/${id}/status`, { active });
   return data;
 }
 

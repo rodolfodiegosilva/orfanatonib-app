@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   Card, CardActionArea, CardContent, Stack, Typography,
-  Box, Avatar, Tooltip, IconButton, useTheme, Chip
+  Box, Avatar, Tooltip, IconButton, useTheme, Chip, Switch
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
@@ -11,6 +11,8 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 import DecisionModal from "./DecisionModal";
@@ -47,12 +49,14 @@ export default function ShelteredCard({
   sheltered,
   onClick,
   onEdit,
-  onRefresh
+  onRefresh,
+  onToggleStatus
 }: {
   sheltered: ShelteredSimpleResponseDto;
   onClick: (c: ShelteredSimpleResponseDto) => void;
   onEdit?: (c: ShelteredSimpleResponseDto) => void;
   onRefresh?: () => void;
+  onToggleStatus?: (id: string, active: boolean) => Promise<void>;
 }) {
   const theme = useTheme();
   const colors = genderPastel(sheltered.name || sheltered.id, sheltered.gender);
@@ -289,6 +293,57 @@ export default function ShelteredCard({
               </Typography>
               <FavoriteIcon fontSize="inherit" sx={{ opacity: 0.5, ml: 0.25 }} />
             </Stack>
+
+            {/* Linha de ativar/desativar */}
+            {!!onToggleStatus && (
+              <Box
+                sx={{
+                  mt: 1.5,
+                  pt: 1.5,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Typography 
+                  variant="caption" 
+                  color="text.secondary"
+                  sx={{ 
+                    fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                    flex: 1,
+                  }}
+                >
+                  {sheltered.active 
+                    ? "O abrigado não está mais frequentando?" 
+                    : "O abrigado voltou a frequentar?"}
+                </Typography>
+                <Tooltip title={sheltered.active ? "Desativar abrigado" : "Ativar abrigado"}>
+                  <Switch
+                    checked={sheltered.active}
+                    onChange={async (e) => {
+                      e.stopPropagation();
+                      if (onToggleStatus) {
+                        await onToggleStatus(sheltered.id, !sheltered.active);
+                      }
+                    }}
+                    size="small"
+                    color="success"
+                    sx={{
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "success.main",
+                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "success.main",
+                      },
+                    }}
+                  />
+                </Tooltip>
+              </Box>
+            )}
           </CardContent>
         </CardActionArea>
       </Card>

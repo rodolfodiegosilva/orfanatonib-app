@@ -48,6 +48,7 @@ export type ShelteredSimpleResponseDto = {
   gender: "M" | "F";
   guardianPhone: string | null;
   shelterId: string | null;
+  active: boolean; // Status ativo/inativo
   acceptedChrists: AcceptedChristShortDto[];
 };
 

@@ -2,10 +2,10 @@ import * as React from "react";
 import {
   Box, Alert, Grid, Paper, TextField, InputAdornment,
   Typography, CircularProgress, Button, Fab, IconButton, Tooltip,
-  useMediaQuery, useTheme, Pagination, Stack, ToggleButton, ToggleButtonGroup,
+  useMediaQuery, useTheme, Pagination, Stack,
   FormControl, InputLabel, Select, MenuItem, LinearProgress, Fade
 } from "@mui/material";
-import { Search, PersonAdd, ArrowBack, Favorite } from "@mui/icons-material";
+import { Search, PersonAdd, ArrowBack, Favorite, CheckCircle, Cancel, Clear } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/slices";
@@ -33,22 +33,28 @@ export default function ShelteredBrowserPage() {
     onChangeQ,
     acceptedJesus,
     onChangeAcceptedJesus,
+    active,
+    onChangeActive,
     items,
     loading,
     error,
     setError,
     refetch,
+    updateStatus,
     pagination,
   } = canAccess ? useShelteredBrowser() : { 
     q: "", 
     onChangeQ: () => {},
     acceptedJesus: "all" as const,
     onChangeAcceptedJesus: () => {},
+    active: "all" as const,
+    onChangeActive: () => {},
     items: [], 
     loading: false, 
     error: "", 
     setError: () => { }, 
     refetch: () => { },
+    updateStatus: async () => {},
     pagination: {
       page: 1,
       setPage: () => {},
@@ -259,30 +265,45 @@ export default function ShelteredBrowserPage() {
             >
               Selecionar Abrigado
             </Typography>
-            <TextField
-              value={q}
-              onChange={(e) => onChangeQ(e.target.value)}
-              size="small"
-              fullWidth
-              placeholder={isXs ? "Buscar abrigado…" : "Buscar por nome do abrigo, nome do responsável ou telefone do responsável…"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search fontSize={isXs ? "small" : "medium"} />
-                  </InputAdornment>
-                ),
+            {/* Busca e Filtros na mesma linha */}
+            <Box 
+              sx={{ 
+                display: "flex", 
+                flexDirection: { xs: "column", sm: "row" },
+                gap: { xs: 1.5, sm: 1.5 },
+                flexWrap: "wrap"
               }}
-              sx={{
-                "& .MuiInputBase-root": {
-                  fontSize: { xs: "0.875rem", sm: "1rem" }
-                },
-                mb: { xs: 1.5, sm: 2 }
-              }}
-            />
-            
-            {/* Filtro: Aceitou Jesus */}
-            {isXs ? (
-              <FormControl fullWidth size="small">
+            >
+              {/* Campo de Busca - 40% */}
+              <TextField
+                value={q}
+                onChange={(e) => onChangeQ(e.target.value)}
+                size="small"
+                sx={{ 
+                  flex: { xs: "1 1 100%", sm: "0 0 40%" },
+                  width: { xs: "100%", sm: "40%" },
+                  "& .MuiInputBase-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" }
+                  },
+                }}
+                placeholder={isXs ? "Buscar abrigado…" : "Buscar por nome do abrigo, nome do responsável ou telefone do responsável…"}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize={isXs ? "small" : "medium"} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              
+              {/* Filtro: Aceitou Jesus - 20% */}
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  flex: { xs: "1 1 100%", sm: "0 0 20%" },
+                  width: { xs: "100%", sm: "20%" }
+                }}
+              >
                 <InputLabel id="accepted-jesus-label">Aceitou Jesus</InputLabel>
                 <Select
                   labelId="accepted-jesus-label"
@@ -291,35 +312,77 @@ export default function ShelteredBrowserPage() {
                   label="Aceitou Jesus"
                 >
                   <MenuItem value="all">Todos</MenuItem>
-                  <MenuItem value="accepted">Aceitou Jesus</MenuItem>
+                  <MenuItem value="accepted">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Favorite fontSize="small" />
+                      Aceitou Jesus
+                    </Box>
+                  </MenuItem>
                   <MenuItem value="not_accepted">Não aceitou</MenuItem>
                 </Select>
               </FormControl>
-            ) : (
-              <ToggleButtonGroup
-                value={acceptedJesus}
-                exclusive
-                onChange={(_, value) => {
-                  if (value !== null) {
-                    onChangeAcceptedJesus(value);
-                  }
+
+              {/* Filtro: Status Ativo - 20% */}
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  flex: { xs: "1 1 100%", sm: "0 0 20%" },
+                  width: { xs: "100%", sm: "20%" }
                 }}
-                aria-label="Filtro: Aceitou Jesus"
-                fullWidth
-                size="small"
               >
-                <ToggleButton value="all" aria-label="Todos">
-                  Todos
-                </ToggleButton>
-                <ToggleButton value="accepted" aria-label="Aceitou Jesus">
-                  <Favorite sx={{ mr: 0.5, fontSize: "1rem" }} />
-                  Aceitou Jesus
-                </ToggleButton>
-                <ToggleButton value="not_accepted" aria-label="Não aceitou">
-                  Não aceitou
-                </ToggleButton>
-              </ToggleButtonGroup>
-            )}
+                <InputLabel id="active-label">Status</InputLabel>
+                <Select
+                  labelId="active-label"
+                  value={active}
+                  onChange={(e) => onChangeActive(e.target.value as "all" | "active" | "inactive")}
+                  label="Status"
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="active">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <CheckCircle fontSize="small" />
+                      Ativos
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="inactive">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Cancel fontSize="small" />
+                      Inativos
+                    </Box>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Botão Limpar Filtros */}
+              {(q || acceptedJesus !== "all" || active !== "all") && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<Clear />}
+                  onClick={() => {
+                    onChangeQ("");
+                    onChangeAcceptedJesus("all");
+                    onChangeActive("all");
+                  }}
+                  sx={{
+                    flex: { xs: "1 1 100%", sm: "0 0 auto" },
+                    width: { xs: "100%", sm: "auto" },
+                    minWidth: { xs: "auto", sm: 120 },
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderColor: "text.secondary",
+                    color: "text.primary",
+                    "&:hover": {
+                      borderColor: "error.main",
+                      color: "error.main",
+                      bgcolor: "error.light",
+                    },
+                  }}
+                >
+                  Limpar Filtros
+                </Button>
+              )}
+            </Box>
           </Paper>
 
           {error && (
@@ -373,6 +436,7 @@ export default function ShelteredBrowserPage() {
                         onClick={(c) => nav(`/area-dos-abrigados/${c.id}`, { state: { sheltered: c } })}
                         onEdit={(c) => openEdit(c.id)}
                         onRefresh={refetch}
+                        onToggleStatus={updateStatus}
                       />
                     </Grid>
                   ))}
