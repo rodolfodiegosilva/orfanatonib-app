@@ -193,7 +193,7 @@ const TeacherWeekBanner: React.FC = () => {
             variant="contained"
             size="medium"
             component={Link}
-            to={`/${currentVisitRoute.path}`}
+            to="/lista-materias-visita"
             sx={{
               bgcolor: 'white',
               color: '#0073E6',
