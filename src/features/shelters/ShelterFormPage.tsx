@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
@@ -17,8 +17,8 @@ import { motion } from "framer-motion";
 import BackHeader from "@/components/common/header/BackHeader";
 import AddressFields from "./form/AddressFields";
 import ShelterMediaForm from "./form/ShelterMediaForm";
-import TeamManagementSection from "./components/TeamManagementSection";
-import { CreateShelterForm, EditShelterForm } from "./types";
+import TeamManagementSection, { TeamManagementRef } from "./components/TeamManagementSection";
+import { CreateShelterForm, EditShelterForm, TeamInputDto } from "./types";
 import { useShelterMutations } from "./hooks";
 import { apiFetchShelter } from "./api";
 
@@ -32,6 +32,7 @@ export default function ShelterFormPage() {
   const [error, setError] = useState("");
   const [savedShelterId, setSavedShelterId] = useState<string | null>(id || null);
   const [successSnackbar, setSuccessSnackbar] = useState({ open: false, message: "" });
+  const teamManagementRef = useRef<TeamManagementRef>(null);
 
   // Estados locais para mídia
   const [uploadType, setUploadType] = useState<"upload" | "link">("upload");
@@ -73,7 +74,7 @@ export default function ShelterFormPage() {
             mediaItem: shelter.mediaItem ? {
               title: shelter.mediaItem.title,
               description: shelter.mediaItem.description,
-              uploadType: shelter.mediaItem.uploadType === "LINK" ? "link" : "upload",
+              uploadType: (shelter.mediaItem.uploadType.toUpperCase() === "LINK" ? "link" : "upload") as "upload" | "link",
               url: shelter.mediaItem.url,
               isLocalFile: shelter.mediaItem.isLocalFile,
             } : undefined,
@@ -82,7 +83,7 @@ export default function ShelterFormPage() {
 
           // Configurar estados de mídia
           if (shelter.mediaItem) {
-            setUploadType(shelter.mediaItem.uploadType === "LINK" ? "link" : "upload");
+            setUploadType((shelter.mediaItem.uploadType.toUpperCase() === "LINK" ? "link" : "upload") as "upload" | "link");
             setUrl(shelter.mediaItem.url || "");
           }
         } catch (err: any) {
@@ -143,6 +144,16 @@ export default function ShelterFormPage() {
     }
   };
 
+  // Função auxiliar para converter equipes do componente para o formato TeamInputDto[]
+  const convertTeamsToInputDto = (teams: any[]): TeamInputDto[] => {
+    return teams.map((team) => ({
+      numberTeam: team.numberTeam,
+      description: team.description || undefined,
+      leaderProfileIds: (team.leaders || []).map((l: any) => l.id).filter((id: string) => !!id),
+      teacherProfileIds: (team.teachers || []).map((t: any) => t.id).filter((id: string) => !!id),
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!formData) return;
 
@@ -174,12 +185,22 @@ export default function ShelterFormPage() {
       const { file, ...rest } = formData as any;
 
       if (isEdit && id) {
+        // Obter dados das equipes do componente
+        console.log("🟡 [handleSubmit] Obtendo dados das equipes...");
+        const teamsData = teamManagementRef.current?.getCurrentTeams() || [];
+        console.log("🟡 [handleSubmit] teamsData:", JSON.stringify(teamsData, null, 2));
+        
+        // Converter para o formato TeamInputDto[]
+        const teamsInput = convertTeamsToInputDto(teamsData);
+        console.log("🟡 [handleSubmit] teamsInput:", JSON.stringify(teamsInput, null, 2));
+        
         // Atualizar abrigo
         const payload: any = {
           name: rest.name,
           description: rest.description,
           teamsQuantity: rest.teamsQuantity,
           address: rest.address,
+          teams: teamsInput, // ⭐ Incluir equipes no payload conforme documentação atualizada
         };
 
         if (file) {
@@ -190,6 +211,7 @@ export default function ShelterFormPage() {
             description: payload.description,
             teamsQuantity: payload.teamsQuantity,
             address: payload.address,
+            teams: payload.teams, // ⭐ Incluir equipes
             mediaItem: {
               title: rest.mediaItem?.title || "Foto do Abrigo",
               description: rest.mediaItem?.description || "Imagem do abrigo",
@@ -212,14 +234,25 @@ export default function ShelterFormPage() {
           // Sem mudança na mídia
           await updateShelter(id, payload);
         }
+        
         // O callback do useShelterMutations já navegará para /adm/shelters
       } else {
+        // Obter dados das equipes do componente
+        console.log("🟡 [handleSubmit] Obtendo dados das equipes...");
+        const teamsData = teamManagementRef.current?.getCurrentTeams() || [];
+        console.log("🟡 [handleSubmit] teamsData:", JSON.stringify(teamsData, null, 2));
+        
+        // Converter para o formato TeamInputDto[]
+        const teamsInput = convertTeamsToInputDto(teamsData);
+        console.log("🟡 [handleSubmit] teamsInput:", JSON.stringify(teamsInput, null, 2));
+        
         // Criar abrigo
         const payload: any = {
           name: rest.name,
           description: rest.description,
           teamsQuantity: rest.teamsQuantity,
           address: rest.address,
+          teams: teamsInput, // ⭐ Incluir equipes no payload conforme documentação atualizada
         };
 
         if (file) {
@@ -230,6 +263,7 @@ export default function ShelterFormPage() {
             description: payload.description,
             teamsQuantity: payload.teamsQuantity,
             address: payload.address,
+            teams: payload.teams, // ⭐ Incluir equipes
             mediaItem: {
               title: rest.mediaItem?.title || "Foto do Abrigo",
               description: rest.mediaItem?.description || "Imagem do abrigo",
@@ -456,8 +490,12 @@ export default function ShelterFormPage() {
                 <Divider sx={{ mb: 3 }} />
                 
                 <TeamManagementSection
+                  ref={teamManagementRef}
                   shelterId={savedShelterId}
                   teamsQuantity={teamsQuantity}
+                  onTeamsQuantityChange={(newQuantity) => {
+                    setFormData(prev => prev ? { ...prev, teamsQuantity: newQuantity } as any : null);
+                  }}
                 />
               </Paper>
             </Grid>

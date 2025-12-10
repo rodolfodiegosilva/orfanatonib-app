@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   Card, CardActionArea, CardContent, Stack, Typography,
-  Box, Avatar, Tooltip, IconButton, useTheme
+  Box, Avatar, Tooltip, IconButton, useTheme, Chip
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
@@ -9,21 +9,38 @@ import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import FemaleIcon from "@mui/icons-material/Female";
+import MaleIcon from "@mui/icons-material/Male";
 
 import { ShelteredSimpleResponseDto } from "@/features/sheltered/types";
 import DecisionModal from "./DecisionModal";
 
 function genderPastel(seed: string, gender: string | undefined) {
-  const hash = Array.from(seed).reduce((acc, ch) => (acc * 33 + ch.charCodeAt(0)) % 1000, 7);
-  const t = hash / 1000;
   const g = (gender || "").toUpperCase();
-  // Cores mais neutras e profissionais
-  const h = g === "F" ? (200 + t * 40) % 360 : (220 + t * 30) % 360;
-  const s = 45, l = 75;
-  return {
-    solid: `hsl(${h} ${s}% ${l - 10}%)`,
-    soft: `hsl(${(h + 8) % 360} ${s}% ${l + 5}%)`,
-  };
+  
+  // Cores distintivas para gêneros
+  if (g === "F") {
+    // Feminino: Tons de rosa/vermelho suave
+    return {
+      solid: "#e91e63", // Rosa vibrante
+      soft: "#f8bbd0", // Rosa claro
+      light: "#fce4ec", // Rosa muito claro
+    };
+  } else if (g === "M") {
+    // Masculino: Tons de azul
+    return {
+      solid: "#2196f3", // Azul vibrante
+      soft: "#90caf9", // Azul claro
+      light: "#e3f2fd", // Azul muito claro
+    };
+  } else {
+    // Neutro: Tons de cinza/roxo
+    return {
+      solid: "#9e9e9e", // Cinza
+      soft: "#e0e0e0", // Cinza claro
+      light: "#f5f5f5", // Cinza muito claro
+    };
+  }
 }
 
 export default function ShelteredCard({
@@ -71,14 +88,23 @@ export default function ShelteredCard({
           borderRadius: 4,
           height: "100%",
           overflow: "hidden",
-          borderColor: "divider",
-          transition: "transform .12s ease, box-shadow .12s ease",
-          "&:hover": { transform: "translateY(-2px)", boxShadow: 4 },
+          borderColor: colors.solid,
+          borderWidth: 2,
+          transition: "all 0.2s ease-in-out",
           position: "relative",
           background:
             theme.palette.mode === "light"
-              ? "linear-gradient(180deg, #fff 0%, #fafbfc 100%)"
+              ? `linear-gradient(180deg, ${colors.light} 0%, #fff 100%)`
               : "linear-gradient(180deg, #1e1e1e 0%, #161616 100%)",
+          "&:hover": { 
+            transform: "translateY(-2px)", 
+            boxShadow: `0 4px 12px ${colors.solid}30`,
+            borderColor: colors.solid,
+            // Intensificar levemente a cor do gênero no hover
+            background: theme.palette.mode === "light"
+              ? `linear-gradient(180deg, ${colors.soft} 0%, ${colors.light} 50%, #fff 100%)`
+              : "linear-gradient(180deg, #1e1e1e 0%, #161616 100%)",
+          },
         }}
       >
         <Tooltip title={getTooltipText()}>
@@ -169,7 +195,43 @@ export default function ShelteredCard({
           </Avatar>
         </Box>
 
-        <CardActionArea onClick={() => onClick(sheltered)} sx={{ display: "flex" }}>
+        <CardActionArea 
+          onClick={() => onClick(sheltered)} 
+          sx={{ 
+            display: "flex",
+            // Sobrescrever qualquer background padrão do MUI (especialmente o verde do success)
+            backgroundColor: "transparent !important",
+            color: "inherit !important",
+            "&:hover": {
+              backgroundColor: "transparent !important",
+              color: "inherit !important",
+              // Garantir que não apareça nenhum overlay verde
+              "&::before": {
+                display: "none !important",
+              },
+              // Manter cores do texto originais
+              "& .MuiTypography-root": {
+                color: "inherit !important",
+              },
+            },
+            "&:focus": {
+              backgroundColor: "transparent !important",
+              color: "inherit !important",
+            },
+            "&:active": {
+              backgroundColor: "transparent !important",
+              color: "inherit !important",
+            },
+            // Remover qualquer overlay do MUI
+            "&::before": {
+              display: "none !important",
+            },
+            // Garantir que todos os textos mantenham suas cores originais
+            "& .MuiTypography-root": {
+              color: "inherit",
+            },
+          }}
+        >
           <CardContent sx={{ pt: 3.5, pb: 2.25, px: { xs: 1.5, sm: 2 } }}>
             <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.5 }}>
               <PersonIcon fontSize="small" sx={{ opacity: 0.7 }} />
@@ -181,6 +243,23 @@ export default function ShelteredCard({
               >
                 {sheltered.name}
               </Typography>
+              <Chip
+                icon={sheltered.gender === "F" ? <FemaleIcon /> : <MaleIcon />}
+                label={sheltered.gender === "F" ? "F" : "M"}
+                size="small"
+                sx={{
+                  height: { xs: 20, sm: 24 },
+                  fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                  bgcolor: colors.light,
+                  color: colors.solid,
+                  border: `1px solid ${colors.solid}`,
+                  "& .MuiChip-icon": {
+                    color: colors.solid,
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  fontWeight: 700,
+                }}
+              />
             </Stack>
 
             <Stack direction="row" spacing={0.75} alignItems="center" sx={{ mb: 0.25 }}>

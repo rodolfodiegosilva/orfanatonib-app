@@ -21,6 +21,7 @@ export type TeamResponseDto = {
   }>;
   createdAt: string;
   updatedAt: string;
+  isLeaderInTeam?: boolean; // ⭐ Indica se o líder logado está nesta equipe (vem do endpoint my-shelters)
 };
 
 export type TeamWithMembersDto = TeamResponseDto;

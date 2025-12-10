@@ -46,8 +46,30 @@ export async function apiFetchSheltered(id: string) {
   return data;
 }
 
-export async function apiFetchShelteredSimple() {
-  const { data } = await api.get<ShelteredSimpleResponseDto[]>(`/sheltered/simple`);
+export async function apiFetchShelteredSimple(args?: {
+  page?: number;
+  limit?: number;
+  searchString?: string;
+  acceptedJesus?: "all" | "accepted" | "not_accepted";
+}) {
+  const params: Record<string, any> = {};
+  
+  if (args?.page !== undefined) params.page = args.page;
+  if (args?.limit !== undefined) params.limit = args.limit;
+  if (args?.searchString?.trim()) params.searchString = args.searchString.trim();
+  if (args?.acceptedJesus && args.acceptedJesus !== "all") {
+    params.acceptedJesus = args.acceptedJesus;
+  }
+  
+  const { data } = await api.get<{
+    data: ShelteredSimpleResponseDto[];
+    meta: {
+      page: number;
+      limit: number;
+      totalItems: number;
+      totalPages: number;
+    };
+  }>(`/sheltered/simple`, { params });
   return data;
 }
 

@@ -29,21 +29,34 @@ export async function addLeaderToTeam(teamId: string, leaderId: string): Promise
 /**
  * Remove um líder de uma equipe existente
  * Busca a equipe atual, remove o líder e atualiza
+ * IMPORTANTE: Remove apenas desta equipe específica, não afeta outras equipes
  */
 export async function removeLeaderFromTeam(teamId: string, leaderId: string): Promise<TeamResponseDto> {
   // 1. Buscar a equipe atual
   const team = await apiGetTeam(teamId);
   
-  // 2. Extrair IDs dos líderes atuais
+  // 2. Extrair IDs dos líderes atuais desta equipe
   const currentLeaderIds = team.leaders.map((l) => l.id);
   
-  // 3. Remover o líder específico
+  // 3. Verificar se o líder está nesta equipe
+  if (!currentLeaderIds.includes(leaderId)) {
+    console.warn(`Líder ${leaderId} não está na equipe ${teamId}`);
+    return team; // Retornar equipe sem alterações
+  }
+  
+  // 4. Remover o líder específico apenas desta equipe
   const updatedLeaderIds = currentLeaderIds.filter((id) => id !== leaderId);
   
-  // 4. Atualizar a equipe
-  return await apiUpdateTeam(teamId, {
+  console.log(`Removendo líder ${leaderId} da equipe ${teamId}. Líderes antes: ${currentLeaderIds.length}, depois: ${updatedLeaderIds.length}`);
+  
+  // 5. Atualizar a equipe (apenas esta equipe específica)
+  const updatedTeam = await apiUpdateTeam(teamId, {
     leaderProfileIds: updatedLeaderIds,
   });
+  
+  console.log(`Equipe ${teamId} atualizada. Líderes agora: ${updatedTeam.leaders.length}`);
+  
+  return updatedTeam;
 }
 
 /**

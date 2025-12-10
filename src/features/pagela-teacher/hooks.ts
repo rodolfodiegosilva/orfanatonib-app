@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   CreatePagelaPayload,
   Pagela,
@@ -28,16 +28,32 @@ function useDebouncedValue<T>(value: T, delay = 250) {
 
 export function useShelteredBrowser() {
   const [q, setQ] = useState("");
+  const [acceptedJesus, setAcceptedJesus] = useState<"all" | "accepted" | "not_accepted">("all");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10); // 10 itens por página
   const [items, setItems] = useState<ShelteredSimpleResponseDto[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setShelteredError] = useState<string>("");
 
-  const search = useCallback(async (_term: string) => {
+  const debouncedQ = useDebouncedValue(q, 500); // Debounce de 500ms para busca
+  const prevDebouncedQRef = React.useRef<string>("");
+  const prevAcceptedJesusRef = React.useRef<"all" | "accepted" | "not_accepted">("all");
+
+  const search = useCallback(async (searchTerm: string, pageNum: number = 1, acceptedJesusFilter: "all" | "accepted" | "not_accepted" = "all") => {
     setLoading(true);
     setShelteredError("");
     try {
-      const list = await apiFetchShelteredSimple();
-      setItems(list);
+      const response = await apiFetchShelteredSimple({
+        page: pageNum,
+        limit,
+        searchString: searchTerm || undefined,
+        acceptedJesus: acceptedJesusFilter,
+      });
+      setItems(response.data || []);
+      setTotalItems(response.meta?.totalItems || 0);
+      setTotalPages(response.meta?.totalPages || 0);
     } catch (e: any) {
       setShelteredError(
         e?.response?.data?.message || e?.message || "Erro ao listar abrigados"
@@ -45,29 +61,63 @@ export function useShelteredBrowser() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
-  const [hasInitialized, setHasInitialized] = useState(false);
-
+  // Inicializar na primeira renderização
   useEffect(() => {
-    if (!hasInitialized) {
-      search("");
-      setHasInitialized(true);
+    search("", 1, "all");
+    prevDebouncedQRef.current = "";
+    prevAcceptedJesusRef.current = "all";
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Resetar página quando busca ou filtro mudar
+  useEffect(() => {
+    if (prevDebouncedQRef.current !== debouncedQ || prevAcceptedJesusRef.current !== acceptedJesus) {
+      setPage(1);
+      prevDebouncedQRef.current = debouncedQ;
+      prevAcceptedJesusRef.current = acceptedJesus;
     }
-  }, [search, hasInitialized]);
+  }, [debouncedQ, acceptedJesus]);
+
+  // Buscar quando termo de busca, filtro ou página mudar
+  useEffect(() => {
+    const currentPage = (prevDebouncedQRef.current !== debouncedQ || prevAcceptedJesusRef.current !== acceptedJesus) ? 1 : page;
+    search(debouncedQ, currentPage, acceptedJesus);
+  }, [debouncedQ, acceptedJesus, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onChangeQ = (v: string) => {
     setQ(v);
-    search(v);
+  };
+
+  const onChangeAcceptedJesus = (v: "all" | "accepted" | "not_accepted") => {
+    setAcceptedJesus(v);
   };
 
   const refetch = useCallback(async () => {
-    await search(q);
-  }, [search, q]);
+    await search(debouncedQ, page, acceptedJesus);
+  }, [search, debouncedQ, page, acceptedJesus]);
 
   const byId = useMemo(() => new Map(items.map((c) => [c.id, c])), [items]);
 
-  return { q, onChangeQ, items, byId, loading, error, setError: setShelteredError, refetch };
+  return { 
+    q, 
+    onChangeQ,
+    acceptedJesus,
+    onChangeAcceptedJesus,
+    items, 
+    byId, 
+    loading, 
+    error, 
+    setError: setShelteredError, 
+    refetch,
+    pagination: {
+      page,
+      setPage,
+      limit,
+      totalItems,
+      totalPages,
+    },
+  };
 }
 
 export function useShelteredPagelas(

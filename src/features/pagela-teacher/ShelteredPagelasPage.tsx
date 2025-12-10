@@ -26,16 +26,31 @@ import type { ShelteredSimpleResponseDto } from "../sheltered/types";
 import type { Pagela } from "./types";
 
 function genderPastel(seed: string, gender?: string) {
-  const hash = Array.from(seed).reduce((a, ch) => (a * 33 + ch.charCodeAt(0)) % 1000, 7);
-  const t = hash / 1000;
   const g = (gender || "").toUpperCase();
-  // Cores mais neutras e profissionais
-  const h = g === "F" ? (200 + t * 40) % 360 : (220 + t * 30) % 360;
-  const s = 45, l = 75;
-  return {
-    solid: `hsl(${h} ${s}% ${l - 10}%)`,
-    soft: `hsl(${(h + 8) % 360} ${s}% ${l + 5}%)`,
-  };
+  
+  // Cores distintivas para gêneros (mesmas cores do ShelteredCard)
+  if (g === "F") {
+    // Feminino: Tons de rosa/vermelho suave
+    return {
+      solid: "#e91e63", // Rosa vibrante
+      soft: "#f8bbd0", // Rosa claro
+      light: "#fce4ec", // Rosa muito claro
+    };
+  } else if (g === "M") {
+    // Masculino: Tons de azul
+    return {
+      solid: "#2196f3", // Azul vibrante
+      soft: "#90caf9", // Azul claro
+      light: "#e3f2fd", // Azul muito claro
+    };
+  } else {
+    // Neutro: Tons de cinza/roxo
+    return {
+      solid: "#9e9e9e", // Cinza
+      soft: "#e0e0e0", // Cinza claro
+      light: "#f5f5f5", // Cinza muito claro
+    };
+  }
 }
 
 const TEACHER_PROFILE_ID: string | null = null;

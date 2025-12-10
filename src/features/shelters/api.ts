@@ -110,6 +110,16 @@ export async function apiFetchShelter(id: string) {
 export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
   // Se já é FormData, enviar direto
   if (payload instanceof FormData) {
+    // Verificar se teams está no FormData
+    const shelterDataStr = payload.get('shelterData');
+    if (shelterDataStr) {
+      try {
+        const shelterData = JSON.parse(shelterDataStr as string);
+        console.log("🟢 [apiCreateShelter] FormData shelterData:", JSON.stringify(shelterData, null, 2));
+      } catch (e) {
+        console.warn("⚠️ [apiCreateShelter] Erro ao parsear shelterData do FormData:", e);
+      }
+    }
     const { data } = await api.post<ShelterResponseDto>("/shelters", payload, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -123,7 +133,7 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
     const formData = new FormData();
     
     // Preparar dados do shelter sem o arquivo
-    const shelterData = {
+    const shelterData: any = {
       name: payload.name,
       description: payload.description,
       teamsQuantity: payload.teamsQuantity, // Campo obrigatório
@@ -136,6 +146,12 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
       } : undefined,
     };
     
+    // ⭐ Incluir teams se presente (conforme documentação atualizada)
+    if ((payload as any).teams) {
+      shelterData.teams = (payload as any).teams;
+    }
+    
+    console.log("🟢 [apiCreateShelter] shelterData (com arquivo):", JSON.stringify(shelterData, null, 2));
     // Adicionar JSON como string
     formData.append("shelterData", JSON.stringify(shelterData));
     
@@ -151,6 +167,8 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
   } else {
     // Sem arquivo, usar JSON simples
     const { file, ...rest } = payload;
+    // ⭐ O rest já inclui teams se presente (conforme documentação atualizada)
+    console.log("🟢 [apiCreateShelter] Payload JSON (sem arquivo):", JSON.stringify(rest, null, 2));
     const { data } = await api.post<ShelterResponseDto>("/shelters", rest);
     return data;
   }
@@ -160,6 +178,16 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
 export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm, "id"> | FormData) {
   // Se já é FormData, enviar direto
   if (payload instanceof FormData) {
+    // Verificar se teams está no FormData
+    const shelterDataStr = payload.get('shelterData');
+    if (shelterDataStr) {
+      try {
+        const shelterData = JSON.parse(shelterDataStr as string);
+        console.log("🟢 [apiUpdateShelter] FormData shelterData:", JSON.stringify(shelterData, null, 2));
+      } catch (e) {
+        console.warn("⚠️ [apiUpdateShelter] Erro ao parsear shelterData do FormData:", e);
+      }
+    }
     const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -173,7 +201,7 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
     const formData = new FormData();
     
     // Preparar dados do shelter sem o arquivo
-    const shelterData = {
+    const shelterData: any = {
       name: payload.name,
       description: payload.description,
       teamsQuantity: payload.teamsQuantity, // Campo obrigatório
@@ -186,6 +214,12 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
       } : undefined,
     };
     
+    // ⭐ Incluir teams se presente (conforme documentação atualizada)
+    if ((payload as any).teams) {
+      shelterData.teams = (payload as any).teams;
+    }
+    
+    console.log("🟢 [apiCreateShelter] shelterData (com arquivo):", JSON.stringify(shelterData, null, 2));
     // Adicionar JSON como string
     formData.append("shelterData", JSON.stringify(shelterData));
     
@@ -208,6 +242,11 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
       address: rest.address,
     };
     
+    // ⭐ Incluir teams se presente (conforme documentação atualizada)
+    if ((rest as any).teams) {
+      payloadJson.teams = (rest as any).teams;
+    }
+    
     // Incluir mediaItem apenas se for link
     if (rest.mediaItem && rest.mediaItem.uploadType === "link" && rest.mediaItem.url) {
       payloadJson.mediaItem = {
@@ -218,6 +257,7 @@ export async function apiUpdateShelter(id: string, payload: Omit<EditShelterForm
       };
     }
     
+    console.log("🟢 [apiUpdateShelter] Payload JSON (sem arquivo):", JSON.stringify(payloadJson, null, 2));
     const { data } = await api.put<ShelterResponseDto>(`/shelters/${id}`, payloadJson);
     return data;
   }

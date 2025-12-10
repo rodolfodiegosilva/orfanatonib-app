@@ -93,11 +93,21 @@ export type Paginated<T> = {
   pageCount: number;
 };
 
+// Tipo para equipe no payload (conforme documentação atualizada)
+export type TeamInputDto = {
+  numberTeam: number; // Número da equipe (1, 2, 3... até teamsQuantity)
+  description?: string; // Descrição da equipe (opcional)
+  leaderProfileIds?: string[]; // Array de UUIDs dos perfis de líderes (opcional)
+  teacherProfileIds?: string[]; // Array de UUIDs dos perfis de professores (opcional)
+};
+
 // Atualizado: Removidos leaderProfileIds e teacherProfileIds (agora via Teams)
+// ⭐ NOVO: Campo teams opcional para vincular líderes/professores durante criação/atualização
 export type CreateShelterForm = {
   name: string;
   description?: string;
   teamsQuantity: number; // Quantidade de equipes (number) ⭐ OBRIGATÓRIO
+  teams?: TeamInputDto[]; // ⭐ Opcional - Permite vincular líderes/professores durante a criação
   address: Partial<AddressResponseDto> & {
     street: string; district: string; city: string; state: string; postalCode: string;
   };

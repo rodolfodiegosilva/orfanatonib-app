@@ -2,12 +2,14 @@ import * as React from "react";
 import {
   Box, Alert, Grid, Paper, TextField, InputAdornment,
   Typography, CircularProgress, Button, Fab, IconButton, Tooltip,
-  useMediaQuery, useTheme
+  useMediaQuery, useTheme, Pagination, Stack, ToggleButton, ToggleButtonGroup,
+  FormControl, InputLabel, Select, MenuItem, LinearProgress, Fade
 } from "@mui/material";
-import { Search, PersonAdd, ArrowBack } from "@mui/icons-material";
+import { Search, PersonAdd, ArrowBack, Favorite } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/slices";
+import { selectIsAdmin, selectIsLeader, selectIsTeacher } from "@/store/selectors/routeSelectors";
 
 import { useShelteredBrowser } from "./hooks";
 import ShelteredCard from "./components/ShelteredCard";
@@ -20,27 +22,41 @@ export default function ShelteredBrowserPage() {
   const nav = useNavigate();
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const shelter = useSelector((state: RootState) => (state.auth as any).user?.teacherProfile?.shelter);
+  const isAdmin = useSelector(selectIsAdmin);
+  const isLeader = useSelector(selectIsLeader);
+  const isTeacher = useSelector(selectIsTeacher);
+  // O endpoint filtra automaticamente por role, então qualquer um desses roles pode acessar
+  const canAccess = isAdmin || isLeader || isTeacher;
 
   const {
+    q,
+    onChangeQ,
+    acceptedJesus,
+    onChangeAcceptedJesus,
     items,
     loading,
     error,
     setError,
     refetch,
-  } = shelter ? useShelteredBrowser() : { items: [], loading: false, error: "", setError: () => { }, refetch: () => { } };
-
-  const [query, setQuery] = React.useState("");
-  const filteredItems = React.useMemo(() => {
-    const s = query.trim().toLowerCase();
-    if (!s) return items;
-    return items.filter((c) => {
-      const name = c.name?.toLowerCase() ?? "";
-      const gname = c.guardianName?.toLowerCase() ?? "";
-      const gphone = c.guardianPhone?.toLowerCase() ?? "";
-      return name.includes(s) || gname.includes(s) || gphone.includes(s);
-    });
-  }, [items, query]);
+    pagination,
+  } = canAccess ? useShelteredBrowser() : { 
+    q: "", 
+    onChangeQ: () => {},
+    acceptedJesus: "all" as const,
+    onChangeAcceptedJesus: () => {},
+    items: [], 
+    loading: false, 
+    error: "", 
+    setError: () => { }, 
+    refetch: () => { },
+    pagination: {
+      page: 1,
+      setPage: () => {},
+      limit: 10,
+      totalItems: 0,
+      totalPages: 0,
+    },
+  };
 
   const [creating, setCreating] = React.useState<CreateShelteredForm | null>(null);
   const [editing, setEditing] = React.useState<EditShelteredForm | null>(null);
@@ -127,9 +143,9 @@ export default function ShelteredBrowserPage() {
   return (
     <Box
       sx={{
-        px: { xs: 2, md: 4 },
-        pt: { xs: 2, md: 4 },
-        pb: { xs: 2, md: 4 },
+        px: { xs: 1.5, sm: 2, md: 4 },
+        pt: { xs: 1.5, sm: 2, md: 4 },
+        pb: { xs: 2, sm: 2, md: 4 },
         minHeight: "100vh",
         bgcolor: "#f8f9fa"
       }}
@@ -171,7 +187,7 @@ export default function ShelteredBrowserPage() {
             Área dos abrigados
           </Typography>
 
-          {shelter && (
+          {canAccess && (
             <Typography
               variant="body2"
               color="text.secondary"
@@ -179,11 +195,10 @@ export default function ShelteredBrowserPage() {
             >
               Toque em um abrigado para abrir suas pagelas
             </Typography>
-
           )}
         </Box>
 
-        {shelter && (
+        {canAccess && isAdmin && (
           <Button
             onClick={openCreate}
             startIcon={<PersonAdd />}
@@ -195,7 +210,7 @@ export default function ShelteredBrowserPage() {
         )}
       </Box>
 
-      {shelter && (
+      {canAccess && isAdmin && (
         <Fab
           color="primary"
           aria-label="Adicionar abrigado"
@@ -212,38 +227,99 @@ export default function ShelteredBrowserPage() {
         </Fab>
       )}
 
-      {!shelter ? (
+      {!canAccess ? (
         <Alert severity="warning" sx={{ mt: 4 }}>
           <Typography fontWeight="bold">
-            Você não está vinculado a nenhum shelter.
+            Acesso não autorizado
           </Typography>
           <Typography>
-            Entre em contato com <strong>seu Líder</strong> ou envie uma mensagem para  <strong>(92) 99127-4881</strong> ou <strong>(92) 98155-3139</strong>.
+            Você precisa ser um Administrador, Líder ou Professor para acessar esta área.
           </Typography>
         </Alert>
       ) : (
         <>
           <Paper
             elevation={0}
-            sx={{ p: 2, mb: 2, borderRadius: 3, border: "1px solid", borderColor: "divider" }}
+            sx={{ 
+              p: { xs: 1.5, sm: 2 }, 
+              mb: { xs: 1.5, sm: 2 }, 
+              borderRadius: { xs: 2, sm: 3 }, 
+              border: "1px solid", 
+              borderColor: "divider" 
+            }}
           >
-            <Typography variant="h6" fontWeight={900} sx={{ mb: 1, color: "#2c3e50" }}>
+            <Typography 
+              variant="h6" 
+              fontWeight={900} 
+              sx={{ 
+                mb: { xs: 0.75, sm: 1 }, 
+                color: "#2c3e50",
+                fontSize: { xs: "1rem", sm: "1.25rem" }
+              }}
+            >
               Selecionar Abrigado
             </Typography>
             <TextField
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={q}
+              onChange={(e) => onChangeQ(e.target.value)}
               size="small"
               fullWidth
-              placeholder="Buscar por nome ou telefone do responsável…"
+              placeholder={isXs ? "Buscar abrigado…" : "Buscar por nome do abrigo, nome do responsável ou telefone do responsável…"}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Search />
+                    <Search fontSize={isXs ? "small" : "medium"} />
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" }
+                },
+                mb: { xs: 1.5, sm: 2 }
+              }}
             />
+            
+            {/* Filtro: Aceitou Jesus */}
+            {isXs ? (
+              <FormControl fullWidth size="small">
+                <InputLabel id="accepted-jesus-label">Aceitou Jesus</InputLabel>
+                <Select
+                  labelId="accepted-jesus-label"
+                  value={acceptedJesus}
+                  onChange={(e) => onChangeAcceptedJesus(e.target.value as "all" | "accepted" | "not_accepted")}
+                  label="Aceitou Jesus"
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="accepted">Aceitou Jesus</MenuItem>
+                  <MenuItem value="not_accepted">Não aceitou</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <ToggleButtonGroup
+                value={acceptedJesus}
+                exclusive
+                onChange={(_, value) => {
+                  if (value !== null) {
+                    onChangeAcceptedJesus(value);
+                  }
+                }}
+                aria-label="Filtro: Aceitou Jesus"
+                fullWidth
+                size="small"
+              >
+                <ToggleButton value="all" aria-label="Todos">
+                  Todos
+                </ToggleButton>
+                <ToggleButton value="accepted" aria-label="Aceitou Jesus">
+                  <Favorite sx={{ mr: 0.5, fontSize: "1rem" }} />
+                  Aceitou Jesus
+                </ToggleButton>
+                <ToggleButton value="not_accepted" aria-label="Não aceitou">
+                  Não aceitou
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
           </Paper>
 
           {error && (
@@ -253,22 +329,86 @@ export default function ShelteredBrowserPage() {
           )}
 
           {loading && !items.length ? (
-            <Box textAlign="center" my={6}>
-              <CircularProgress />
+            <Box textAlign="center" my={{ xs: 4, sm: 6 }}>
+              <CircularProgress size={isXs ? 32 : 40} />
+            </Box>
+          ) : items.length === 0 ? (
+            <Box textAlign="center" my={{ xs: 4, sm: 6 }} px={2}>
+              <Typography 
+                variant="body1" 
+                color="text.secondary"
+                sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}
+              >
+                {q ? "Nenhum abrigado encontrado com os filtros aplicados." : "Nenhum abrigado cadastrado."}
+              </Typography>
             </Box>
           ) : (
-            <Grid container spacing={{ xs: 1, sm: 1.5, md: 2 }}>
-              {filteredItems.map((sheltered) => (
-                <Grid key={sheltered.id} item xs={12} sm={6} md={4} lg={3} xl={2.4 as any}>
-                  <ShelteredCard
-                    sheltered={sheltered}
-                    onClick={(c) => nav(`/area-dos-abrigados/${c.id}`, { state: { sheltered: c } })}
-                    onEdit={(c) => openEdit(c.id)}
-                    onRefresh={refetch}
-                  />
+            <>
+              {/* Loading sutil no topo quando está carregando nova página */}
+              <Fade in={loading && items.length > 0}>
+                <LinearProgress 
+                  sx={{ 
+                    mb: 2, 
+                    borderRadius: 1,
+                    height: 3,
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 1,
+                    }
+                  }} 
+                />
+              </Fade>
+              
+              {/* Grid com opacidade reduzida durante loading */}
+              <Box sx={{ 
+                position: "relative", 
+                opacity: loading && items.length > 0 ? 0.6 : 1, 
+                transition: "opacity 0.2s ease",
+                pointerEvents: loading && items.length > 0 ? "none" : "auto"
+              }}>
+                <Grid container spacing={{ xs: 1.5, sm: 1.5, md: 2 }}>
+                  {items.map((sheltered) => (
+                    <Grid key={sheltered.id} item xs={12} sm={6} md={4} lg={3} xl={2.4 as any}>
+                      <ShelteredCard
+                        sheltered={sheltered}
+                        onClick={(c) => nav(`/area-dos-abrigados/${c.id}`, { state: { sheltered: c } })}
+                        onEdit={(c) => openEdit(c.id)}
+                        onRefresh={refetch}
+                      />
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </Box>
+              
+              {pagination.totalPages > 1 && (
+                <Stack spacing={2} alignItems="center" sx={{ mt: { xs: 3, md: 4 }, mb: { xs: 2, md: 2 }, position: "relative" }}>
+                  {/* Loading sutil na paginação */}
+                  {loading && items.length > 0 && (
+                    <Box sx={{ position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", zIndex: 1 }}>
+                      <CircularProgress size={16} thickness={4} />
+                    </Box>
+                  )}
+                  <Pagination
+                    count={pagination.totalPages}
+                    page={pagination.page}
+                    onChange={(_, page) => pagination.setPage(page)}
+                    color="primary"
+                    size={isXs ? "small" : "large"}
+                    showFirstButton={!isXs}
+                    showLastButton={!isXs}
+                    siblingCount={isXs ? 0 : 1}
+                    boundaryCount={isXs ? 1 : 1}
+                    disabled={loading}
+                  />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                  >
+                    Mostrando {items.length} de {pagination.totalItems} abrigado(s)
+                  </Typography>
+                </Stack>
+              )}
+            </>
           )}
         </>
       )}

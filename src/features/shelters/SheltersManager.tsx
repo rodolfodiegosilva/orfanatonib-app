@@ -17,11 +17,18 @@ import { apiFetchShelters } from "./api";
 import BackHeader from "@/components/common/header/BackHeader";
 import DeleteConfirmDialog from "@/components/common/modal/DeleteConfirmDialog";
 import { useSelector } from "react-redux";
-import { selectIsAdmin } from "@/store/selectors/routeSelectors";
+import { selectIsAdmin, selectIsLeader } from "@/store/selectors/routeSelectors";
+import ShelterDetailsPage from "./ShelterDetailsPage";
 
 export default function SheltersManager() {
   const navigate = useNavigate();
   const isAdmin = useSelector(selectIsAdmin);
+  const isLeader = useSelector(selectIsLeader);
+
+  // Se for líder, mostrar página de detalhes do abrigo
+  if (isLeader) {
+    return <ShelterDetailsPage />;
+  }
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 

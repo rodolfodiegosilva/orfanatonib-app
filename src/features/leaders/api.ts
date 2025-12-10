@@ -73,3 +73,12 @@ export async function apiListSheltersSimple() {
   const { data } = await api.get<ShelterSimple[]>("/shelters/simple");
   return data;
 }
+
+/**
+ * Busca os abrigos do líder logado
+ * GET /leader-profiles/my-shelters
+ */
+export async function apiGetMyShelters() {
+  const { data } = await api.get<any[]>("/leader-profiles/my-shelters");
+  return data;
+}
