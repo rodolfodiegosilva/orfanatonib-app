@@ -52,7 +52,7 @@ const VisitMaterialsBanner: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(205, 220, 57, 0.1) 0%, transparent 50%)',
           zIndex: 0,
           borderRadius: 'inherit',
         },
@@ -65,7 +65,7 @@ const VisitMaterialsBanner: React.FC = () => {
           left: 0,
           right: 0,
           height: '60px',
-          background: 'linear-gradient(to top, transparent 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%)',
+          background: 'linear-gradient(to top, transparent 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.25) 100%)',
           zIndex: 2,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
@@ -197,17 +197,19 @@ const VisitMaterialsBanner: React.FC = () => {
               variant="contained"
               size="large"
               component={Link}
-              to={`/${currentVisitRoute.path}`}
+              to="/lista-materias-visita"
               sx={{
                 px: { xs: 4, md: 6 },
                 py: { xs: 2, md: 2.5 },
                 fontSize: { xs: '1rem', md: '1.1rem' },
                 fontWeight: 700,
                 borderRadius: 3,
-                 background: '#009933',
-                 color: '#FFFFFF',
-                 '&:hover': {
-                   backgroundColor: '#007a29',
+                background: 'linear-gradient(135deg, #2d8650 0%, #4caf50 100%)',
+                color: '#FFFFFF',
+                boxShadow: '0 4px 12px rgba(45, 134, 80, 0.4)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1a5f2e 0%, #2d8650 100%)',
+                  boxShadow: '0 6px 16px rgba(45, 134, 80, 0.6)',
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.3s ease',
@@ -227,7 +229,7 @@ const VisitMaterialsBanner: React.FC = () => {
           left: 0,
           right: 0,
           height: '60px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%)',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.25) 100%)',
           zIndex: 2,
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,

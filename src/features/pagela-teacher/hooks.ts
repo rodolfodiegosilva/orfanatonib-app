@@ -167,7 +167,7 @@ export function useShelteredBrowser() {
 
 export function useShelteredPagelas(
   shelteredId: string | null | undefined,
-  initial?: { year?: number; visit?: number }
+  initial?: { year?: number; visit?: number; limit?: number }
 ) {
   const [year, setYearState] = useState<number | undefined>(initial?.year);
   const [visit, setVisitState] = useState<number | undefined>(initial?.visit);
@@ -175,9 +175,17 @@ export function useShelteredPagelas(
   const [rows, setRows] = useState<Pagela[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
+  const [limit, setLimit] = useState(initial?.limit ?? 12);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+
+  // Atualizar limite quando initial.limit mudar
+  useEffect(() => {
+    if (initial?.limit !== undefined) {
+      setLimit(initial.limit);
+      setPage(1); // Resetar página quando o limite mudar
+    }
+  }, [initial?.limit]);
   const setYear = useCallback((v?: number) => { setYearState(v); setPage(1); }, []);
   const setVisit = useCallback((v?: number) => { setVisitState(v); setPage(1); }, []);
   const setPresentQ = useCallback((v: Tri) => { setPresentQState(v); setPage(1); }, []);

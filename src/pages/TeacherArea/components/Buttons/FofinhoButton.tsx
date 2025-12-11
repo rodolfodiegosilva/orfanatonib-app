@@ -61,27 +61,42 @@ const FofinhoButton: React.FC<FofinhoButtonProps & { fullWidth?: boolean }> = ({
       aria-label={label}
       disableElevation
       sx={{
-        px: { xs: 1.5, sm: 2 },
-        py: { xs: 1.25, sm: 1.5 },
-        minHeight: 48,
-        borderRadius: { xs: 2, sm: 3 },
-        fontWeight: 800,
+        px: { xs: 2, sm: 2.5 },
+        py: { xs: 1.5, sm: 1.75 },
+        minHeight: 52,
+        borderRadius: 3,
+        fontWeight: 700,
         fontSize: { xs: '0.9rem', md: '1rem' },
         textTransform: 'none',
         justifyContent: 'flex-start',
-        gap: 1.25,
-        boxShadow: '0 4px 8px rgba(0,0,0,0.10)',
-        backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.12), rgba(0,0,0,0.06))',
+        gap: 1.5,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0,0,0,0.08))',
         transition: reduceMotion
-          ? 'box-shadow .2s ease'
-          : 'transform .18s ease, box-shadow .18s ease',
+          ? 'box-shadow .3s ease'
+          : 'transform .25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .3s ease',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: '-100%',
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+          transition: 'left 0.5s ease',
+        },
         '&:hover': {
-          boxShadow: '0 8px 16px rgba(0,0,0,0.16)',
-          transform: reduceMotion ? 'none' : 'translateY(-2px)',
+          boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+          transform: reduceMotion ? 'none' : 'translateY(-3px)',
+          '&::before': {
+            left: '100%',
+          },
         },
         '&:active': {
-          transform: reduceMotion ? 'none' : 'translateY(0)',
-          boxShadow: '0 6px 12px rgba(0,0,0,0.14)',
+          transform: reduceMotion ? 'none' : 'translateY(-1px)',
+          boxShadow: '0 6px 16px rgba(0,0,0,0.18)',
         },
         '&:focus-visible': {
           outline: `3px solid ${theme.palette[paletteKey].light}`,

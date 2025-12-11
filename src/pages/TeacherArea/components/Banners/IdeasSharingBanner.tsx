@@ -36,10 +36,10 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
           gap: shouldUseColumnLayout ? 3 : 0,
           width: '100%',
           mx: 'auto',
-          px: isCompact ? { xs: '10px', sm: 3, md: '16px' } : { xs: '10px', sm: 4, md: 4 },
-          py: isCompact ? { xs: '10px', sm: 0, md: 0 } : { xs: '10px', sm: 6, md: 6 },
-          mb: isCompact ? 0 : 6,
-          mt: isCompact ? 0 : 4,
+          px: isCompact ? { xs: 3, sm: 4, md: 4 } : { xs: 3, sm: 5, md: 5 },
+          py: isCompact ? { xs: 3, sm: 3, md: 3 } : { xs: 4, sm: 6, md: 6 },
+          mb: isCompact ? 0 : 0,
+          mt: isCompact ? 0 : 0,
           position: 'relative',
           overflow: 'hidden',
           height: isMobile
@@ -48,6 +48,7 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
           minHeight: isMobile
             ? { xs: 400, sm: 400, md: 400 }
             : { xs: 400, sm: shouldUseColumnLayout ? 300 : 200, md: shouldUseColumnLayout ? 280 : 200 },
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.4)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -55,7 +56,7 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             right: -50,
             width: 200,
             height: 200,
-            background: 'rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.15)',
             borderRadius: '50%',
             zIndex: 0,
           },
@@ -66,7 +67,7 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             left: -30,
             width: 150,
             height: 150,
-            background: 'rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.1)',
             borderRadius: '50%',
             zIndex: 0,
           },
@@ -80,7 +81,7 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             justifyContent: 'center',
             alignItems: shouldUseColumnLayout ? 'center' : 'flex-start',
             textAlign: shouldUseColumnLayout ? 'center' : 'left',
-            px: isCompact ? 0 : 4,
+            px: isCompact ? { xs: 2, md: 0 } : { xs: 2, sm: 3, md: 4 },
             position: 'relative',
             zIndex: 1,
           }}
@@ -90,28 +91,28 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             sx={{
               fontWeight: 'bold',
               color: 'white',
-              fontSize: isCompact ? { xs: '1rem', sm: '1.1rem', md: '1.6rem' } : { xs: '1.8rem', sm: '2rem', md: '2.2rem' },
+              fontSize: isCompact ? { xs: '0.9rem', sm: '1rem', md: '1.6rem' } : { xs: '1.3rem', sm: '1.6rem', md: '2.2rem' },
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              mb: 2,
+              mb: { xs: 1.5, md: 2 },
             }}
-          >{forceColumnLayout}
-            ✨ Compartilhe a Inspiração que Deus Te Deu!
+          >
+            Compartilhe a Inspiração que Deus Te Deu!
           </Typography>
 
           <Typography
             variant="h6"
             sx={{
               color: 'rgba(255,255,255,0.95)',
-              fontSize: isCompact ? { xs: '0.85rem', sm: '0.95rem', md: '1.1rem' } : { xs: '1.1rem', sm: '1.2rem', md: '1.3rem' },
+              fontSize: isCompact ? { xs: '0.85rem', sm: '0.95rem', md: '1.15rem' } : { xs: '1rem', sm: '1.1rem', md: '1.35rem' },
               maxWidth: isCompact ? '800px' : '800px',
-              lineHeight: 1.4,
-              fontWeight: 400,
+              lineHeight: 1.6,
+              fontWeight: 500,
               mb: 0,
             }}
           >
-            💡 Criou uma brincadeira incrível ou descobriu uma forma especial de contar uma história bíblica?
+            Criou uma brincadeira incrível ou descobriu uma forma especial de contar uma história bíblica?
             <br />
-            🌟 Compartilhe sua criatividade com outros professores! Sua ideia pode transformar vidas! ✨
+            Compartilhe sua criatividade com outros professores! Sua ideia pode transformar vidas!
           </Typography>
 
         </Box>
@@ -129,46 +130,53 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             px: isCompact ? 0 : 2,
           }}
         >
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/compartilhar-ideia')}
-            sx={{
-              bgcolor: 'white',
-              color: '#667eea',
-              px: isCompact ? { xs: 3, md: 4 } : { xs: 4, md: 8 },
-              py: isCompact ? { xs: 1.5, md: 2 } : { xs: 2, md: 3 },
-              fontSize: isCompact ? { xs: '0.9rem', sm: '1rem', md: '1.3rem' } : { xs: '1rem', sm: '1.2rem', md: '1.4rem' },
-              fontWeight: 'bold',
-              borderRadius: '16px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.95)',
-                transform: 'translateY(-3px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-              },
-              transition: 'all 0.3s ease',
-              minWidth: isCompact ? { xs: '160px', md: '180px' } : { xs: '180px', md: '250px' },
-              width: '100%',
-            }}
-            endIcon={
-              <Share
-                sx={{
-                  fontSize: isCompact ? { xs: '1rem', md: '1.3rem' } : { xs: '1.2rem', md: '1.8rem' }
-                }}
-              />
-            }
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            Compartilhar Ideia
-          </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={() => navigate('/compartilhar-ideia')}
+              sx={{
+                bgcolor: 'white',
+                color: '#667eea',
+                px: { xs: 2.5, sm: 3, md: 5 },
+                py: { xs: 1, sm: 1.25, md: 2.25 },
+                fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.3rem' },
+                fontWeight: 700,
+                borderRadius: 2,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.95)',
+                  transform: { xs: 'none', md: 'translateY(-4px)' },
+                  boxShadow: { xs: '0 4px 16px rgba(0,0,0,0.2)', md: '0 12px 40px rgba(0,0,0,0.35)' },
+                },
+                transition: 'all 0.3s ease',
+                minWidth: { xs: '140px', sm: '160px', md: '200px' },
+                width: { xs: 'auto', md: '100%' },
+              }}
+              endIcon={
+                <Share
+                  sx={{
+                    fontSize: { xs: '1rem', sm: '1.1rem', md: '1.4rem' }
+                  }}
+                />
+              }
+            >
+              Compartilhar Ideia
+            </Button>
+          </motion.div>
 
           <Typography
             variant="caption"
             sx={{
               color: 'rgba(255,255,255,0.8)',
               textAlign: 'center',
-              fontSize: isCompact ? { xs: '0.7rem', sm: '0.75rem', md: '0.9rem' } : { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
-              maxWidth: '200px',
+              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.9rem' },
+              maxWidth: { xs: '100%', md: '200px' },
+              mt: { xs: 0.5, md: 0 },
             }}
           >
             Clique aqui para começar!

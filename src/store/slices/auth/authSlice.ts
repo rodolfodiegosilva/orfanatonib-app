@@ -27,6 +27,7 @@ interface TeacherProfileLite {
 interface LeaderProfileLite {
   id: string;
   active: boolean;
+  shelters?: ShelterLite[]; // Array de abrigos do líder
   team: {
     id: string;
     name: string;

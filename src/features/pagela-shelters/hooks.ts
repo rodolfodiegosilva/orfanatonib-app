@@ -290,3 +290,64 @@ export const usePagelaSheltersManager = () => {
     handlePagelasSearchChange,
   };
 };
+
+// Hook específico para líderes - não precisa buscar shelters, apenas usa o shelterId selecionado
+export const usePagelaSheltersManagerForLeader = (selectedShelterId: string | null) => {
+  const [selectedSheltered, setSelectedSheltered] = useState<ShelteredDto | null>(null);
+  const [shelteredFilters, setShelteredFilters] = useState<ShelteredFilters>({});
+  const [pagelasFilters, setPagelasFilters] = useState<PagelasFilters>({});
+
+  // Sheltered - só carrega quando há shelter selecionado
+  const shelteredFiltersWithShelter = selectedShelterId 
+    ? { ...shelteredFilters, shelterId: selectedShelterId }
+    : undefined;
+  
+  const sheltered = useSheltered(shelteredFiltersWithShelter, !!selectedShelterId);
+
+  // Pagelas - só carrega quando há sheltered selecionado
+  const pagelasFiltersWithSheltered = selectedSheltered
+    ? { 
+        ...pagelasFilters, 
+        shelteredId: selectedSheltered.id,
+      }
+    : undefined;
+  
+  const pagelas = usePagelas(pagelasFiltersWithSheltered, !!selectedSheltered);
+
+  const handleShelteredSelect = (sheltered: ShelteredDto | null) => {
+    setSelectedSheltered(sheltered);
+    setPagelasFilters({}); // Reset pagelas filters
+  };
+
+  const handleShelteredSearchChange = (searchString: string) => {
+    setShelteredFilters(prev => ({
+      ...prev,
+      searchString: searchString,
+      page: 1,
+    }));
+  };
+
+  const handlePagelasSearchChange = useCallback((searchString: string) => {
+    setPagelasFilters(prev => ({
+      ...prev,
+      searchString: searchString,
+      page: 1,
+    }));
+  }, []);
+
+  // Reset quando o shelter muda
+  useEffect(() => {
+    setSelectedSheltered(null);
+    setShelteredFilters({});
+    setPagelasFilters({});
+  }, [selectedShelterId]);
+
+  return {
+    selectedSheltered,
+    sheltered,
+    pagelas,
+    handleShelteredSelect,
+    handleShelteredSearchChange,
+    handlePagelasSearchChange,
+  };
+};

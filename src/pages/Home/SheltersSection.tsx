@@ -380,42 +380,87 @@ const SheltersSection: React.FC = () => {
             </>
           )}
 
-          {shelterCards.length > 1 && (
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: { xs: 12, md: 16 },
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'flex',
-                gap: { xs: 0.8, md: 1 },
-                zIndex: 2,
-                bgcolor: 'rgba(255, 255, 255, 0.3)',
-                backdropFilter: 'blur(8px)',
-                borderRadius: 3,
-                px: 1.5,
-                py: 1,
-              }}
-            >
-              {shelterCards.map((_, index) => (
+          {shelterCards.length > 1 && (() => {
+            const MAX_DOTS = 5; // Máximo de pontos a exibir
+            
+            // Se tiver menos ou igual ao máximo, mostra todos
+            if (shelterCards.length <= MAX_DOTS) {
+              return (
                 <Box
-                  key={index}
-                  onClick={() => goToSlide(index)}
                   sx={{
-                    width: currentIndex === index ? { xs: 28, md: 32 } : { xs: 10, md: 12 },
-                    height: { xs: 10, md: 12 },
-                    borderRadius: { xs: 5, md: 6 },
-                    bgcolor: currentIndex === index ? '#ff9800' : 'rgba(255, 152, 0, 0.3)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: currentIndex === index ? '#ff5722' : 'rgba(255, 152, 0, 0.6)',
-                    },
+                    position: 'absolute',
+                    bottom: { xs: 12, md: 16 },
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    gap: { xs: 0.8, md: 1 },
+                    zIndex: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.3)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: 3,
+                    px: 1.5,
+                    py: 1,
                   }}
-                />
-              ))}
-            </Box>
-          )}
+                >
+                  {shelterCards.map((_, index) => (
+                    <Box
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      sx={{
+                        width: currentIndex === index ? { xs: 28, md: 32 } : { xs: 10, md: 12 },
+                        height: { xs: 10, md: 12 },
+                        borderRadius: { xs: 5, md: 6 },
+                        bgcolor: currentIndex === index ? '#ff9800' : 'rgba(255, 152, 0, 0.3)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          bgcolor: currentIndex === index ? '#ff5722' : 'rgba(255, 152, 0, 0.6)',
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              );
+            }
+            
+            // Se tiver mais que o máximo, mostra apenas os primeiros MAX_DOTS pontos
+            return (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: { xs: 12, md: 16 },
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  display: 'flex',
+                  gap: { xs: 0.8, md: 1 },
+                  zIndex: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.3)',
+                  backdropFilter: 'blur(8px)',
+                  borderRadius: 3,
+                  px: 1.5,
+                  py: 1,
+                }}
+              >
+                {shelterCards.slice(0, MAX_DOTS).map((_, index) => (
+                  <Box
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    sx={{
+                      width: currentIndex === index ? { xs: 28, md: 32 } : { xs: 10, md: 12 },
+                      height: { xs: 10, md: 12 },
+                      borderRadius: { xs: 5, md: 6 },
+                      bgcolor: currentIndex === index ? '#ff9800' : 'rgba(255, 152, 0, 0.3)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        bgcolor: currentIndex === index ? '#ff5722' : 'rgba(255, 152, 0, 0.6)',
+                      },
+                    }}
+                  />
+                ))}
+              </Box>
+            );
+          })()}
         </Box>
       </Container>
     </Box>

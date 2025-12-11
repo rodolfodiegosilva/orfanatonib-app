@@ -70,8 +70,10 @@ const CommentsSection: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    // Só buscar comentários se ainda não estiverem carregados
+    if (rawComments !== null) return;
     fetchComments();
-  }, [fetchComments]);
+  }, [fetchComments, rawComments]);
 
   const handleSubmit = async () => {
     const newErrors = {
@@ -116,14 +118,41 @@ const CommentsSection: React.FC = () => {
         { breakpoint: 960, settings: { slidesToShow: 2 } },
         { breakpoint: 600, settings: { slidesToShow: 1 } },
       ],
-      arrows: true,
+      arrows: !isMobile,
       appendDots: (dots: React.ReactNode) => (
-        <Box sx={{ mt: 2 }}>
-          <ul style={{ margin: 0, padding: 0 }}>{dots}</ul>
+        <Box 
+          sx={{ 
+            mt: { xs: 1, md: 2 },
+            '& .slick-dots': {
+              bottom: 'auto',
+              position: 'relative',
+              '& li': {
+                width: { xs: '6px', md: '10px' },
+                height: { xs: '6px', md: '10px' },
+                margin: { xs: '0 3px', md: '0 5px' },
+                '& button': {
+                  width: { xs: '6px', md: '10px' },
+                  height: { xs: '6px', md: '10px' },
+                  padding: 0,
+                  '&::before': {
+                    fontSize: { xs: '6px', md: '10px' },
+                    color: 'rgba(0, 0, 0, 0.3)',
+                    opacity: 1,
+                  },
+                },
+                '&.slick-active button::before': {
+                  color: theme.palette.primary.main,
+                  opacity: 1,
+                },
+              },
+            },
+          }}
+        >
+          <ul style={{ margin: 0, padding: 0, display: 'flex', justifyContent: 'center' }}>{dots}</ul>
         </Box>
       ),
     }),
-    []
+    [isMobile, theme]
   );
 
   const labels: Record<string, string> = {
@@ -156,13 +185,23 @@ const CommentsSection: React.FC = () => {
       <Paper
         elevation={4}
         sx={{
-          p: { xs: 0.6, md: 4 },
-          mt: 5,
-          borderRadius: { xs: 3, md: 4 },
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
-          border: `2px solid ${theme.palette.primary.main}20`,
+          p: { xs: 2, sm: 2.5, md: 4 },
+          mt: 0,
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%)',
+          border: '1px solid rgba(25, 118, 210, 0.2)',
           position: 'relative',
           overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '4px',
+            height: '100%',
+            background: 'linear-gradient(180deg, #1976d2 0%, #1565c0 100%)',
+            borderRadius: '0 4px 4px 0',
+          },
         }}
       >
         <Box
@@ -180,28 +219,38 @@ const CommentsSection: React.FC = () => {
 
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           {/* Header */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 2, md: 3 } }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: { xs: 2.5, md: 4 },
+            }}
+          >
             <Box
               sx={{
                 p: { xs: 1, md: 1.5 },
                 borderRadius: 2,
-                bgcolor: 'primary.main',
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 mr: { xs: 1.5, md: 2 },
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
               }}
             >
-              <CommentIcon sx={{ fontSize: { xs: '1rem', md: '1.5rem' } }} />
+              <CommentIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.8rem' } }} />
             </Box>
             <Typography
-              variant="h4"
-              fontWeight="bold"
-              color="primary.main"
+              variant="h5"
+              fontWeight={800}
               sx={{
-                fontSize: { xs: '1rem', md: '1.8rem' },
-                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.6rem' },
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '-0.3px',
               }}
             >
               Comentários dos Professores
@@ -215,20 +264,21 @@ const CommentsSection: React.FC = () => {
             >
               <Button
                 variant="contained"
+                size="medium"
                 startIcon={<ExpandMoreIcon sx={{ transform: formOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} />}
                 onClick={() => setFormOpen(!formOpen)}
                 sx={{
                   mb: { xs: 2, md: 3 },
-                  borderRadius: { xs: 2, md: 3 },
+                  borderRadius: 2,
                   textTransform: 'none',
-                  fontSize: { xs: '0.75rem', md: '1rem' },
-                  px: { xs: 1.5, md: 3 },
-                  py: { xs: 0.8, md: 1.5 },
+                  fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
+                  px: { xs: 2, sm: 2.5, md: 3 },
+                  py: { xs: 1, sm: 1.1, md: 1.5 },
                   minWidth: { xs: 'auto', md: 'auto' },
                   width: { xs: '100%', md: 'auto' },
-                  boxShadow: { xs: 2, md: 3 },
+                  boxShadow: 2,
                   '&:hover': {
-                    boxShadow: { xs: 4, md: 6 },
+                    boxShadow: 4,
                   },
                   '& .MuiButton-startIcon': {
                     marginRight: { xs: 0.5, md: 1 },
@@ -261,9 +311,9 @@ const CommentsSection: React.FC = () => {
                       variant="h6"
                       fontWeight="bold"
                       color="primary.main"
-                      sx={{ mb: { xs: 2, md: 3 }, textAlign: 'center', fontSize: { xs: '0.9rem', md: '1.25rem' } }}
+                      sx={{ mb: { xs: 2, md: 3 }, textAlign: 'center', fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}
                     >
-                      📝 Compartilhe sua experiência
+                      Compartilhe sua experiência
                     </Typography>
 
                     <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 2, md: 3 } }}>
@@ -325,25 +375,26 @@ const CommentsSection: React.FC = () => {
                         <Button
                           variant="contained"
                           color="primary"
+                          size="medium"
                           onClick={handleSubmit}
                           disabled={isSubmitting}
                           endIcon={
                             isSubmitting ? (
-                              <CircularProgress color="inherit" size={18} />
+                              <CircularProgress color="inherit" size={16} />
                             ) : (
-                              <SendIcon sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} />
+                              <SendIcon sx={{ fontSize: { xs: '0.9rem', md: '1.25rem' } }} />
                             )
                           }
                           sx={{
-                            borderRadius: { xs: 2, md: 3 },
+                            borderRadius: 2,
                             textTransform: 'none',
-                            fontSize: { xs: '0.8rem', md: '1rem' },
-                            px: { xs: 2, md: 4 },
-                            py: { xs: 1, md: 1.5 },
+                            fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
+                            px: { xs: 2, sm: 2.5, md: 4 },
+                            py: { xs: 0.9, sm: 1, md: 1.5 },
                             minWidth: { xs: 'auto', md: 'auto' },
-                            boxShadow: 3,
+                            boxShadow: 2,
                             '&:hover': {
-                              boxShadow: 6,
+                              boxShadow: 4,
                             },
                             '&:disabled': {
                               opacity: 0.7,
@@ -370,27 +421,27 @@ const CommentsSection: React.FC = () => {
               >
                 <Box sx={{
                   position: 'relative',
-                  px: 1,
+                  px: { xs: 0, md: 1 },
                   '& .slick-prev:before, & .slick-next:before': {
                     color: theme.palette.primary.main,
-                    fontSize: '28px'
+                    fontSize: { xs: '20px', md: '28px' }
                   },
                   '& .slick-prev': {
-                    left: { xs: 5, md: -30 },
+                    left: { xs: -10, md: -30 },
                     zIndex: 2,
                   },
                   '& .slick-next': {
-                    right: { xs: 5, md: -30 },
+                    right: { xs: -10, md: -30 },
                     zIndex: 2,
                   },
                   '& .slick-arrow': {
-                    width: { xs: 30, md: 40 },
-                    height: { xs: 30, md: 40 },
-                    backgroundColor: { xs: 'rgba(255,255,255,0.9)', md: 'transparent' },
+                    width: { xs: 28, md: 40 },
+                    height: { xs: 28, md: 40 },
+                    backgroundColor: { xs: 'rgba(255,255,255,0.95)', md: 'transparent' },
                     borderRadius: { xs: '50%', md: 0 },
-                    boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.2)', md: 'none' },
+                    boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.15)', md: 'none' },
                     '&:before': {
-                      fontSize: { xs: '20px', md: '28px' },
+                      fontSize: { xs: '18px', md: '28px' },
                       color: theme.palette.primary.main,
                     },
                     '&:hover': {
@@ -403,7 +454,7 @@ const CommentsSection: React.FC = () => {
                       <Box
                         key={comment.id}
                         sx={{
-                          p: { xs: 0.5, md: 2 },
+                          p: { xs: 0.25, sm: 0.5, md: 2 },
                           display: 'flex',
                           justifyContent: 'center',
                         }}
@@ -412,35 +463,36 @@ const CommentsSection: React.FC = () => {
                           initial={{ opacity: 0, scale: 0.9, y: 20 }}
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: index * 0.1 }}
-                          whileHover={{ y: -8 }}
+                          whileHover={{ y: { xs: 0, md: -8 } }}
+                          style={{ width: '100%' }}
                         >
                           <Card
-                            elevation={6}
+                            elevation={4}
                             sx={{
-                              width: { xs: '100%', sm: '96%', md: '90%' },
-                              maxWidth: { xs: 'none', md: 400 },
-                              minHeight: { xs: 260, md: 320 },
+                              width: '100%',
+                              maxWidth: { xs: '100%', md: 400 },
+                              minHeight: { xs: 'auto', md: 320 },
                               borderRadius: { xs: 2, md: 3 },
                               background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
                               border: `2px solid ${theme.palette.primary.main}15`,
                               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                               '&:hover': {
-                                elevation: 12,
-                                transform: 'translateY(-4px)',
+                                elevation: { xs: 4, md: 12 },
+                                transform: { xs: 'none', md: 'translateY(-4px)' },
                                 borderColor: theme.palette.primary.main,
-                                boxShadow: `0 20px 40px ${theme.palette.primary.main}20`,
+                                boxShadow: { xs: 'none', md: `0 20px 40px ${theme.palette.primary.main}20` },
                               },
                             }}
                           >
-                            <CardContent sx={{ p: { xs: 1.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, md: 2 } }}>
+                            <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1, md: 2 } }}>
                                 <Avatar
                                   sx={{
                                     bgcolor: 'primary.main',
-                                    mr: { xs: 1.5, md: 2 },
-                                    width: { xs: 36, md: 48 },
-                                    height: { xs: 36, md: 48 },
-                                    fontSize: { xs: '0.9rem', md: '1.2rem' },
+                                    mr: { xs: 1, md: 2 },
+                                    width: { xs: 32, sm: 36, md: 48 },
+                                    height: { xs: 32, sm: 36, md: 48 },
+                                    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1.2rem' },
                                   }}
                                 >
                                   {comment.name.charAt(0).toUpperCase()}
@@ -451,8 +503,8 @@ const CommentsSection: React.FC = () => {
                                     fontWeight="bold"
                                     color="primary.main"
                                     sx={{
-                                      fontSize: { xs: '0.9rem', md: '1.1rem' },
-                                      mb: 0.5,
+                                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1.1rem' },
+                                      mb: { xs: 0.25, md: 0.5 },
                                     }}
                                   >
                                     {comment.name}
@@ -460,7 +512,7 @@ const CommentsSection: React.FC = () => {
                                   <Typography
                                     variant="caption"
                                     color="text.secondary"
-                                    sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+                                    sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}
                                   >
                                     {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
                                   </Typography>
@@ -468,21 +520,21 @@ const CommentsSection: React.FC = () => {
                               </Box>
 
                               {/* Conteúdo do Comentário */}
-                              <Box sx={{ flexGrow: 1, mb: { xs: 1.5, md: 2 } }}>
+                              <Box sx={{ flexGrow: 1, mb: { xs: 1, md: 2 } }}>
                                 <Paper
                                   elevation={1}
                                   sx={{
-                                    p: { xs: 1.5, md: 2 },
+                                    p: { xs: 1.25, sm: 1.5, md: 2 },
                                     borderRadius: 2,
                                     background: 'linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)',
-                                    borderLeft: `4px solid ${theme.palette.primary.main}`,
+                                    borderLeft: `3px solid ${theme.palette.primary.main}`,
                                   }}
                                 >
                                   <Typography
                                     variant="body1"
                                     sx={{
-                                      fontSize: { xs: '0.85rem', md: '1rem' },
-                                      lineHeight: { xs: 1.5, md: 1.6 },
+                                      fontSize: { xs: '0.8rem', sm: '0.85rem', md: '1rem' },
+                                      lineHeight: { xs: 1.4, md: 1.6 },
                                       color: 'text.primary',
                                       fontStyle: 'italic',
                                     }}
@@ -496,30 +548,30 @@ const CommentsSection: React.FC = () => {
                               <Box sx={{ mt: 'auto' }}>
                                 <Stack direction="row" spacing={{ xs: 0.5, md: 1 }} flexWrap="wrap" useFlexGap>
                                   <Chip
-                                    icon={<HomeIcon />}
+                                    icon={<HomeIcon sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }} />}
                                     label={comment.shelter}
                                     size="small"
                                     sx={{
                                       bgcolor: 'primary.light',
                                       color: 'white',
-                                      fontSize: { xs: '0.7rem', md: '0.75rem' },
-                                      height: { xs: 24, md: 28 },
-                                      '& .MuiChip-icon': {
-                                        fontSize: { xs: '0.8rem', md: '0.875rem' },
+                                      fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                                      height: { xs: 22, sm: 24, md: 28 },
+                                      '& .MuiChip-label': {
+                                        px: { xs: 0.75, md: 1 },
                                       },
                                     }}
                                   />
                                   <Chip
-                                    icon={<LocationOnIcon />}
+                                    icon={<LocationOnIcon sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }} />}
                                     label={comment.neighborhood}
                                     size="small"
                                     sx={{
                                       bgcolor: 'secondary.light',
                                       color: 'white',
-                                      fontSize: { xs: '0.7rem', md: '0.75rem' },
-                                      height: { xs: 24, md: 28 },
-                                      '& .MuiChip-icon': {
-                                        fontSize: { xs: '0.8rem', md: '0.875rem' },
+                                      fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                                      height: { xs: 22, sm: 24, md: 28 },
+                                      '& .MuiChip-label': {
+                                        px: { xs: 0.75, md: 1 },
                                       },
                                     }}
                                   />

@@ -101,7 +101,10 @@ export default function ShelteredPagelasPage() {
     [sheltered, shelteredId]
   );
 
-  const { filters, list, actions } = useShelteredPagelas(shelteredId);
+  // Limite responsivo: 5 para mobile, 9 para desktop
+  const limit = React.useMemo(() => (isXs ? 5 : 9), [isXs]);
+  
+  const { filters, list, actions } = useShelteredPagelas(shelteredId, { limit });
 
   const [snack, setSnack] = React.useState({
     open: false,

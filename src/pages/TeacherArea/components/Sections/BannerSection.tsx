@@ -7,8 +7,8 @@ const BannerSection: React.FC<BannerSectionProps> = ({ showMeditationBanner }) =
   return (
     <Grid
       container
-      spacing={2}
-      sx={{ mb: 6, mt: 0, pt: 0, justifyContent: 'space-between' }}
+      spacing={3}
+      sx={{ mb: { xs: 4, md: 6 }, mt: 0, pt: 0, justifyContent: 'space-between' }}
     >
       {showMeditationBanner ? (
         <>

@@ -77,6 +77,7 @@ export async function apiListSheltersSimple() {
 /**
  * Busca os abrigos do líder logado
  * GET /leader-profiles/my-shelters
+ * Retorna um array de abrigos completos (ShelterResponseDto)
  */
 export async function apiGetMyShelters() {
   const { data } = await api.get<any[]>("/leader-profiles/my-shelters");

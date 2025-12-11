@@ -9,6 +9,9 @@ export const useComments = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    // Só buscar comentários se ainda não estiverem carregados
+    if (comments !== null) return;
+
     const fetchComments = async () => {
       try {
         const response = await api.get('/comments/published');
@@ -18,7 +21,7 @@ export const useComments = () => {
       }
     };
     fetchComments();
-  }, [dispatch]);
+  }, [dispatch, comments]);
 
   return comments;
 };

@@ -38,8 +38,8 @@ export const gradients = {
   special: {
     // Gradiente completo com todas as cores principais
     full: 'linear-gradient(135deg, #000000 0%, #009933 25%, #FFFF00 50%, #FF0000 75%, #FFFFFF 100%)',
-    // Gradiente para banners especiais
-    banner: 'linear-gradient(135deg, #000000 0%, #009933 50%, #FFFF00 100%)',
+    // Gradiente para banners especiais - versão melhorada com cores mais suaves
+    banner: 'linear-gradient(135deg, #1a5f2e 0%, #2d8650 25%, #4caf50 50%, #8bc34a 75%, #cddc39 100%)',
     // Gradiente para CTAs
     cta: 'linear-gradient(45deg, #009933 30%, #FFFF00 70%, #FF0000 100%)',
   },

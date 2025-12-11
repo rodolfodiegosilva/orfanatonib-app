@@ -81,7 +81,7 @@ const TeacherWeekBanner: React.FC = () => {
       transition={{ duration: 0.6 }}
     >
       <Paper
-        elevation={4}
+        elevation={6}
         sx={{
           width: '100%',
           height: { 
@@ -99,33 +99,46 @@ const TeacherWeekBanner: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
-          p: { xs: '5px', sm: 3, md: '16px' },
-          borderRadius: { xs: 2, md: 3 },
-          background: 'linear-gradient(135deg, #0073E6 0%, #4A90E2 50%, #87CEEB 100%)',
+          p: { xs: 2, sm: 3, md: 4 },
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 25%, #42a5f5 50%, #64b5f6 75%, #90caf9 100%)',
           color: '#fff',
           position: 'relative',
           overflow: 'hidden',
+          boxShadow: '0 12px 40px rgba(25, 118, 210, 0.35)',
           '&::before': {
             content: '""',
             position: 'absolute',
-            top: -50,
-            right: -50,
-            width: 200,
-            height: 200,
-            background: 'rgba(255,255,255,0.1)',
+            top: -60,
+            right: -60,
+            width: 250,
+            height: 250,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)',
             borderRadius: '50%',
             zIndex: 0,
+            animation: 'pulse 4s ease-in-out infinite',
           },
           '&::after': {
             content: '""',
             position: 'absolute',
-            bottom: -30,
-            left: -30,
-            width: 150,
-            height: 150,
-            background: 'rgba(255,255,255,0.08)',
+            bottom: -40,
+            left: -40,
+            width: 180,
+            height: 180,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
             borderRadius: '50%',
             zIndex: 0,
+            animation: 'pulse 4s ease-in-out infinite 2s',
+          },
+          '@keyframes pulse': {
+            '0%, 100%': {
+              transform: 'scale(1)',
+              opacity: 0.6,
+            },
+            '50%': {
+              transform: 'scale(1.1)',
+              opacity: 0.8,
+            },
           },
         }}
       >
@@ -138,9 +151,9 @@ const TeacherWeekBanner: React.FC = () => {
           <Typography
             variant="h6"
             sx={{
-              fontSize: { xs: '1rem', md: '1.3rem' },
+              fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.3rem' },
               fontWeight: 500,
-              mb: 1,
+              mb: { xs: 0.75, md: 1 },
               textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)',
             }}
           >
@@ -152,8 +165,8 @@ const TeacherWeekBanner: React.FC = () => {
             fontWeight="bold"
             sx={{
               color: '#fff',
-              fontSize: { xs: '1.5rem', md: '3rem' },
-              mb: 2,
+              fontSize: { xs: '1.2rem', sm: '1.4rem', md: '3rem' },
+              mb: { xs: 1.5, md: 2 },
               textShadow: '2px 2px 6px rgba(0, 0, 0, 0.4)',
               lineHeight: 1.2,
             }}
@@ -166,8 +179,8 @@ const TeacherWeekBanner: React.FC = () => {
               <Typography
                 variant="body1"
                 sx={{
-                  fontSize: { xs: '0.9rem', md: '1.2rem' },
-                  mb: 1,
+                  fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1.2rem' },
+                  mb: { xs: 0.75, md: 1 },
                   textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)',
                   opacity: 0.95,
                 }}
@@ -178,8 +191,8 @@ const TeacherWeekBanner: React.FC = () => {
                 variant="body1"
                 sx={{
                   fontWeight: { xs: 500, md: 700 },
-                  fontSize: { xs: '0.95rem', md: '1.5rem' },
-                  mb: 3,
+                  fontSize: { xs: '0.9rem', sm: '1rem', md: '1.5rem' },
+                  mb: { xs: 2, md: 3 },
                   textShadow: { xs: '1px 1px 3px rgba(0, 0, 0, 0.3)', md: '2px 2px 8px rgba(0, 0, 0, 0.6)' },
                   opacity: 0.95,
                 }}
@@ -189,31 +202,37 @@ const TeacherWeekBanner: React.FC = () => {
             </Fragment>
           )}
 
-          <Button
-            variant="contained"
-            size="medium"
-            component={Link}
-            to="/lista-materias-visita"
-            sx={{
-              bgcolor: 'white',
-              color: '#0073E6',
-              fontWeight: 'bold',
-              px: { xs: 3, md: 4 },
-              py: { xs: 1, md: 1.5 },
-              fontSize: { xs: '0.85rem', md: '1rem' },
-              borderRadius: 2,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.95)',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
-              },
-              transition: 'all 0.3s ease',
-              minWidth: { xs: '120px', md: '140px' },
-            }}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            Saber mais
-          </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              component={Link}
+              to="/lista-materias-visita"
+              sx={{
+                bgcolor: 'white',
+                color: '#1976d2',
+                fontWeight: 700,
+                px: { xs: 2.5, sm: 3, md: 5 },
+                py: { xs: 1, sm: 1.25, md: 2 },
+                fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1.1rem' },
+                borderRadius: 2,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.95)',
+                  transform: { xs: 'none', md: 'translateY(-3px)' },
+                  boxShadow: { xs: '0 4px 16px rgba(0,0,0,0.2)', md: '0 8px 24px rgba(0,0,0,0.35)' },
+                },
+                transition: 'all 0.3s ease',
+                minWidth: { xs: '120px', sm: '140px', md: '160px' },
+              }}
+            >
+              Saber mais
+            </Button>
+          </motion.div>
         </Box>
       </Paper>
     </motion.div>

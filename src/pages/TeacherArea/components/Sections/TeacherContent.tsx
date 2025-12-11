@@ -22,87 +22,131 @@ const TeacherContent: React.FC<TeacherContentProps> = ({ userName }) => {
 
   return (
     <Box>
-      <Box
-        textAlign="center"
-        mb={5}
-        sx={{
-          p: { xs: 3, md: 4 },
-          borderRadius: 3,
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(10px)',
-          border: '2px solid #2196f320',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
       >
         <Box
+          textAlign="center"
+          mb={{ xs: 3, md: 5 }}
           sx={{
-            position: 'absolute',
-            top: -20,
-            right: -20,
-            width: 100,
-            height: 100,
-            background: 'rgba(33, 150, 243, 0.05)',
-            borderRadius: '50%',
-            zIndex: 0,
+            p: { xs: 2, sm: 3, md: 5 },
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.9) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid rgba(33, 150, 243, 0.2)',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 8px 32px rgba(33, 150, 243, 0.1)',
           }}
-        />
-
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            gutterBottom
+        >
+          <Box
             sx={{
-              fontSize: { xs: '1.4rem', md: '1.8rem' },
-              color: 'primary.main',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '0.5px',
-              mb: 2,
+              position: 'absolute',
+              top: -30,
+              right: -30,
+              width: 150,
+              height: 150,
+              background: 'radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%)',
+              borderRadius: '50%',
+              zIndex: 0,
             }}
-          >
-            👋 Olá, {userName || 'Professor'}!
-          </Typography>
-
-          <Typography
-            variant="h6"
-            color="text.primary"
+          />
+          <Box
             sx={{
-              maxWidth: '900px',
-              mx: 'auto',
-              fontSize: { xs: '1.1rem', md: '1.3rem' },
-              lineHeight: { xs: 1.6, md: 1.7 },
-              fontWeight: 500,
-              textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-              letterSpacing: '0.3px',
-              mb: 1,
+              position: 'absolute',
+              bottom: -20,
+              left: -20,
+              width: 120,
+              height: 120,
+              background: 'radial-gradient(circle, rgba(76, 175, 80, 0.08) 0%, transparent 70%)',
+              borderRadius: '50%',
+              zIndex: 0,
             }}
-          >
-            Bem-vindo ao site do Abrigo onde consegue encontrar materiais, ideias e recursos para enriquecer suas aulas!
-          </Typography>
+          />
 
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{
-              maxWidth: '800px',
-              mx: 'auto',
-              fontSize: { xs: '1rem', md: '1.1rem' },
-              lineHeight: { xs: 1.5, md: 1.6 },
-              fontWeight: 400,
-              letterSpacing: '0.2px',
-            }}
-          >
-            Tudo atualizado semanalmente e alinhado ao calendário bíblico para sua missão evangelística! ✨
-          </Typography>
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Typography
+                variant="h3"
+                fontWeight={900}
+                gutterBottom
+                sx={{
+                  fontSize: { xs: '1.3rem', sm: '1.5rem', md: '2.2rem' },
+                  background: 'linear-gradient(135deg, #2196f3 0%, #42a5f5 50%, #1976d2 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  letterSpacing: '-0.5px',
+                  mb: { xs: 1.5, md: 2.5 },
+                }}
+              >
+                Olá, {userName || 'Professor'}!
+              </Typography>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Typography
+                variant="h6"
+                color="text.primary"
+                sx={{
+                  maxWidth: '900px',
+                  mx: 'auto',
+                  fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.4rem' },
+                  lineHeight: { xs: 1.5, md: 1.8 },
+                  fontWeight: 600,
+                  letterSpacing: '0.2px',
+                  mb: { xs: 1.5, md: 2 },
+                }}
+              >
+                Bem-vindo ao site do Abrigo onde consegue encontrar materiais, ideias e recursos para enriquecer suas aulas!
+              </Typography>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  maxWidth: '800px',
+                  mx: 'auto',
+                  fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' },
+                  lineHeight: { xs: 1.5, md: 1.7 },
+                  fontWeight: 500,
+                  letterSpacing: '0.1px',
+                }}
+              >
+                Tudo atualizado semanalmente e alinhado ao calendário bíblico para sua missão evangelística!
+              </Typography>
+            </motion.div>
+          </Box>
         </Box>
-      </Box>
+      </motion.div>
 
-      <Grid container spacing={3} sx={{ mt: 4 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <Grid container spacing={3} sx={{ mt: 5 }}>
         {SECTION_DATA.map((section, idx) => {
           const IconComponent = section.icon === 'CheckCircle' ? CheckCircleIcon :
             section.icon === 'Info' ? InfoIcon : LightbulbIcon;
@@ -244,20 +288,52 @@ const TeacherContent: React.FC<TeacherContentProps> = ({ userName }) => {
             </Grid>
           );
         })}
-      </Grid>
+        </Grid>
+      </motion.div>
 
-      <Box mt={6}>
-        <DocumentsSection />
-      </Box>
-      <Box mt={6}>
-        <IdeasGallerySection />
-      </Box>
-      <Box mt={6}>
-        <TrainingVideosSection />
-      </Box>
-      <Box mt={6}>
-        <CommentsSection />
-      </Box>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <Box mt={8}>
+          <DocumentsSection />
+        </Box>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
+        <Box mt={8}>
+          <IdeasGallerySection />
+        </Box>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <Box mt={8}>
+          <TrainingVideosSection />
+        </Box>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <Box mt={8} mb={4}>
+          <CommentsSection />
+        </Box>
+      </motion.div>
     </Box>
   );
 };
