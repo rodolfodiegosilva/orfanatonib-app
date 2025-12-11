@@ -25,8 +25,20 @@ export default function ShelteredBrowserPage() {
   const isAdmin = useSelector(selectIsAdmin);
   const isLeader = useSelector(selectIsLeader);
   const isTeacher = useSelector(selectIsTeacher);
+  const user = useSelector((state: RootState) => state.auth.user);
   // O endpoint filtra automaticamente por role, então qualquer um desses roles pode acessar
   const canAccess = isAdmin || isLeader || isTeacher;
+
+  // Obter nome do abrigo do Redux
+  const shelterName = React.useMemo(() => {
+    if (isTeacher && user?.teacherProfile?.shelter?.name) {
+      return user.teacherProfile.shelter.name;
+    }
+    if (isLeader && user?.leaderProfile?.team?.shelter?.name) {
+      return user.leaderProfile.team.shelter.name;
+    }
+    return null;
+  }, [isTeacher, isLeader, user]);
 
   const {
     q,
@@ -184,36 +196,53 @@ export default function ShelteredBrowserPage() {
             </Tooltip>
           )}
 
-          <Typography
-            component="h1"
-            variant="h5"
-            fontWeight={900}
-            sx={{ color: "#2c3e50", fontSize: { xs: "1.25rem", md: "1.75rem" } }}
-          >
-            Área dos abrigados
-          </Typography>
-
-          {canAccess && (
+          <Box>
             <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ display: { xs: "none", md: "block" } }}
+              component="h1"
+              variant="h5"
+              fontWeight={900}
+              sx={{ color: "#2c3e50", fontSize: { xs: "1.25rem", md: "1.75rem" } }}
             >
-              Toque em um abrigado para abrir suas pagelas
+              Área dos abrigados
             </Typography>
-          )}
+            {canAccess && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ display: { xs: "none", md: "block" }, mt: 0.5 }}
+              >
+                Toque em um abrigado para abrir suas pagelas
+              </Typography>
+            )}
+          </Box>
         </Box>
 
-        {canAccess && isAdmin && (
-          <Button
-            onClick={openCreate}
-            startIcon={<PersonAdd />}
-            variant="contained"
-            sx={{ display: { xs: "none", md: "inline-flex" } }}
-          >
-            Adicionar abrigado
-          </Button>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+          {shelterName && (
+            <Typography
+              variant="body1"
+              fontWeight={600}
+              sx={{ 
+                fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem" },
+                color: "primary.main",
+                textAlign: "right",
+                display: { xs: "none", sm: "block" }
+              }}
+            >
+              Abrigados do Abrigo {shelterName}
+            </Typography>
+          )}
+          {canAccess && isAdmin && (
+            <Button
+              onClick={openCreate}
+              startIcon={<PersonAdd />}
+              variant="contained"
+              sx={{ display: { xs: "none", md: "inline-flex" } }}
+            >
+              Adicionar abrigado
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {canAccess && isAdmin && (

@@ -51,24 +51,39 @@ export default function ShelteredFormDialog({
     }
   }, [value, isTeacher, teacherShelterId]);
 
+  // Usar dados do Redux ao invés de chamar API
   React.useEffect(() => {
-    if (!isTeacher) return;
-    if (shelterOptions.length > 0) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoadingShelterDetail(true);
-        setShelterDetailErr("");
-        const items = await apiFetchSheltersList();
-        if (!cancelled) setShelterOptions(Array.isArray(items) ? items : []);
-      } catch (e: any) {
-        if (!cancelled) setShelterDetailErr(e?.response?.data?.message || e?.message || "Falha ao carregar shelters");
-      } finally {
-        if (!cancelled) setLoadingShelterDetail(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [isTeacher]);
+    // Só executar quando o dialog estiver aberto
+    if (!open) return;
+    
+    // Se for teacher, usar o abrigo do Redux
+    if (isTeacher && teacherShelter) {
+      setShelterOptions([{
+        id: teacherShelter.id,
+        detalhe: teacherShelter.name || "",
+        leader: false,
+      }]);
+      return;
+    }
+    
+    // Se não for teacher e ainda não tiver opções, buscar da API
+    if (!isTeacher && shelterOptions.length === 0) {
+      let cancelled = false;
+      (async () => {
+        try {
+          setLoadingShelterDetail(true);
+          setShelterDetailErr("");
+          const items = await apiFetchSheltersList();
+          if (!cancelled) setShelterOptions(Array.isArray(items) ? items : []);
+        } catch (e: any) {
+          if (!cancelled) setShelterDetailErr(e?.response?.data?.message || e?.message || "Falha ao carregar shelters");
+        } finally {
+          if (!cancelled) setLoadingShelterDetail(false);
+        }
+      })();
+      return () => { cancelled = true; };
+    }
+  }, [open, isTeacher, teacherShelter, shelterOptions.length]);
 
   const selectedShelterDetail = React.useMemo(() => {
     if (!effectiveShelterId) return null;

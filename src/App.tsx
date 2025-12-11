@@ -127,7 +127,7 @@ function App() {
                 <Route path="/compartilhar-ideia" element={<IdeasSectionPage />} />
               </Route>
 
-              <Route element={<ProtectedRoute requiredRole={[UserRole.ADMIN, UserRole.COORDINATOR]} />}>
+              <Route element={<ProtectedRoute requiredRole={[UserRole.ADMIN, UserRole.LEADER]} />}>
                 <Route path="/adm" element={<AdminLayout />}>
                   <Route index element={<AdminDashboardPage />} />
                   <Route path="meditacoes" element={<MeditationManager />} />

@@ -19,7 +19,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const isAdmin = isAuthenticated && user?.role === UserRole.ADMIN;
   const isTeacher = isAuthenticated && user?.role === UserRole.TEACHER;
-  const isLeader = isAuthenticated && user?.role === UserRole.COORDINATOR;
+  const isLeader = isAuthenticated && user?.role === UserRole.LEADER;
 
   const handleClick = () => closeMenu?.();
 

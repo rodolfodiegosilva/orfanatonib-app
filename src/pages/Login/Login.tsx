@@ -79,7 +79,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       const isAdminOrCoordinator =
-        user.role === UserRole.ADMIN || user.role === UserRole.COORDINATOR;
+        user.role === UserRole.ADMIN || user.role === UserRole.LEADER;
 
       const redirectPath = isAdminOrCoordinator ? '/adm' : '/area-do-professor';
       navigate(redirectPath);

@@ -9,7 +9,7 @@ export function roleChipColor(role?: string) {
   switch (role) {
     case "ADMIN":
       return "secondary";
-    case "COORDINATOR":
+    case "LEADER":
       return "primary";
     case "TEACHER":
       return "success";

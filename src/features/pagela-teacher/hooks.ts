@@ -42,6 +42,8 @@ export function useShelteredBrowser() {
   const prevDebouncedQRef = React.useRef<string>("");
   const prevAcceptedJesusRef = React.useRef<"all" | "accepted" | "not_accepted">("all");
   const prevActiveRef = React.useRef<"all" | "active" | "inactive">("all");
+  const prevPageRef = React.useRef<number>(1);
+  const isInitialMount = React.useRef<boolean>(true);
 
   const search = useCallback(async (
     searchTerm: string, 
@@ -71,37 +73,39 @@ export function useShelteredBrowser() {
     }
   }, [limit]);
 
-  // Inicializar na primeira renderização
+  // Buscar quando termo de busca, filtro ou página mudar
   useEffect(() => {
-    search("", 1, "all", "all");
-    prevDebouncedQRef.current = "";
-    prevAcceptedJesusRef.current = "all";
-    prevActiveRef.current = "all";
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Resetar página quando busca ou filtro mudar
-  useEffect(() => {
-    if (
+    const filtersChanged = 
       prevDebouncedQRef.current !== debouncedQ || 
       prevAcceptedJesusRef.current !== acceptedJesus ||
-      prevActiveRef.current !== active
-    ) {
+      prevActiveRef.current !== active;
+    const pageChanged = prevPageRef.current !== page;
+
+    // Na primeira montagem, buscar apenas uma vez
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevDebouncedQRef.current = debouncedQ;
+      prevAcceptedJesusRef.current = acceptedJesus;
+      prevActiveRef.current = active;
+      prevPageRef.current = page;
+      search(debouncedQ, page, acceptedJesus, active);
+      return;
+    }
+
+    // Se os filtros mudaram, resetar página e buscar
+    if (filtersChanged) {
       setPage(1);
       prevDebouncedQRef.current = debouncedQ;
       prevAcceptedJesusRef.current = acceptedJesus;
       prevActiveRef.current = active;
+      prevPageRef.current = 1;
+      search(debouncedQ, 1, acceptedJesus, active);
+    } else if (pageChanged) {
+      // Se apenas a página mudou, buscar na nova página
+      prevPageRef.current = page;
+      search(debouncedQ, page, acceptedJesus, active);
     }
-  }, [debouncedQ, acceptedJesus, active]);
-
-  // Buscar quando termo de busca, filtro ou página mudar
-  useEffect(() => {
-    const currentPage = (
-      prevDebouncedQRef.current !== debouncedQ || 
-      prevAcceptedJesusRef.current !== acceptedJesus ||
-      prevActiveRef.current !== active
-    ) ? 1 : page;
-    search(debouncedQ, currentPage, acceptedJesus, active);
-  }, [debouncedQ, acceptedJesus, active, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedQ, acceptedJesus, active, page, search]);
 
   const onChangeQ = (v: string) => {
     setQ(v);

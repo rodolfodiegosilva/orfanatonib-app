@@ -20,6 +20,6 @@ export const selectIsTeacher = createSelector(
 
 export const selectIsLeader = createSelector(
   [(state: RootState) => state.auth],
-  (auth) => auth.isAuthenticated && auth.user?.role === UserRole.COORDINATOR
+  (auth) => auth.isAuthenticated && auth.user?.role === UserRole.LEADER
 );
 

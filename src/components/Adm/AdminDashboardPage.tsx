@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const role = user?.role;
   const isAdmin = !!isAuthenticated && role === UserRole.ADMIN;
-  const isLeader = !!isAuthenticated && role === UserRole.COORDINATOR;
+  const isLeader = !!isAuthenticated && role === UserRole.LEADER;
   const isSimpleMode = isLeader && !isAdmin;
 
   const [query, setQuery] = React.useState("");

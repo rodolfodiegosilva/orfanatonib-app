@@ -19,7 +19,7 @@ type Props = {
 };
 
 const roleLabels: Record<UserRole, string> = {
-  [UserRole.COORDINATOR]: "Líder",
+  [UserRole.LEADER]: "Líder",
   [UserRole.TEACHER]: "Professor",
   [UserRole.ADMIN]: "Administrador",
 };
@@ -29,7 +29,7 @@ export default function UserEditDialog({
 }: Props) {
   if (!value) return null;
 
-  const roleOptions = [UserRole.COORDINATOR, UserRole.TEACHER];
+  const roleOptions = [UserRole.LEADER, UserRole.TEACHER];
 
   const editingPassword = !!value.editPassword;
   const senhaInvalida =

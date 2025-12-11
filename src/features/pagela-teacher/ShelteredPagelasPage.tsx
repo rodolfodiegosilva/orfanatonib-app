@@ -19,7 +19,8 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { ArrowBack, FamilyRestroom, Phone, Add } from "@mui/icons-material";
-import { useShelteredBrowser, useShelteredPagelas } from "./hooks";
+import { useShelteredPagelas } from "./hooks";
+import { apiFetchSheltered } from "../sheltered/api";
 import PagelaList from "./components/PagelaList";
 import PagelaQuickForm from "./components/PagelaQuickForm";
 import type { ShelteredSimpleResponseDto } from "../sheltered/types";
@@ -62,13 +63,39 @@ export default function ShelteredPagelasPage() {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { byId, loading: loadingShelteredren, error: cError, setError: setCErr, onChangeQ } =
-    useShelteredBrowser();
-  React.useEffect(() => {
-    if (!loc.state?.sheltered && !byId.get(shelteredId)) onChangeQ("");
-  }, [shelteredId]);
+  const [sheltered, setSheltered] = React.useState<ShelteredSimpleResponseDto | null>(
+    loc.state?.sheltered || null
+  );
+  const [loadingShelteredren, setLoadingShelteredren] = React.useState(false);
+  const [cError, setCErr] = React.useState("");
 
-  const sheltered = loc.state?.sheltered || byId.get(shelteredId) || null;
+  // Buscar abrigado apenas se não vier no state e tiver shelteredId
+  React.useEffect(() => {
+    if (!loc.state?.sheltered && shelteredId) {
+      setLoadingShelteredren(true);
+      setCErr("");
+      apiFetchSheltered(shelteredId)
+        .then((data) => {
+          // Converter ShelteredResponseDto para ShelteredSimpleResponseDto
+          setSheltered({
+            id: data.id,
+            name: data.name,
+            guardianName: data.guardianName || null,
+            gender: data.gender,
+            guardianPhone: data.guardianPhone || null,
+            shelterId: data.shelter?.id || null,
+            active: data.active,
+            acceptedChrists: data.acceptedChrists || [],
+          });
+        })
+        .catch((err: any) => {
+          setCErr(err?.response?.data?.message || err.message || "Erro ao carregar abrigado");
+        })
+        .finally(() => {
+          setLoadingShelteredren(false);
+        });
+    }
+  }, [shelteredId, loc.state?.sheltered]);
   const colors = React.useMemo(
     () => genderPastel(sheltered?.name || shelteredId, (sheltered as any)?.gender),
     [sheltered, shelteredId]

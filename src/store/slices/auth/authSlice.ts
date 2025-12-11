@@ -3,19 +3,20 @@ import apiAxios from '@/config/axiosConfig';
 
 export enum UserRole {
   ADMIN = 'admin',
-  COORDINATOR = 'leader',
+  LEADER = 'leader',
   TEACHER = 'teacher',
 }
 
 interface ShelterLite {
   id: string;
-  number: number;
-  weekday: string;
+  name: string;
+  number?: number;
 }
 
 interface TeacherProfileLite {
   id: string;
   active: boolean;
+  shelter?: ShelterLite | null;
   team: {
     id: string;
     name: string;
