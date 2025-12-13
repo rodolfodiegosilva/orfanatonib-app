@@ -103,7 +103,6 @@ export function IdeasMaterialPageCreator({ fromTemplatePage }: PageCreatorProps)
   };
 
   const handleSavePage = async () => {
-    // Marcar todos os campos como touched ao tentar salvar
     setTouched({ title: true, description: true });
     
     if (Object.values(errors).some(Boolean)) {

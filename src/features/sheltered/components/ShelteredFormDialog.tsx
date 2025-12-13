@@ -51,12 +51,9 @@ export default function ShelteredFormDialog({
     }
   }, [value, isTeacher, teacherShelterId]);
 
-  // Usar dados do Redux ao invés de chamar API
   React.useEffect(() => {
-    // Só executar quando o dialog estiver aberto
     if (!open) return;
     
-    // Se for teacher, usar o abrigo do Redux
     if (isTeacher && teacherShelter) {
       setShelterOptions([{
         id: teacherShelter.id,
@@ -66,7 +63,6 @@ export default function ShelteredFormDialog({
       return;
     }
     
-    // Se não for teacher e ainda não tiver opções, buscar da API
     if (!isTeacher && shelterOptions.length === 0) {
       let cancelled = false;
       (async () => {

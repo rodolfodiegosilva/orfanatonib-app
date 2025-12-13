@@ -359,10 +359,10 @@ function AdminLayout() {
         sx={{
           flexGrow: 1,
           width: "100%",
-          px: { xs: 0, md: 4 }, // Sem padding lateral no mobile
-          pt: { xs: 2, md: 6 }, // 16px padding-top no mobile
+          px: { xs: 0, md: 4 },
+          pt: { xs: 2, md: 6 },
           pb: { xs: "var(--app-footer-h)", md: "var(--app-footer-h)" },
-          mt: 0, // Remove margin-top no mobile
+          mt: 0,
           bgcolor: "#f5f7fa",
           minHeight: `calc(100vh - var(--app-header-h))`,
         }}

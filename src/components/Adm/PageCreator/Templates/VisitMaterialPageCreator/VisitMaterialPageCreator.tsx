@@ -133,7 +133,6 @@ export default function VisitMaterialPageCreator({
   }, [fromTemplatePage, visitMaterialSData]);
 
   const handleSavePage = async () => {
-    // Marcar todos os campos como touched ao tentar salvar
     setTouched({ title: true, subtitle: true, description: true });
     
     const hasError = !pageTitle || !pageSubtitle || !pageDescription;

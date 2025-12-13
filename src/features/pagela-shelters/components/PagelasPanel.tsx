@@ -56,7 +56,6 @@ export function PagelasPanel({
   const [search, setSearch] = useState("");
   const dq = useDebounced(search);
 
-  // Chama a API quando o debounced search muda
   useEffect(() => {
     if (onSearchChange) {
       onSearchChange(dq);

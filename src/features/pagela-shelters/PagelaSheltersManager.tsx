@@ -42,12 +42,10 @@ export default function PagelaSheltersManager() {
   const user = useSelector((state: RootState) => state.auth.user);
   const isLeader = user?.role === UserRole.LEADER && user?.leaderProfile;
   
-  // Se for líder, renderiza versão específica
   if (isLeader) {
     return <PagelaSheltersManagerForLeader />;
   }
 
-  // Versão original para admin
   return <PagelaSheltersManagerForAdmin />;
 }
 
@@ -61,7 +59,6 @@ function PagelaSheltersManagerForLeader() {
   const [loadingShelters, setLoadingShelters] = useState(true);
   const [selectedShelterId, setSelectedShelterId] = useState<string | null>(null);
   
-  // Buscar abrigos do líder
   useEffect(() => {
     const fetchLeaderShelters = async () => {
       try {
@@ -69,12 +66,11 @@ function PagelaSheltersManagerForLeader() {
         const sheltersData = await apiGetMyShelters();
         setLeaderShelters(sheltersData);
         
-        // Se tiver abrigos, seleciona o primeiro automaticamente
         if (sheltersData.length > 0) {
           setSelectedShelterId(sheltersData[0].id);
         }
       } catch (error) {
-        console.error('Erro ao buscar abrigos do líder:', error);
+        console.error('Error fetching leader shelters:', error);
       } finally {
         setLoadingShelters(false);
       }
@@ -241,7 +237,6 @@ function PagelaSheltersManagerForLeader() {
           <BackHeader title="📋 Gerenciar Pagelas" />
         </motion.div>
 
-        {/* Seletor de Abrigo (se tiver mais de 1) */}
         {leaderShelters.length > 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

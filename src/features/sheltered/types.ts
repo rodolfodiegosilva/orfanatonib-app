@@ -48,7 +48,7 @@ export type ShelteredSimpleResponseDto = {
   gender: "M" | "F";
   guardianPhone: string | null;
   shelterId: string | null;
-  active: boolean; // Status ativo/inativo
+  active: boolean;
   acceptedChrists: AcceptedChristShortDto[];
 };
 
@@ -70,7 +70,6 @@ export type Paginated<T> = {
 };
 
 export type ShelteredFilters = {
-  // Filtros agrupados (novos)
   shelteredSearchingString?: string;
   shelterSearchingString?: string;
   addressFilter?: string;
@@ -79,7 +78,6 @@ export type ShelteredFilters = {
   birthDateTo?: string;
   joinedFrom?: string;
   joinedTo?: string;
-  // Filtros legados (compatibilidade)
   searchString?: string;
   shelterId?: string;
   shelterName?: string;

@@ -85,7 +85,7 @@ const SiteFeedbackForm: React.FC = () => {
 
         } catch (error) {
             setErrorMessage('Erro ao enviar feedback. Tente novamente.');
-            console.error('Erro ao enviar feedback:', error);
+            console.error('Error sending feedback:', error);
         }
     };
 

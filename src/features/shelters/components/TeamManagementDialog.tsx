@@ -49,9 +49,9 @@ import TextField from "@mui/material/TextField";
 type Props = {
   open: boolean;
   shelter?: ShelterResponseDto | null;
-  shelterId?: string; // Permite passar apenas o ID do abrigo
-  teacherId?: string; // ID do professor (para adicionar ao abrigo se necessário)
-  leaderId?: string; // ID do líder (para adicionar ao abrigo se necessário)
+  shelterId?: string;
+  teacherId?: string;
+  leaderId?: string;
   onClose: () => void;
   onSuccess?: () => void;
 };
@@ -78,7 +78,6 @@ export default function TeamManagementDialog({
   const [shelterOptions, setShelterOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [selectedShelterId, setSelectedShelterId] = useState<string | null>(shelterId || null);
   
-  // Estados para modais
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [newTeamNumber, setNewTeamNumber] = useState<number>(1);
   const [showAddLeaderDialog, setShowAddLeaderDialog] = useState(false);
@@ -90,7 +89,6 @@ export default function TeamManagementDialog({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<string | null>(null);
 
-  // Carregar abrigo se apenas o ID foi fornecido
   const loadShelter = async () => {
     const currentShelterId = selectedShelterId || shelterId;
     if (currentShelterId && !shelter) {
@@ -106,7 +104,6 @@ export default function TeamManagementDialog({
     }
   };
 
-  // Carregar equipes do abrigo
   const loadTeams = async () => {
     const currentShelterId = shelter?.id || selectedShelterId || shelterId;
     if (!currentShelterId) return;
@@ -122,7 +119,6 @@ export default function TeamManagementDialog({
     }
   };
 
-  // Adicionar professor/líder ao abrigo selecionado
   const handleAddToShelter = async (shelterIdToAdd: string) => {
     if (!shelterIdToAdd) return;
     
@@ -130,15 +126,11 @@ export default function TeamManagementDialog({
     setError("");
     try {
       if (teacherId) {
-        // Para professores, precisamos do shelterId e numberTeam (obrigatórios)
-        // Buscar o abrigo para obter as equipes ou usar equipe 1 como padrão
         const currentShelter = shelter || await apiFetchShelter(shelterIdToAdd);
         const teamsCount = currentShelter?.teams?.length || 0;
         const numberTeam = teamsCount > 0 ? currentShelter.teams[0].numberTeam : 1;
         await apiManageTeacherTeam(teacherId, { shelterId: shelterIdToAdd, numberTeam });
       } else if (leaderId) {
-        // Para líderes, precisamos do shelterId e numberTeam (obrigatórios)
-        // Buscar o abrigo para obter as equipes ou usar equipe 1 como padrão
         const currentShelter = shelter || await apiFetchShelter(shelterIdToAdd);
         const teamsCount = currentShelter?.teams?.length || 0;
         const numberTeam = teamsCount > 0 ? currentShelter.teams[0].numberTeam : 1;
@@ -147,8 +139,6 @@ export default function TeamManagementDialog({
       setSelectedShelterId(shelterIdToAdd);
       await loadShelter();
       await loadTeams();
-      // Não chamar handleSuccess aqui para não fechar o modal
-      // handleSuccess será chamado apenas quando necessário (ex: após criar/editar equipe)
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || "Erro ao vincular");
     } finally {
@@ -156,7 +146,6 @@ export default function TeamManagementDialog({
     }
   };
 
-  // Carregar opções de líderes e professores
   const loadOptions = async () => {
     try {
       const [leaders, teachers] = await Promise.all([
@@ -170,13 +159,12 @@ export default function TeamManagementDialog({
     }
   };
 
-  // Carregar lista de abrigos
   const loadShelterOptions = async () => {
     try {
       const data = await apiFetchSheltersSimple();
       setShelterOptions(data?.map(s => ({ id: s.id, name: s.name })) || []);
     } catch (err) {
-      console.error("Erro ao carregar abrigos:", err);
+      console.error("Error loading shelters:", err);
     }
   };
 
@@ -192,14 +180,12 @@ export default function TeamManagementDialog({
         loadTeams();
         loadOptions();
       } else {
-        // Se não há shelterId, carregar opções de abrigos
         loadShelterOptions();
         loadOptions();
       }
     }
-  }, [open, shelter?.id, shelterId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, shelter?.id, shelterId]);
 
-  // Quando selecionar um abrigo, carregar suas equipes
   useEffect(() => {
     if (selectedShelterId && selectedShelterId !== shelterId) {
       setShelter(null);
@@ -207,9 +193,8 @@ export default function TeamManagementDialog({
         loadTeams();
       });
     }
-  }, [selectedShelterId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedShelterId]);
 
-  // Atualizar shelter quando prop mudar
   useEffect(() => {
     if (shelterProp) {
       setShelter(shelterProp);
@@ -234,7 +219,6 @@ export default function TeamManagementDialog({
       setError("Selecione um abrigo primeiro");
       return;
     }
-    // Definir o próximo número disponível
     const maxNumber = teams.length > 0 ? Math.max(...teams.map(t => t.numberTeam || 0)) : 0;
     setNewTeamNumber(maxNumber + 1);
     setShowCreateTeamDialog(true);
@@ -252,7 +236,6 @@ export default function TeamManagementDialog({
       return;
     }
 
-    // Validar se o número já existe
     if (teams.some(t => t.numberTeam === newTeamNumber)) {
       setError("Já existe uma equipe com este número");
       return;
@@ -326,7 +309,6 @@ export default function TeamManagementDialog({
       return;
     }
 
-    // Buscar a equipe selecionada para obter o numberTeam
     const selectedTeam = teams.find((t) => t.id === selectedTeamForLeader);
     if (!selectedTeam) {
       setError("Equipe não encontrada");
@@ -336,7 +318,6 @@ export default function TeamManagementDialog({
     setLoading(true);
     setError("");
     try {
-      // Usar API simplificada de líderes - precisa de shelterId e numberTeam
       await apiManageLeaderTeam(selectedLeaderId, { 
         shelterId: currentShelterId, 
         numberTeam: selectedTeam.numberTeam 
@@ -353,8 +334,6 @@ export default function TeamManagementDialog({
   };
 
   const handleRemoveLeader = async (teamId: string, leaderId: string) => {
-    // Com a simplificação da API, não há mais como remover diretamente
-    // O líder deve ser movido para outra equipe/abrigo
     setError("Para remover um líder, vincule-o a outra equipe ou abrigo usando a opção de editar.");
   };
 
@@ -385,7 +364,6 @@ export default function TeamManagementDialog({
       return;
     }
 
-    // Buscar a equipe selecionada para obter o numberTeam
     const selectedTeam = teams.find((t) => t.id === selectedTeamForTeacher);
     if (!selectedTeam) {
       setError("Equipe não encontrada");
@@ -395,7 +373,6 @@ export default function TeamManagementDialog({
     setLoading(true);
     setError("");
     try {
-      // Usar API simplificada de professores - precisa de shelterId e numberTeam
       await apiManageTeacherTeam(selectedTeacherId, { 
         shelterId: currentShelterId, 
         numberTeam: selectedTeam.numberTeam 
@@ -412,12 +389,9 @@ export default function TeamManagementDialog({
   };
 
   const handleRemoveTeacher = async (teamId: string, teacherId: string) => {
-    // Com a simplificação da API, não há mais como remover diretamente
-    // O professor deve ser movido para outra equipe/abrigo
     setError("Para remover um professor, vincule-o a outra equipe ou abrigo usando a opção de editar.");
   };
 
-  // Agregar todos os líderes e professores de todas as equipes
   const allLeaders = teams.flatMap((t) => t.leaders);
   const allTeachers = teams.flatMap((t) => t.teachers);
 
@@ -539,7 +513,6 @@ export default function TeamManagementDialog({
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
                         {team.leaders.map((leader) => {
-                          // Buscar nome do líder nas opções carregadas se não estiver no objeto
                           const leaderFromOptions = leaderOptions.find(l => l.leaderProfileId === leader.id);
                           const leaderName = leader.user?.name 
                             || leader.user?.email 
@@ -572,7 +545,6 @@ export default function TeamManagementDialog({
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
                         {team.teachers.map((teacher) => {
-                          // Buscar nome do professor nas opções carregadas se não estiver no objeto
                           const teacherFromOptions = teacherOptions.find(t => t.teacherProfileId === teacher.id);
                           const teacherName = teacher.user?.name 
                             || teacher.user?.email 

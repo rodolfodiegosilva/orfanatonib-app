@@ -47,7 +47,7 @@ export default function ShelterPageView({ idToFetch }: ShelterPageViewProps) {
         const data = await apiFetchShelter(idToFetch);
         setShelter(data);
       } catch (err: any) {
-        console.error('Erro ao carregar abrigo:', err);
+        console.error('Error loading shelter:', err);
         setError(err?.response?.data?.message || 'Erro ao carregar o abrigo. Tente novamente mais tarde.');
       } finally {
         setLoading(false);
@@ -59,8 +59,6 @@ export default function ShelterPageView({ idToFetch }: ShelterPageViewProps) {
     }
   }, [idToFetch]);
 
-  // ⚠️ IMPORTANTE: Todos os hooks devem ser chamados ANTES de qualquer early return
-  // Remover líderes duplicados (um líder pode estar em múltiplas equipes)
   const uniqueLeaders = useMemo(() => {
     if (!shelter?.leaders || shelter.leaders.length === 0) return [];
     const leadersMap = new Map<string, (typeof shelter.leaders)[0]>();
@@ -72,7 +70,6 @@ export default function ShelterPageView({ idToFetch }: ShelterPageViewProps) {
     return Array.from(leadersMap.values());
   }, [shelter?.leaders]);
 
-  // Remover professores duplicados (um professor só pode estar em uma equipe, mas por segurança)
   const uniqueTeachers = useMemo(() => {
     if (!shelter?.teachers || shelter.teachers.length === 0) return [];
     const teachersMap = new Map<string, (typeof shelter.teachers)[0]>();

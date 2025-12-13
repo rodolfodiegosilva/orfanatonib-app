@@ -96,7 +96,6 @@ export default function ImageSectionPage() {
   }, [sectionData]);
 
   const saveSection = async (formData: FormData) => {
-    // Sempre cria nova seção (modo criação)
     await api.post('/image-sections', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
@@ -121,7 +120,7 @@ export default function ImageSectionPage() {
 
       navigate('/area-do-professor');
     } catch (error) {
-      console.error('Erro ao salvar a seção:', error);
+      console.error('Error saving section:', error);
       showError('Falha ao compartilhar as imagens do seu Abrigo. Tente novamente.');
     } finally {
       setIsSaving(false);

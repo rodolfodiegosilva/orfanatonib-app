@@ -1,4 +1,3 @@
-// Função utilitária para extrair apenas dígitos de um telefone
 export function justDigits(phone?: string | number | null) {
   return phone ? String(phone).replace(/\D/g, "") : "";
 }

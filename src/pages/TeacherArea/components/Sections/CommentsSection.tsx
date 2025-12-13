@@ -65,12 +65,11 @@ const CommentsSection: React.FC = () => {
       const response = await api.get('/comments/published');
       dispatch(setComments(response.data));
     } catch (error) {
-      console.error('Erro ao buscar comentários:', error);
+      console.error('Error fetching comments:', error);
     }
   }, [dispatch]);
 
   useEffect(() => {
-    // Só buscar comentários se ainda não estiverem carregados
     if (rawComments !== null) return;
     fetchComments();
   }, [fetchComments, rawComments]);
@@ -94,7 +93,7 @@ const CommentsSection: React.FC = () => {
       setSuccessSnackbarOpen(true);
       await fetchComments();
     } catch (error) {
-      console.error('Erro ao enviar comentário:', error);
+      console.error('Error sending comment:', error);
     } finally {
       setIsSubmitting(false);
     }

@@ -54,7 +54,6 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
     severity: 'success' as 'success' | 'error',
   });
 
-  // Carregar páginas disponíveis
   useEffect(() => {
     const loadPages = async () => {
       setPagesLoading(true);
@@ -62,7 +61,7 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
         const res = await api.get('/ideas-pages');
         setPages(res.data || []);
       } catch (error) {
-        console.error('Erro ao carregar páginas:', error);
+        console.error('Error loading pages:', error);
         setSnackbar({
           open: true,
           message: 'Erro ao carregar páginas disponíveis',
@@ -111,15 +110,7 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
 
       const mediaTypeCounters = { video: 0, document: 0, image: 0 };
 
-      const mediasPayload = sectionData.medias.map((media, index) => {
-        console.log(`🔍 Processando mídia ${index}:`, {
-          title: media.title,
-          mediaType: media.mediaType,
-          uploadType: media.uploadType,
-          hasFile: !!media.file,
-          hasUrl: !!media.url
-        });
-
+      const mediasPayload = sectionData.medias.map((media) => {
         const baseItem = {
           title: media.title,
           description: media.description,
@@ -130,12 +121,6 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
 
         if (media.uploadType === 'upload' && media.mediaType !== 'audio') {
           if (media.id && !media.file) {
-            console.log(`📋 Mídia existente mantida: ${media.title}`, {
-              id: media.id,
-              url: media.url,
-              originalName: media.originalName
-            });
-
             return {
               ...baseItem,
               id: media.id,
@@ -146,15 +131,13 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
           }
 
           if (!media.file) {
-            console.error(`❌ Mídia de upload "${media.title}" não tem arquivo!`);
-            throw new Error(`Mídia de upload "${media.title}" não tem arquivo associado`);
+            throw new Error(`Upload media "${media.title}" has no file associated`);
           }
 
           mediaTypeCounters[media.mediaType as keyof typeof mediaTypeCounters]++;
           const count = mediaTypeCounters[media.mediaType as keyof typeof mediaTypeCounters];
           const fieldKey = count === 1 ? `${media.mediaType}_upload` : `${media.mediaType}${count}_upload`;
 
-          console.log(`📁 Adicionando arquivo: ${fieldKey}`, media.file.name);
           formData.append(fieldKey, media.file);
 
           if (media.id) {
@@ -170,8 +153,6 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
         }
 
         if (media.uploadType === 'link' && media.url) {
-          console.log(`🔗 Link externo: ${media.title}`, media.url);
-
           if (media.id) {
             return {
               ...baseItem,
@@ -188,13 +169,6 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
           };
         }
 
-        console.warn(`⚠️ Mídia ignorada: ${media.title}`, {
-          uploadType: media.uploadType,
-          hasFile: !!media.file,
-          hasUrl: !!media.url,
-          mediaType: media.mediaType
-        });
-
         return baseItem;
       });
 
@@ -204,15 +178,6 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
         public: sectionData.public,
         medias: mediasPayload,
       };
-
-      console.log('📦 Payload final:', JSON.stringify(payloadData, null, 2));
-      console.log('📋 Medias payload:', mediasPayload.map(m => ({
-        title: m.title,
-        uploadType: m.uploadType,
-        hasFieldKey: !!(m as any).fieldKey,
-        fieldKey: (m as any).fieldKey,
-        hasUrl: !!(m as any).url
-      })));
 
       formData.append('sectionData', JSON.stringify(payloadData));
 
@@ -229,7 +194,7 @@ export function IdeasSectionAdminEditor({ existingSection }: IdeasSectionAdminEd
         navigate('/adm/ideias-compartilhadas');
       }, 2000);
     } catch (error) {
-      console.error('Erro ao salvar seção:', error);
+      console.error('Error saving section:', error);
       setSnackbar({
         open: true,
         message: 'Ops! Algo deu errado ao salvar a seção. Tente novamente.',

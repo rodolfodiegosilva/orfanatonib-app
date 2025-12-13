@@ -16,7 +16,6 @@ const VisitMaterialsBanner: React.FC = () => {
   
   if (!currentVisitRoute) return null;
 
-  // Função para determinar a parte do mês
   const getMonthPart = () => {
     const today = new Date();
     const dayOfMonth = today.getDate();

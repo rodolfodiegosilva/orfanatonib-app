@@ -11,7 +11,6 @@ interface AboutSectionProps {
 const AboutSection: React.FC<AboutSectionProps> = ({ section, index }) => {
   const theme = useTheme();
 
-  // Ícones para cada seção
   const getSectionIcon = (sectionId: string) => {
     switch (sectionId) {
       case 'quem-somos':
@@ -25,7 +24,6 @@ const AboutSection: React.FC<AboutSectionProps> = ({ section, index }) => {
     }
   };
 
-  // Gradientes para cada card
   const getCardGradient = (sectionId: string) => {
     switch (sectionId) {
       case 'quem-somos':

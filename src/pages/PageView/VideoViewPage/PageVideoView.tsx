@@ -36,7 +36,6 @@ export default function PageVideoView({ idToFetch }: VideoPageViewProps) {
   };
 
   const handleBack = () => {
-    console.log('handleBack called in PageVideoView');
     navigate(-1);
   };
 

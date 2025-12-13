@@ -299,7 +299,6 @@ export default function IdeasPageView({ idToFetch }: IdeasPageViewProps) {
   const isAdmin = isAuthenticated && user?.role === UserRole.ADMIN;
 
   const handleBack = () => {
-    console.log('handleBack called in IdeasPageView');
     navigate(-1);
   };
 

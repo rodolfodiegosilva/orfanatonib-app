@@ -184,7 +184,7 @@ export default function PageSectionView({ idToFetch, feed }: PageSectionProps) {
         setHasMore(data.page * data.limit < data.total);
       } catch (err: any) {
         if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
-          console.error('Erro ao carregar a seção:', err);
+          console.error('Error loading section:', err);
           setError('Erro ao carregar a seção. Tente novamente mais tarde.');
         }
       } finally {

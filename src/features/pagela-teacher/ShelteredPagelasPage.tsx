@@ -29,7 +29,6 @@ import type { Pagela } from "./types";
 function genderPastel(seed: string, gender?: string) {
   const g = (gender || "").toUpperCase();
   
-  // Cores distintivas para gêneros (mesmas cores do ShelteredCard)
   if (g === "F") {
     // Feminino: Tons de rosa/vermelho suave
     return {
@@ -69,14 +68,12 @@ export default function ShelteredPagelasPage() {
   const [loadingShelteredren, setLoadingShelteredren] = React.useState(false);
   const [cError, setCErr] = React.useState("");
 
-  // Buscar abrigado apenas se não vier no state e tiver shelteredId
   React.useEffect(() => {
     if (!loc.state?.sheltered && shelteredId) {
       setLoadingShelteredren(true);
       setCErr("");
       apiFetchSheltered(shelteredId)
         .then((data) => {
-          // Converter ShelteredResponseDto para ShelteredSimpleResponseDto
           setSheltered({
             id: data.id,
             name: data.name,
@@ -101,7 +98,6 @@ export default function ShelteredPagelasPage() {
     [sheltered, shelteredId]
   );
 
-  // Limite responsivo: 5 para mobile, 9 para desktop
   const limit = React.useMemo(() => (isXs ? 5 : 9), [isXs]);
   
   const { filters, list, actions } = useShelteredPagelas(shelteredId, { limit });

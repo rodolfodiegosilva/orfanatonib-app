@@ -100,7 +100,7 @@ export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: stri
     const token = state.auth.accessToken;
 
     if (!token || typeof token !== 'string' || token.trim() === '') {
-      log('[Auth] Nenhum token válido encontrado.');
+      log('[Auth] No valid token found.');
       return rejectWithValue('No valid access token found');
     }
 
@@ -111,7 +111,7 @@ export const fetchCurrentUser = createAsyncThunk<User, void, { rejectValue: stri
       return response.data;
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message || 'Erro ao buscar usuário';
-      log('[Auth] Erro ao buscar usuário:', errorMessage);
+      log('[Auth] Error fetching user:', errorMessage);
       return rejectWithValue(errorMessage);
     }
   }

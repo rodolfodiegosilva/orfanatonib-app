@@ -61,7 +61,7 @@ export default function TeacherMeditationBanner() {
         setOpenModal(true);
       }
     } catch (error) {
-      console.error('Erro ao carregar meditação:', error);
+      console.error('Error loading meditation:', error);
     } finally {
       setLoading(false);
     }

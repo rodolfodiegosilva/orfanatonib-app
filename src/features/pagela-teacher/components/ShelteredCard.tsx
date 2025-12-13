@@ -20,23 +20,19 @@ import DecisionModal from "./DecisionModal";
 function genderPastel(seed: string, gender: string | undefined) {
   const g = (gender || "").toUpperCase();
   
-  // Cores distintivas para gêneros
   if (g === "F") {
-    // Feminino: Tons de rosa/vermelho suave
     return {
-      solid: "#e91e63", // Rosa vibrante
-      soft: "#f8bbd0", // Rosa claro
-      light: "#fce4ec", // Rosa muito claro
+      solid: "#e91e63",
+      soft: "#f8bbd0",
+      light: "#fce4ec",
     };
   } else if (g === "M") {
-    // Masculino: Tons de azul
     return {
-      solid: "#2196f3", // Azul vibrante
-      soft: "#90caf9", // Azul claro
-      light: "#e3f2fd", // Azul muito claro
+      solid: "#2196f3",
+      soft: "#90caf9",
+      light: "#e3f2fd",
     };
   } else {
-    // Neutro: Tons de cinza/roxo
     return {
       solid: "#9e9e9e", // Cinza
       soft: "#e0e0e0", // Cinza claro
@@ -209,7 +205,6 @@ export default function ShelteredCard({
             "&:hover": {
               backgroundColor: "transparent !important",
               color: "inherit !important",
-              // Garantir que não apareça nenhum overlay verde
               "&::before": {
                 display: "none !important",
               },
@@ -226,11 +221,9 @@ export default function ShelteredCard({
               backgroundColor: "transparent !important",
               color: "inherit !important",
             },
-            // Remover qualquer overlay do MUI
             "&::before": {
               display: "none !important",
             },
-            // Garantir que todos os textos mantenham suas cores originais
             "& .MuiTypography-root": {
               color: "inherit",
             },

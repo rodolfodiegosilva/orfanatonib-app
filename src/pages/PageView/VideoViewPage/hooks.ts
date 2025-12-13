@@ -27,7 +27,7 @@ export const useVideoPage = (idToFetch: string) => {
             const data = toVideoPageData(dto);
             dispatch(setVideoData(data));
         } catch (e) {
-            console.error("Erro ao carregar página de vídeos:", e);
+            console.error("Error loading video page:", e);
             setError("Erro ao carregar a página de vídeos. Tente novamente mais tarde.");
         } finally {
             setLoading(false);
@@ -57,7 +57,7 @@ export const useVideoPage = (idToFetch: string) => {
                 await dispatch(fetchRoutes());
                 onSuccess?.();
             } catch (e) {
-                console.error(e);
+                console.error("Error deleting page:", e);
                 const msg = "Erro ao excluir a página. Tente novamente mais tarde.";
                 setError(msg);
                 onError?.(msg);

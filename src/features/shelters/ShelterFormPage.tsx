@@ -34,7 +34,6 @@ export default function ShelterFormPage() {
   const [successSnackbar, setSuccessSnackbar] = useState({ open: false, message: "" });
   const teamManagementRef = useRef<TeamManagementRef>(null);
 
-  // Estados locais para mídia
   const [uploadType, setUploadType] = useState<"upload" | "link">("upload");
   const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -50,14 +49,11 @@ export default function ShelterFormPage() {
     const message = isEdit ? "Abrigo atualizado com sucesso!" : "Abrigo criado com sucesso!";
     setSuccessSnackbar({ open: true, message });
     
-    // Aguardar um pouco para o usuário ver o feedback antes de redirecionar
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Navegar para a lista de abrigos
     navigate("/adm/shelters");
   });
 
-  // Carregar dados do abrigo ao editar
   useEffect(() => {
     if (isEdit && id) {
       const loadShelter = async () => {
@@ -81,7 +77,6 @@ export default function ShelterFormPage() {
             file: undefined,
           } as EditShelterForm);
 
-          // Configurar estados de mídia
           if (shelter.mediaItem) {
             setUploadType((shelter.mediaItem.uploadType.toUpperCase() === "LINK" ? "link" : "upload") as "upload" | "link");
             setUrl(shelter.mediaItem.url || "");
@@ -94,7 +89,6 @@ export default function ShelterFormPage() {
       };
       loadShelter();
     } else {
-      // Inicializar formulário vazio para criação
       setFormData({
         name: "",
         description: "",
@@ -113,7 +107,6 @@ export default function ShelterFormPage() {
     }
   }, [id, isEdit]);
 
-  // Atualizar mídia quando houver mudança
   const updateMediaItem = (newUrl?: string, newFile?: File | null) => {
     if (!formData) return;
 
@@ -131,7 +124,6 @@ export default function ShelterFormPage() {
     } as any);
   };
 
-  // Função para remover imagem existente
   const handleRemoveExistingImage = () => {
     setUrl("");
     setFile(null);
@@ -144,7 +136,6 @@ export default function ShelterFormPage() {
     }
   };
 
-  // Função auxiliar para converter equipes do componente para o formato TeamInputDto[]
   const convertTeamsToInputDto = (teams: any[]): TeamInputDto[] => {
     return teams.map((team) => ({
       numberTeam: team.numberTeam,
@@ -160,15 +151,13 @@ export default function ShelterFormPage() {
     setError("");
     setDialogError("");
 
-    // Validação: teamsQuantity é obrigatório
     if (!formData.teamsQuantity || formData.teamsQuantity < 1) {
-      setError("A quantidade de equipes é obrigatória e deve ser maior que 0");
+      setError("Teams quantity is required and must be greater than 0");
       return;
     }
 
-    // Validação: campos obrigatórios
     if (!formData.name?.trim()) {
-      setError("O nome do abrigo é obrigatório");
+      setError("Shelter name is required");
       return;
     }
 
@@ -177,52 +166,43 @@ export default function ShelterFormPage() {
         !formData.address?.city?.trim() || 
         !formData.address?.state?.trim() || 
         !formData.address?.postalCode?.trim()) {
-      setError("Todos os campos de endereço são obrigatórios (exceto número e complemento)");
+      setError("All address fields are required (except number and complement)");
       return;
     }
 
     try {
       const { file, ...rest } = formData as any;
 
+      const teamsData = teamManagementRef.current?.getCurrentTeams() || [];
+      const teamsInput = convertTeamsToInputDto(teamsData);
+
       if (isEdit && id) {
-        // Obter dados das equipes do componente
-        console.log("🟡 [handleSubmit] Obtendo dados das equipes...");
-        const teamsData = teamManagementRef.current?.getCurrentTeams() || [];
-        console.log("🟡 [handleSubmit] teamsData:", JSON.stringify(teamsData, null, 2));
-        
-        // Converter para o formato TeamInputDto[]
-        const teamsInput = convertTeamsToInputDto(teamsData);
-        console.log("🟡 [handleSubmit] teamsInput:", JSON.stringify(teamsInput, null, 2));
-        
-        // Atualizar abrigo
         const payload: any = {
           name: rest.name,
           description: rest.description,
           teamsQuantity: rest.teamsQuantity,
           address: rest.address,
-          teams: teamsInput, // ⭐ Incluir equipes no payload conforme documentação atualizada
+          teams: teamsInput,
         };
 
         if (file) {
-          // Upload de novo arquivo (form-data)
           const formDataObj = new FormData();
           const shelterData = {
             name: payload.name,
             description: payload.description,
             teamsQuantity: payload.teamsQuantity,
             address: payload.address,
-            teams: payload.teams, // ⭐ Incluir equipes
+            teams: payload.teams,
             mediaItem: {
               title: rest.mediaItem?.title || "Foto do Abrigo",
               description: rest.mediaItem?.description || "Imagem do abrigo",
-              uploadType: "UPLOAD",
+              uploadType: "upload",
             }
           };
           formDataObj.append('shelterData', JSON.stringify(shelterData));
           formDataObj.append('image', file);
           await updateShelter(id, formDataObj);
         } else if (rest.mediaItem && !rest.mediaItem.id) {
-          // Nova URL de link
           payload.mediaItem = {
             title: rest.mediaItem.title || "Foto do Abrigo",
             description: rest.mediaItem.description || "Imagem do abrigo",
@@ -231,50 +211,32 @@ export default function ShelterFormPage() {
           };
           await updateShelter(id, payload);
         } else {
-          // Sem mudança na mídia
           await updateShelter(id, payload);
         }
-        
-        // O callback do useShelterMutations já navegará para /adm/shelters
       } else {
-        // Obter dados das equipes do componente
-        console.log("🟡 [handleSubmit] Obtendo dados das equipes...");
-        const teamsData = teamManagementRef.current?.getCurrentTeams() || [];
-        console.log("🟡 [handleSubmit] teamsData:", JSON.stringify(teamsData, null, 2));
-        
-        // Converter para o formato TeamInputDto[]
-        const teamsInput = convertTeamsToInputDto(teamsData);
-        console.log("🟡 [handleSubmit] teamsInput:", JSON.stringify(teamsInput, null, 2));
-        
-        // Criar abrigo
         const payload: any = {
           name: rest.name,
           description: rest.description,
           teamsQuantity: rest.teamsQuantity,
           address: rest.address,
-          teams: teamsInput, // ⭐ Incluir equipes no payload conforme documentação atualizada
         };
 
-        // Incluir teams apenas se houver equipes definidas (opcional)
         if (teamsInput && teamsInput.length > 0) {
           payload.teams = teamsInput;
-        } else {
-          delete payload.teams;
         }
 
         if (file) {
-          // Upload de arquivo (form-data)
           const formDataObj = new FormData();
           const shelterData = {
             name: payload.name,
             description: payload.description,
             teamsQuantity: payload.teamsQuantity,
             address: payload.address,
-            teams: payload.teams, // ⭐ Incluir equipes apenas se houver
+            teams: payload.teams,
             mediaItem: {
-              uploadType: "upload", // Conforme documentação: "upload" ou "link"
-              isLocalFile: true, // Arquivo local
-              fieldKey: "image", // Nome do campo no form-data
+              uploadType: "upload",
+              isLocalFile: true,
+              fieldKey: "image",
               title: rest.mediaItem?.title || "Foto do Abrigo",
               description: rest.mediaItem?.description || "Imagem do abrigo",
             }
@@ -283,22 +245,17 @@ export default function ShelterFormPage() {
           formDataObj.append('image', file);
           await createShelter(formDataObj);
         } else if (rest.mediaItem?.url) {
-          // Link de URL (JSON)
           payload.mediaItem = {
-            uploadType: "link", // Conforme documentação: "upload" ou "link"
-            isLocalFile: false, // URL externa
+            uploadType: "link",
+            isLocalFile: false,
             url: rest.mediaItem.url,
             title: rest.mediaItem.title || "Foto do Abrigo",
             description: rest.mediaItem.description || "Imagem do abrigo",
           };
           await createShelter(payload);
         } else {
-          // Sem imagem (JSON)
-          // Remover mediaItem se não houver URL ou arquivo
-          delete payload.mediaItem;
           await createShelter(payload);
         }
-        // O callback do useShelterMutations já navegará para /adm/shelters
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || dialogError || "Erro ao salvar abrigo");

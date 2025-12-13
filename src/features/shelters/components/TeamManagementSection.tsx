@@ -56,7 +56,6 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
     const [leaderOptions, setLeaderOptions] = useState<LeaderSimpleListDto[]>([]);
     const [teacherOptions, setTeacherOptions] = useState<TeacherSimpleListDto[]>([]);
     
-    // Estados para diálogos
     const [showAddLeaderDialog, setShowAddLeaderDialog] = useState(false);
     const [showAddTeacherDialog, setShowAddTeacherDialog] = useState(false);
     const [showDeleteTeamDialog, setShowDeleteTeamDialog] = useState(false);
@@ -67,33 +66,19 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
     const [leaderSearchTerm, setLeaderSearchTerm] = useState("");
     const [teacherSearchTerm, setTeacherSearchTerm] = useState("");
 
-    // Expor função para obter equipes atuais
     useImperativeHandle(ref, () => ({
-      getCurrentTeams: () => {
-        console.log("🟣 [getCurrentTeams] Chamado - teams:", JSON.stringify(teams, null, 2));
-        console.log("🟣 [getCurrentTeams] teams.length:", teams.length);
-        return teams;
-      },
+      getCurrentTeams: () => teams,
     }));
 
-    // Carregar abrigo
     const loadShelter = useCallback(async () => {
-      if (!shelterId) {
-        console.log("🟣 [loadShelter] shelterId não fornecido");
-        return;
-      }
-      console.log("🟣 [loadShelter] Carregando abrigo:", shelterId);
+      if (!shelterId) return;
+      
       setLoading(true);
       try {
         const data = await apiFetchShelter(shelterId);
-        console.log("🟣 [loadShelter] Abrigo carregado:", data);
         setShelter(data);
         
-        // Gerar array de equipes baseado no teamsQuantity
         const existingTeams = data.teams || [];
-        console.log("🟣 [loadShelter] existingTeams:", JSON.stringify(existingTeams, null, 2));
-        console.log("🟣 [loadShelter] teamsQuantity:", teamsQuantity);
-        
         const teamsMap = new Map(existingTeams.map(t => [t.numberTeam, t]));
         const allTeams = [];
         
@@ -109,18 +94,15 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
           }
         }
         
-        console.log("🟣 [loadShelter] allTeams gerado:", JSON.stringify(allTeams, null, 2));
         setTeams(allTeams);
-        console.log("🟣 [loadShelter] Estado teams atualizado");
       } catch (err: any) {
-        console.error("❌ [loadShelter] Erro:", err);
-        setError(err?.response?.data?.message || "Erro ao carregar abrigo");
+        console.error("Error loading shelter:", err);
+        setError(err?.response?.data?.message || "Error loading shelter");
       } finally {
         setLoading(false);
       }
-    }, [shelterId]); // Removido teamsQuantity das dependências para não recarregar quando mudar
+    }, [shelterId, teamsQuantity]);
 
-    // Carregar opções
     const loadOptions = useCallback(async () => {
       try {
         const [leaders, teachers] = await Promise.all([
@@ -130,16 +112,14 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
         setLeaderOptions(leaders || []);
         setTeacherOptions(teachers || []);
       } catch (err: any) {
-        console.error("Erro ao carregar opções:", err);
+        console.error("Error loading options:", err);
       }
     }, []);
 
-    // Carregar dados iniciais (apenas quando shelterId mudar, não quando teamsQuantity mudar)
     useEffect(() => {
       if (shelterId) {
         loadShelter();
       } else {
-        // Inicializar equipes vazias quando não há shelterId (criação)
         const initialTeams = [];
         for (let i = 1; i <= teamsQuantity; i++) {
           initialTeams.push({
@@ -153,9 +133,7 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
       loadOptions();
     }, [shelterId, loadShelter, loadOptions]);
 
-    // Inicializar equipes quando teamsQuantity mudar (apenas no frontend, sem chamar API)
     useEffect(() => {
-      // Se não há shelterId (criação), inicializar equipes vazias
       if (!shelterId) {
         const allTeams = [];
         for (let i = 1; i <= teamsQuantity; i++) {
@@ -169,17 +147,12 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
         return;
       }
 
-      // Se há shelterId (edição), só ajustar se já temos equipes carregadas e não está carregando
-      // Isso garante que não sobrescrevemos dados do servidor durante o carregamento
-      // Usamos uma verificação de ref para evitar loops infinitos
       if (shelterId && !loading) {
         setTeams(prevTeams => {
-          // Se não há equipes anteriores, não fazer nada (aguardar loadShelter)
           if (prevTeams.length === 0) {
             return prevTeams;
           }
           
-          // Se já temos equipes, ajustar quantidade
           const teamsMap = new Map(prevTeams.map(t => [t.numberTeam, t]));
           const allTeams = [];
           
@@ -214,12 +187,10 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
 
       setError("");
       
-      // Buscar os dados completos dos líderes selecionados
       const selectedLeaders = leaderOptions.filter(leader => 
         selectedLeaderIds.includes(leader.leaderProfileId)
       );
 
-      // Adicionar líderes ao estado local (sem chamar API)
       setTeams(prevTeams => {
         return prevTeams.map(team => {
           if (team.numberTeam === selectedTeamNumber) {
@@ -256,16 +227,13 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
     };
 
     const handleRemoveLeader = (teamNumber: number, leaderId: string) => {
-      console.log("🟠 [handleRemoveLeader] Removendo líder:", { teamNumber, leaderId });
-      setTeams(prevTeams => {
-        const updated = prevTeams.map(team => 
+      setTeams(prevTeams => 
+        prevTeams.map(team => 
           team.numberTeam === teamNumber
             ? { ...team, leaders: (team.leaders || []).filter((l: any) => l.id !== leaderId) }
             : team
-        );
-        console.log("🟠 [handleRemoveLeader] Equipes atualizadas:", JSON.stringify(updated, null, 2));
-        return updated;
-      });
+        )
+      );
     };
 
     const handleAddTeacher = (teamNumber: number) => {
@@ -282,14 +250,11 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
 
       setError("");
       
-      // Buscar os dados completos dos professores selecionados
       const selectedTeachers = teacherOptions.filter(teacher => 
         selectedTeacherIds.includes(teacher.teacherProfileId)
       );
 
-      // Remover professores de outras equipes (professores só podem estar em uma equipe)
       setTeams(prevTeams => {
-        // Primeiro, remover os professores selecionados de todas as equipes
         const teamsWithoutSelectedTeachers = prevTeams.map(team => ({
           ...team,
           teachers: (team.teachers || []).filter((t: any) => 
@@ -297,7 +262,6 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
           ),
         }));
 
-        // Depois, adicionar os professores à equipe selecionada
         return teamsWithoutSelectedTeachers.map(team => {
           if (team.numberTeam === selectedTeamNumber) {
             const existingTeacherIds = (team.teachers || []).map((t: any) => t.id);
@@ -333,16 +297,13 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
     };
 
     const handleRemoveTeacher = (teamNumber: number, teacherId: string) => {
-      console.log("🟠 [handleRemoveTeacher] Removendo professor:", { teamNumber, teacherId });
-      setTeams(prevTeams => {
-        const updated = prevTeams.map(team => 
+      setTeams(prevTeams => 
+        prevTeams.map(team => 
           team.numberTeam === teamNumber
             ? { ...team, teachers: (team.teachers || []).filter((t: any) => t.id !== teacherId) }
             : team
-        );
-        console.log("🟠 [handleRemoveTeacher] Equipes atualizadas:", JSON.stringify(updated, null, 2));
-        return updated;
-      });
+        )
+      );
     };
 
     const handleDeleteTeamClick = (teamNumber: number) => {
@@ -358,16 +319,10 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
       if (!teamToDelete) return;
 
       const teamNumberToDelete = teamToDelete;
-      const teamToDeleteData = teams.find(t => t.numberTeam === teamNumberToDelete);
-      const leadersCount = teamToDeleteData?.leaders?.length || 0;
-      const teachersCount = teamToDeleteData?.teachers?.length || 0;
 
-      // Remover a equipe completa (incluindo todos os líderes e professores)
       setTeams(prevTeams => {
-        // Filtrar a equipe a ser excluída (remove o card inteiro com todos os líderes e professores)
         const filteredTeams = prevTeams.filter(team => team.numberTeam !== teamNumberToDelete);
         
-        // Renumerar as equipes subsequentes
         const renumberedTeams = filteredTeams.map(team => {
           if (team.numberTeam > teamNumberToDelete) {
             return {
@@ -378,42 +333,31 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
           return team;
         });
 
-        // Ordenar por numberTeam
         renumberedTeams.sort((a, b) => a.numberTeam - b.numberTeam);
-
-        console.log("🟠 [handleConfirmDeleteTeam] Equipe excluída:", teamNumberToDelete);
-        console.log("🟠 [handleConfirmDeleteTeam] Líderes removidos:", leadersCount);
-        console.log("🟠 [handleConfirmDeleteTeam] Professores removidos:", teachersCount);
-        console.log("🟠 [handleConfirmDeleteTeam] Equipes renumeradas:", JSON.stringify(renumberedTeams, null, 2));
-        
         return renumberedTeams;
       });
 
-      // Atualizar a quantidade de equipes no formulário pai
       const newQuantity = teamsQuantity - 1;
       if (onTeamsQuantityChange) {
         onTeamsQuantityChange(newQuantity);
       }
 
-      // Fechar diálogo
       setShowDeleteTeamDialog(false);
       setTeamToDelete(null);
     };
 
-    // Filtrar líderes disponíveis
     const getAvailableLeaders = useCallback((teamNumber: number) => {
       return leaderOptions;
     }, [leaderOptions]);
 
-    // Filtrar professores disponíveis
     const getAvailableTeachers = useCallback((teamNumber: number) => {
-      const team = teams.find((t) => t.numberTeam === teamNumber);
-      const teamTeacherIds = team?.teachers?.map((t) => t.id) || [];
+      const team = teams.find((t: any) => t.numberTeam === teamNumber);
+      const teamTeacherIds = team?.teachers?.map((t: any) => t.id) || [];
       const teachersInOtherTeams = new Set<string>();
       
-      teams.forEach((t) => {
+      teams.forEach((t: any) => {
         if (t.numberTeam !== teamNumber && t.teachers) {
-          t.teachers.forEach((teacher) => {
+          t.teachers.forEach((teacher: any) => {
             teachersInOtherTeams.add(teacher.id);
           });
         }
@@ -552,7 +496,6 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                   >
                     <Box sx={{ 
                       display: "flex", 
-                      alignItems: "center", 
                       justifyContent: "space-between", 
                       mb: 1.5,
                       flexDirection: { xs: "column", sm: "row" },
@@ -586,7 +529,7 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                       </Button>
                     </Box>
                     <ChipsListWithExpand
-                      items={teamLeaders.map((leader) => ({
+                      items={teamLeaders.map((leader: any) => ({
                         id: leader.id,
                         label: leader.user?.name || leader.user?.email || "Sem nome",
                         color: "primary" as const,
@@ -610,7 +553,6 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                   >
                     <Box sx={{ 
                       display: "flex", 
-                      alignItems: "center", 
                       justifyContent: "space-between", 
                       mb: 1.5,
                       flexDirection: { xs: "column", sm: "row" },
@@ -644,7 +586,7 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                       </Button>
                     </Box>
                     <ChipsListWithExpand
-                      items={teamTeachers.map((teacher) => ({
+                      items={teamTeachers.map((teacher: any) => ({
                         id: teacher.id,
                         label: teacher.user?.name || teacher.user?.email || "Sem nome",
                         color: "secondary" as const,

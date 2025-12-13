@@ -25,7 +25,6 @@ export default function SheltersManager() {
   const isAdmin = useSelector(selectIsAdmin);
   const isLeader = useSelector(selectIsLeader);
 
-  // Se for líder, mostrar página de detalhes do abrigo
   if (isLeader) {
     return <ShelterDetailsPage />;
   }
@@ -58,7 +57,6 @@ export default function SheltersManager() {
   const {
     deleteShelter,
   } = useShelterMutations(async () => {
-    // Recarregar dados após operações CRUD
     await fetchPage();
   });
 
@@ -79,7 +77,6 @@ export default function SheltersManager() {
     setConfirmDelete(null);
   };
 
-  // Removido o useEffect duplicado - o useShelters já gerencia as requests automaticamente
 
   return (
     <Box

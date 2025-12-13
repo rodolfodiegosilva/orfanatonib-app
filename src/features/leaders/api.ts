@@ -9,10 +9,9 @@ export type ListLeadersParams = {
   leaderSearchString?: string;
   shelterSearchString?: string;
   hasShelter?: boolean;
-  teamId?: string;              // Filtrar por ID da equipe específica
-  teamName?: string;            // Filtrar por número da equipe (busca parcial)
-  hasTeam?: boolean;            // Filtrar por líderes vinculados a equipes
-  // Filtros legados (compatibilidade)
+  teamId?: string;
+  teamName?: string;
+  hasTeam?: boolean;
   q?: string;
   active?: boolean;
   hasShelters?: boolean;
@@ -51,7 +50,6 @@ export async function apiGetLeader(leaderId: string) {
   return data;
 }
 
-// Endpoints de assign/unassign/move shelter removidos - agora gerenciados via Teams
 
 export type ManageLeaderTeamDto = {
   shelterId: string;    // UUID do abrigo (obrigatório)

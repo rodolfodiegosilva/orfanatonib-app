@@ -18,13 +18,11 @@ import {
   LeaderOption,
 } from "./types";
 
-// Hook para debounce com limpeza de valores vazios
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      // Limpar valores vazios para evitar parâmetros desnecessários
       if (typeof value === 'object' && value !== null) {
         const cleanedValue = Object.fromEntries(
           Object.entries(value as any).map(([key, val]) => [
@@ -57,14 +55,12 @@ export function useShelters(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-  // Debounce dos filtros para evitar requests excessivas
   const debouncedFilters = useDebounce(filters, 500);
   
   // Ref para evitar requests duplicadas
   const lastRequestRef = useRef<string>("");
 
   const fetchPage = useCallback(async (force = false) => {
-    // Criar uma chave única para esta request
     const requestKey = `${pageIndex}-${pageSize}-${JSON.stringify(sorting)}-${JSON.stringify(debouncedFilters)}`;
     
     // Evitar requests duplicadas (exceto quando forçado)
@@ -184,7 +180,7 @@ export function useOptions() {
   const [loaded, setLoaded] = useState(false);
 
   const loadRefs = useCallback(async () => {
-    if (loaded) return; // Evita carregar se já foi carregado
+    if (loaded) return;
     
     setLoading(true);
     try {
@@ -209,14 +205,14 @@ export function useOptions() {
       setTeachers(mappedTeachers);
       setLoaded(true);
     } catch (error) {
-      console.error('Erro ao carregar opções:', error);
+        console.error('Error loading options:', error);
     } finally {
       setLoading(false);
     }
   }, [loaded]);
 
   const reloadOptions = useCallback(async () => {
-    setLoaded(false); // Força recarregar
+    setLoaded(false);
     await loadRefs();
   }, [loadRefs]);
 

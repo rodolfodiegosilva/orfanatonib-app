@@ -27,7 +27,7 @@ const NavLinks: React.FC<Props> = ({ closeMenu, isMobile }) => {
     try {
       await api.post('/auth/logout');
     } catch (error) {
-      console.warn('[Logout] Erro ao fazer logout:', error);
+      console.error('Error during logout:', error);
     } finally {
       dispatch(logout());
       navigate('/');

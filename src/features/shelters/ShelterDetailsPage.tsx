@@ -54,7 +54,6 @@ export default function ShelterDetailsPage() {
   const [error, setError] = useState("");
   const [noSheltersLinked, setNoSheltersLinked] = useState(false);
 
-  // Selecionar abrigo atual baseado no ID selecionado (sem chamadas de API)
   const shelter = useMemo(() => {
     if (!selectedShelterId || allShelters.length === 0) return null;
     return allShelters.find((s) => s.id === selectedShelterId) || null;
@@ -66,7 +65,6 @@ export default function ShelterDetailsPage() {
         setLoading(true);
         setError("");
 
-        // ⭐ Usar apenas o endpoint GET /leader-profiles/my-shelters quando logado como líder
         const shelters = await apiGetMyShelters();
         
         if (!shelters || shelters.length === 0) {
@@ -75,22 +73,18 @@ export default function ShelterDetailsPage() {
           return;
         }
 
-        // Armazenar todos os abrigos para evitar chamadas futuras
         setAllShelters(shelters as ShelterResponseDto[]);
 
-        // Criar lista de opções de abrigos
         const options = shelters.map((s: any) => ({
           id: s.id,
           name: s.name,
         }));
         setShelterOptions(options);
 
-        // Se houver apenas um abrigo, usar esse automaticamente
-        // Se houver múltiplos, usar o primeiro como padrão
         const initialShelterId = shelters[0].id;
         setSelectedShelterId(initialShelterId);
       } catch (err: any) {
-        console.error("Erro ao carregar abrigos:", err);
+        console.error("Error loading shelters:", err);
         setError(
           err?.response?.data?.message ||
             err?.message ||
@@ -104,13 +98,9 @@ export default function ShelterDetailsPage() {
     loadShelters();
   }, []);
 
-  // ⚠️ IMPORTANTE: Todos os hooks devem ser chamados ANTES de qualquer early return
-  // Memoizar dados derivados para melhor performance (sempre executado, mesmo se shelter for null)
   const address = useMemo(() => shelter?.address, [shelter]);
   const teams = useMemo(() => shelter?.teams || [], [shelter]);
   
-  // ⭐ Calcular líderes e professores agregando de todas as equipes
-  // O endpoint my-shelters não retorna leaders/teachers na raiz, apenas dentro de teams
   const allLeaders = useMemo(() => {
     if (teams.length === 0) return [];
     const leadersMap = new Map<string, any>();
@@ -137,14 +127,11 @@ export default function ShelterDetailsPage() {
     return Array.from(teachersMap.values());
   }, [teams]);
 
-  // ⭐ Usar o campo isLeaderInTeam que vem da API (endpoint my-shelters)
-  // Isso é mais confiável e eficiente do que calcular manualmente
   const leaderTeams = useMemo(() => {
     if (teams.length === 0) return [];
     return teams.filter((team) => team.isLeaderInTeam === true);
   }, [teams]);
 
-  // Componente de Skeleton Loading
   const SkeletonLoader = () => (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 4 }}>
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
@@ -196,7 +183,6 @@ export default function ShelterDetailsPage() {
     return <SkeletonLoader />;
   }
 
-  // Mensagem amigável quando não há abrigos vinculados (não é erro)
   if (noSheltersLinked) {
     return (
       <Box

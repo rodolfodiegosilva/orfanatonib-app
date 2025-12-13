@@ -26,11 +26,6 @@ import {
   fetchCurrentUser,
 } from '@/store/slices/auth/authSlice';
 
-const log = (message: string, ...args: any[]): void => {
-  if (import.meta.env.DEV) {
-    console.log(message, ...args);
-  }
-};
 
 const isEmailValid = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,13 +90,11 @@ const Login: React.FC = () => {
     try {
       api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     } catch (error) {
-      log('[Login] Erro ao configurar token no axios:', error);
     }
 
     try {
       await dispatch(fetchCurrentUser()).unwrap();
     } catch (error) {
-      log('[Login] fetchCurrentUser falhou após login:', error);
     }
   };
 
@@ -135,7 +128,6 @@ const Login: React.FC = () => {
 
     setLoading(true);
     setErrorMessage(null);
-    log('[Login] Tentando login com:', { email });
 
     try {
       const response = await api.post<LoginResponse>('/auth/login', { email, password });
@@ -155,7 +147,6 @@ const Login: React.FC = () => {
     } catch (error) {
       const msg = mapLoginError(error);
       setErrorMessage(msg);
-      log('[Login] Erro no login:', error);
     } finally {
       setLoading(false);
     }
@@ -165,7 +156,6 @@ const Login: React.FC = () => {
   const handleGoogleSuccess = async (credentialResponse: any): Promise<void> => {
     setLoading(true);
     setErrorMessage(null);
-    log('[Login] Login com Google bem-sucedido:', credentialResponse);
 
     try {
       const { credential } = credentialResponse;
@@ -196,7 +186,6 @@ const Login: React.FC = () => {
     } catch (error) {
       const msg = mapLoginError(error);
       setErrorMessage(msg);
-      log('[Login] Erro no login Google:', error);
     } finally {
       setLoading(false);
     }
@@ -204,7 +193,6 @@ const Login: React.FC = () => {
 
   const handleGoogleError = (): void => {
     setErrorMessage('Erro ao fazer login com Google. Tente novamente.');
-    log('[Login] Falha no login com Google');
   };
 
   const handleNavigateToRegister = (): void => {

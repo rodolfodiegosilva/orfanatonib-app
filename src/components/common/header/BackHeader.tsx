@@ -32,7 +32,7 @@ const BackHeader: React.FC<BackHeaderProps> = ({
         display: "flex",
         alignItems: "center",
         gap: 1,
-        backgroundColor: "#f5f5f5", // Background consistente
+        backgroundColor: "#f5f5f5",
         p: 1,
       }}
     >

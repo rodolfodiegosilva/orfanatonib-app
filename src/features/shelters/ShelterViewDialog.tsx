@@ -431,9 +431,7 @@ export default function ShelterViewDialog({ open, loading, shelter, onClose }: P
         shelter={shelter}
         onClose={() => setTeamManagementOpen(false)}
         onSuccess={async () => {
-          // Recarregar dados do abrigo se necessário
           if (onClose) {
-            // O componente pai pode recarregar os dados
           }
         }}
       />

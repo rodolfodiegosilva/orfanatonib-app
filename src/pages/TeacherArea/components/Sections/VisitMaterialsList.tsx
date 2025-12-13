@@ -44,18 +44,16 @@ const VisitMaterialsList = () => {
             setLoading(true);
             setIsFiltering(true);
             const data = await listVisitMaterials(params);
-            // Filtrar apenas materiais públicos
             const publicMaterials = data.filter((material) => material.route?.public);
             setMaterials(publicMaterials);
         } catch (error) {
-            console.error('Erro ao buscar materiais de visita:', error);
+            console.error('Error fetching visit materials:', error);
         } finally {
             setLoading(false);
             setIsFiltering(false);
         }
     }, []);
 
-    // Busca inicial
     useEffect(() => {
         if (isInitialMount.current) {
             isInitialMount.current = false;
@@ -63,7 +61,6 @@ const VisitMaterialsList = () => {
         }
     }, [fetchMaterials]);
 
-    // Debounce para busca e filtro por testamento
     useEffect(() => {
         if (isInitialMount.current) return;
         

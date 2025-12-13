@@ -86,15 +86,7 @@ export function IdeasSectionUserCreator() {
 
       const mediaTypeCounters = { video: 0, document: 0, image: 0 };
 
-      const mediasPayload = sectionData.medias.map((media, index) => {
-        console.log(`🔍 Processando mídia ${index}:`, {
-          title: media.title,
-          mediaType: media.mediaType,
-          uploadType: media.uploadType,
-          hasFile: !!media.file,
-          hasUrl: !!media.url
-        });
-
+      const mediasPayload = sectionData.medias.map((media) => {
         const baseItem = {
           title: media.title,
           description: media.description,
@@ -105,35 +97,25 @@ export function IdeasSectionUserCreator() {
 
         if (media.uploadType === 'upload' && media.mediaType !== 'audio') {
           if (!media.file) {
-            console.error(`❌ Mídia de upload "${media.title}" não tem arquivo!`);
-            throw new Error(`Mídia de upload "${media.title}" não tem arquivo associado`);
+            throw new Error(`Upload media "${media.title}" has no file associated`);
           }
 
           mediaTypeCounters[media.mediaType as keyof typeof mediaTypeCounters]++;
           const count = mediaTypeCounters[media.mediaType as keyof typeof mediaTypeCounters];
           const fieldKey = count === 1 ? `${media.mediaType}_upload` : `${media.mediaType}${count}_upload`;
 
-          console.log(`📁 Adicionando arquivo: ${fieldKey}`, media.file.name);
           formData.append(fieldKey, media.file);
 
           return { ...baseItem, fieldKey, originalName: media.file.name };
         }
 
         if (media.uploadType === 'link' && media.url) {
-          console.log(`🔗 Link externo: ${media.title}`, media.url);
           return {
             ...baseItem,
             url: media.url,
             platformType: media.platformType
           };
         }
-
-        console.warn(`⚠️ Mídia ignorada: ${media.title}`, {
-          uploadType: media.uploadType,
-          hasFile: !!media.file,
-          hasUrl: !!media.url,
-          mediaType: media.mediaType
-        });
 
         return baseItem;
       });
@@ -168,7 +150,7 @@ export function IdeasSectionUserCreator() {
         navigate('/area-do-professor');
       }, 2000);
     } catch (error) {
-      console.error('Erro ao compartilhar ideia:', error);
+      console.error('Error sharing idea:', error);
       setSnackbar({
         open: true,
         message: 'Ops! Algo deu errado ao compartilhar sua ideia. Tente novamente.',

@@ -61,7 +61,6 @@ const InformativeBanner: React.FC = () => {
       const content = (route.title || '') + (route.subtitle || '');
       const charCount = content.length;
 
-      // Ajustado para mobile: altura base menor e cálculo mais conservador
       const mobileHeight = Math.min(220 + charCount * 0.4, 350);
       const desktopHeight = Math.min(300 + charCount * 0.3, 350);
 

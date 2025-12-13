@@ -75,7 +75,7 @@ export default function VisitMaterialsPageView({ idToFetch }: VisitMaterialsPage
         setVisitMaterials(response.data);
         dispatch(setVisitMaterialData(response.data));
       } catch (err) {
-        console.error('Erro ao buscar materiais de estudo:', err);
+        console.error('Error fetching study materials:', err);
         setError('Erro ao carregar os materiais de estudo. Tente novamente mais tarde.');
       } finally {
         setLoading(false);
@@ -92,7 +92,7 @@ export default function VisitMaterialsPageView({ idToFetch }: VisitMaterialsPage
       dispatch(fetchRoutes());
       navigate('/adm/paginas-materiais-visita');
     } catch (error) {
-      console.error('Erro ao deletar página:', error);
+      console.error('Error deleting page:', error);
     } finally {
       setIsDeleting(false);
       setDeleteConfirmOpen(false);
@@ -104,7 +104,6 @@ export default function VisitMaterialsPageView({ idToFetch }: VisitMaterialsPage
   };
 
   const handleBack = () => {
-    console.log('handleBack called in VisitMaterialsPageView');
     navigate(-1);
   };
 

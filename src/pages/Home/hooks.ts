@@ -9,7 +9,6 @@ export const useComments = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    // Só buscar comentários se ainda não estiverem carregados
     if (comments !== null) return;
 
     const fetchComments = async () => {
@@ -17,7 +16,7 @@ export const useComments = () => {
         const response = await api.get('/comments/published');
         dispatch(setComments(response.data));
       } catch (error) {
-        console.error('Erro ao buscar comentários:', error);
+        console.error('Error fetching comments:', error);
       }
     };
     fetchComments();

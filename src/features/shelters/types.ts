@@ -56,24 +56,23 @@ export type ShelterSimpleResponseDto = {
   id: string;
   name: string;
   description?: string | null;
-  teamsQuantity?: number; // Quantidade de equipes do abrigo (number) ⭐ NOVO
+  teamsQuantity?: number;
   address: AddressResponseDto;
-  teams: TeamWithMembersDto[]; // Equipes do abrigo (sempre presente)
+  teams: TeamWithMembersDto[];
   mediaItem?: MediaItemDto | null;
   createdAt: string;
   updatedAt: string;
 };
 
-// Atualizado para suportar relacionamentos via Teams e mediaItem
 export type ShelterResponseDto = {
   id: string;
   name: string;
   description?: string | null;
-  teamsQuantity?: number; // Quantidade de equipes do abrigo (number) ⭐ NOVO
+  teamsQuantity?: number;
   address: AddressResponseDto;
-  teams: TeamWithMembersDto[]; // NOVO: Equipes do abrigo
-  leaders: LeaderMiniDto[]; // Calculado (agregação de todas as teams)
-  teachers: TeacherMiniDto[]; // Calculado (agregação de todas as teams)
+  teams: TeamWithMembersDto[];
+  leaders: LeaderMiniDto[];
+  teachers: TeacherMiniDto[];
   mediaItem?: MediaItemDto | null;
   createdAt: string;
   updatedAt: string;
@@ -93,21 +92,18 @@ export type Paginated<T> = {
   pageCount: number;
 };
 
-// Tipo para equipe no payload (conforme documentação atualizada)
 export type TeamInputDto = {
-  numberTeam: number; // Número da equipe (1, 2, 3... até teamsQuantity)
-  description?: string; // Descrição da equipe (opcional)
-  leaderProfileIds?: string[]; // Array de UUIDs dos perfis de líderes (opcional)
-  teacherProfileIds?: string[]; // Array de UUIDs dos perfis de professores (opcional)
+  numberTeam: number;
+  description?: string;
+  leaderProfileIds?: string[];
+  teacherProfileIds?: string[];
 };
 
-// Atualizado: Removidos leaderProfileIds e teacherProfileIds (agora via Teams)
-// ⭐ NOVO: Campo teams opcional para vincular líderes/professores durante criação/atualização
 export type CreateShelterForm = {
   name: string;
   description?: string;
-  teamsQuantity: number; // Quantidade de equipes (number) ⭐ OBRIGATÓRIO
-  teams?: TeamInputDto[]; // ⭐ Opcional - Permite vincular líderes/professores durante a criação
+  teamsQuantity: number;
+  teams?: TeamInputDto[];
   address: Partial<AddressResponseDto> & {
     street: string; district: string; city: string; state: string; postalCode: string;
   };
@@ -115,33 +111,27 @@ export type CreateShelterForm = {
     title?: string;
     description?: string;
     uploadType: "upload" | "link";
-    url?: string; // Para link
+    url?: string;
   };
-  file?: File; // Para upload de arquivo
+  file?: File;
 };
 
 export type EditShelterForm = Partial<CreateShelterForm> & { id: string };
 export type UserLite = { id: string; name?: string; email?: string };
 
-// Filtros conforme nova API
 export type ShelterFilters = {
-  // Filtros principais (conforme documentação)
-  shelterName?: string; // Busca por nome do abrigo
-  staffFilters?: string; // Busca por nome, email ou telefone de líderes/professores
-  addressFilter?: string; // Busca por endereço (cidade, estado, bairro, etc.)
-  teamId?: string; // Filtrar abrigos que têm uma equipe específica (UUID)
-  teamName?: string; // Filtrar abrigos que têm equipes com nome/número específico (busca parcial)
-  leaderId?: string; // Filtrar por líder específico
-  
-  // Filtros legados (compatibilidade)
-  searchString?: string; // Busca geral por nome, endereço, cidade, estado
-  nameSearchString?: string; // Busca específica por nome do shelter
-  
-  // Filtros internos (usados apenas no frontend)
-  shelterSearchString?: string; // Mapeado para shelterName
-  userSearchString?: string; // Mapeado para staffFilters
-  addressSearchString?: string; // Mapeado para addressFilter
-  city?: string; // Mapeado para addressFilter
+  shelterName?: string;
+  staffFilters?: string;
+  addressFilter?: string;
+  teamId?: string;
+  teamName?: string;
+  leaderId?: string;
+  searchString?: string;
+  nameSearchString?: string;
+  shelterSearchString?: string;
+  userSearchString?: string;
+  addressSearchString?: string;
+  city?: string;
   state?: string;
   teacherId?: string;
   hasLeaders?: boolean;
@@ -157,7 +147,6 @@ export type ShelterSort =
 export type LeaderOption = { leaderProfileId: string; name: string; vinculado: boolean };
 export type TeacherOption = { teacherProfileId: string; name: string; vinculado: boolean };
 
-// Novos tipos para endpoints adicionais
 export type ShelterListResponseDto = {
   id: string;
   name: string;
@@ -168,7 +157,6 @@ export type ShelterListResponseDto = {
   updatedAt: string;
 };
 
-// Tipo para resposta do endpoint teams-quantity
 export type ShelterTeamsQuantityResponseDto = {
   id: string;
   teamsQuantity: number;

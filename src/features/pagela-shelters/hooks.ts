@@ -189,7 +189,6 @@ export const usePagelas = (filters: PagelasFilters | undefined = undefined, enab
   };
 };
 
-// Hook principal que gerencia o estado global do componente
 export const usePagelaSheltersManager = () => {
   const [selectedShelter, setSelectedShelter] = useState<ShelterDto | null>(null);
   const [selectedSheltered, setSelectedSheltered] = useState<ShelteredDto | null>(null);
@@ -200,7 +199,6 @@ export const usePagelaSheltersManager = () => {
   // Shelters
   const shelters = useShelters(sheltersFilters);
 
-  // Sheltered - só carrega quando há shelter selecionado
   const shelteredFiltersWithShelter = selectedShelter 
     ? { ...shelteredFilters, shelterId: selectedShelter.id }
     : undefined;
@@ -208,7 +206,6 @@ export const usePagelaSheltersManager = () => {
   
   const sheltered = useSheltered(shelteredFiltersWithShelter, !!selectedShelter);
 
-  // Pagelas - só carrega quando há sheltered selecionado
   const pagelasFiltersWithSheltered = selectedSheltered
     ? { 
         ...pagelasFilters, 
@@ -221,14 +218,14 @@ export const usePagelaSheltersManager = () => {
 
   const handleShelterSelect = (shelter: ShelterDto | null) => {
     setSelectedShelter(shelter);
-    setSelectedSheltered(null); // Reset sheltered selection
-    setShelteredFilters({}); // Reset sheltered filters
-    setPagelasFilters({}); // Reset pagelas filters
+    setSelectedSheltered(null);
+    setShelteredFilters({});
+    setPagelasFilters({});
   };
 
   const handleShelteredSelect = (sheltered: ShelteredDto | null) => {
     setSelectedSheltered(sheltered);
-    setPagelasFilters({}); // Reset pagelas filters
+    setPagelasFilters({});
   };
 
   const handleBack = () => {
@@ -264,16 +261,13 @@ export const usePagelaSheltersManager = () => {
   }, []);
 
   return {
-    // Estado
     selectedShelter,
     selectedSheltered,
     
-    // Dados das APIs
     shelters,
     sheltered,
     pagelas,
     
-    // Filtros
     sheltersFilters,
     shelteredFilters,
     pagelasFilters,
@@ -291,20 +285,17 @@ export const usePagelaSheltersManager = () => {
   };
 };
 
-// Hook específico para líderes - não precisa buscar shelters, apenas usa o shelterId selecionado
 export const usePagelaSheltersManagerForLeader = (selectedShelterId: string | null) => {
   const [selectedSheltered, setSelectedSheltered] = useState<ShelteredDto | null>(null);
   const [shelteredFilters, setShelteredFilters] = useState<ShelteredFilters>({});
   const [pagelasFilters, setPagelasFilters] = useState<PagelasFilters>({});
 
-  // Sheltered - só carrega quando há shelter selecionado
   const shelteredFiltersWithShelter = selectedShelterId 
     ? { ...shelteredFilters, shelterId: selectedShelterId }
     : undefined;
   
   const sheltered = useSheltered(shelteredFiltersWithShelter, !!selectedShelterId);
 
-  // Pagelas - só carrega quando há sheltered selecionado
   const pagelasFiltersWithSheltered = selectedSheltered
     ? { 
         ...pagelasFilters, 
@@ -316,7 +307,7 @@ export const usePagelaSheltersManagerForLeader = (selectedShelterId: string | nu
 
   const handleShelteredSelect = (sheltered: ShelteredDto | null) => {
     setSelectedSheltered(sheltered);
-    setPagelasFilters({}); // Reset pagelas filters
+    setPagelasFilters({});
   };
 
   const handleShelteredSearchChange = (searchString: string) => {
@@ -335,7 +326,6 @@ export const usePagelaSheltersManagerForLeader = (selectedShelterId: string | nu
     }));
   }, []);
 
-  // Reset quando o shelter muda
   useEffect(() => {
     setSelectedSheltered(null);
     setShelteredFilters({});

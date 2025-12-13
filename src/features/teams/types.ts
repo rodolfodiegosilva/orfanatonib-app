@@ -2,7 +2,7 @@ import { UserPublicDto } from "../shelters/types";
 
 export type TeamResponseDto = {
   id: string;
-  numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  numberTeam: number;
   description?: string | null;
   shelterId: string;
   shelter?: {
@@ -21,13 +21,13 @@ export type TeamResponseDto = {
   }>;
   createdAt: string;
   updatedAt: string;
-  isLeaderInTeam?: boolean; // ⭐ Indica se o líder logado está nesta equipe (vem do endpoint my-shelters)
+  isLeaderInTeam?: boolean;
 };
 
 export type TeamWithMembersDto = TeamResponseDto;
 
 export type CreateTeamDto = {
-  numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  numberTeam: number;
   description?: string;
   shelterId: string;
   leaderProfileIds?: string[];
@@ -35,7 +35,7 @@ export type CreateTeamDto = {
 };
 
 export type UpdateTeamDto = {
-  numberTeam?: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  numberTeam?: number;
   description?: string;
   leaderProfileIds?: string[];
   teacherProfileIds?: string[];
@@ -43,7 +43,7 @@ export type UpdateTeamDto = {
 
 export type TeamSimpleDto = {
   id: string;
-  numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  numberTeam: number;
   description?: string | null;
   shelterId: string;
   createdAt: string;

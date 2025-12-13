@@ -38,7 +38,7 @@ export function useShelteredBrowser() {
   const [loading, setLoading] = useState(false);
   const [error, setShelteredError] = useState<string>("");
 
-  const debouncedQ = useDebouncedValue(q, 500); // Debounce de 500ms para busca
+  const debouncedQ = useDebouncedValue(q, 500);
   const prevDebouncedQRef = React.useRef<string>("");
   const prevAcceptedJesusRef = React.useRef<"all" | "accepted" | "not_accepted">("all");
   const prevActiveRef = React.useRef<"all" | "active" | "inactive">("all");
@@ -73,7 +73,6 @@ export function useShelteredBrowser() {
     }
   }, [limit]);
 
-  // Buscar quando termo de busca, filtro ou página mudar
   useEffect(() => {
     const filtersChanged = 
       prevDebouncedQRef.current !== debouncedQ || 
@@ -81,7 +80,6 @@ export function useShelteredBrowser() {
       prevActiveRef.current !== active;
     const pageChanged = prevPageRef.current !== page;
 
-    // Na primeira montagem, buscar apenas uma vez
     if (isInitialMount.current) {
       isInitialMount.current = false;
       prevDebouncedQRef.current = debouncedQ;
@@ -92,7 +90,6 @@ export function useShelteredBrowser() {
       return;
     }
 
-    // Se os filtros mudaram, resetar página e buscar
     if (filtersChanged) {
       setPage(1);
       prevDebouncedQRef.current = debouncedQ;
@@ -101,7 +98,6 @@ export function useShelteredBrowser() {
       prevPageRef.current = 1;
       search(debouncedQ, 1, acceptedJesus, active);
     } else if (pageChanged) {
-      // Se apenas a página mudou, buscar na nova página
       prevPageRef.current = page;
       search(debouncedQ, page, acceptedJesus, active);
     }
@@ -124,7 +120,6 @@ export function useShelteredBrowser() {
     setShelteredError("");
     try {
       await apiUpdateShelteredStatus(id, newActive);
-      // Recarregar a lista após atualizar o status (usando o filtro atual)
       await search(debouncedQ, page, acceptedJesus, active);
     } catch (e: any) {
       setShelteredError(
@@ -179,7 +174,6 @@ export function useShelteredPagelas(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // Atualizar limite quando initial.limit mudar
   useEffect(() => {
     if (initial?.limit !== undefined) {
       setLimit(initial.limit);

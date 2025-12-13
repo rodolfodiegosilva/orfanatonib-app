@@ -386,9 +386,8 @@ const SheltersSection: React.FC = () => {
           )}
 
           {shelterCards.length > 1 && (() => {
-            const MAX_DOTS = 5; // Máximo de pontos a exibir
+            const MAX_DOTS = 5;
             
-            // Se tiver menos ou igual ao máximo, mostra todos
             if (shelterCards.length <= MAX_DOTS) {
               return (
                 <Box
@@ -431,7 +430,6 @@ const SheltersSection: React.FC = () => {
               );
             }
             
-            // Se tiver mais que o máximo, mostra apenas os primeiros MAX_DOTS pontos
             return (
               <Box
                 sx={{

@@ -58,8 +58,6 @@ export async function apiUpdateUser(
   id: string,
   payload: UpadateUserForm
 ): Promise<UserRow> {
-  console.log(payload);
-  
   const {
     name,
     role,

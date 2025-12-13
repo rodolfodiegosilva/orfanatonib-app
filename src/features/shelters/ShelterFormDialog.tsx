@@ -48,7 +48,6 @@ export default function ShelterFormDialog({
   const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  // Carregar dados de mídia existentes ao editar
   useEffect(() => {
     if (value?.mediaItem) {
       setUploadType(value.mediaItem.uploadType || "upload");
@@ -60,13 +59,12 @@ export default function ShelterFormDialog({
     }
   }, [value?.mediaItem]);
 
-  // Atualizar mídia apenas quando houver mudança nos campos
   const updateMediaItem = (newUrl?: string, newFile?: File | null) => {
     if (!value) return;
 
     const mediaItem = (newUrl || newFile) ? {
-      title: "Foto do Abrigo", // Valor padrão
-      description: "Imagem do abrigo", // Valor padrão
+      title: "Foto do Abrigo",
+      description: "Imagem do abrigo",
       uploadType,
       url: uploadType === "link" ? (newUrl || url) : "",
     } : undefined;
@@ -78,7 +76,6 @@ export default function ShelterFormDialog({
     } as any);
   };
 
-  // Função para remover imagem existente
   const handleRemoveExistingImage = () => {
     setUrl("");
     setFile(null);

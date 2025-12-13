@@ -26,10 +26,8 @@ export default function ShelteredBrowserPage() {
   const isLeader = useSelector(selectIsLeader);
   const isTeacher = useSelector(selectIsTeacher);
   const user = useSelector((state: RootState) => state.auth.user);
-  // O endpoint filtra automaticamente por role, então qualquer um desses roles pode acessar
   const canAccess = isAdmin || isLeader || isTeacher;
 
-  // Obter nome do abrigo do Redux
   const shelterName = React.useMemo(() => {
     if (isTeacher && user?.teacherProfile?.shelter?.name) {
       return user.teacherProfile.shelter.name;

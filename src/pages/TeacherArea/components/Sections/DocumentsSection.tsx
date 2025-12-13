@@ -42,7 +42,7 @@ const DocumentsSection: React.FC = () => {
       dispatch(setDocumentData(response.data));
       setOpenModal(true);
     } catch (error) {
-      console.error('Erro ao buscar documento:', error);
+      console.error('Error fetching document:', error);
       setError('Não foi possível carregar o documento.');
     }
   };

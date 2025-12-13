@@ -24,7 +24,7 @@ export type ShelterSimple = {
 // Mantido para compatibilidade, mas TeacherProfile agora usa shelter diretamente
 export type TeamSimple = {
   id: string;
-  numberTeam: number; // ⭐ Número da equipe (1, 2, 3, 4...) - tipo NUMBER
+  numberTeam: number;
   description?: string | null;
   shelterId: string;
   shelter?: ShelterSimple;
@@ -32,7 +32,6 @@ export type TeamSimple = {
   updatedAt: string;
 };
 
-// Tipo conforme documentação: TeacherResponseDto
 export type TeacherProfile = {
   id: string;
   active: boolean;
@@ -79,13 +78,12 @@ export type Page<T> = {
 };
 
 export type TeacherQuery = {
-  // Filtros principais (conforme documentação)
-  teacherSearchString?: string; // Busca por nome, email ou telefone do professor
-  shelterSearchString?: string; // Busca por dados do abrigo (nome, endereço, líder)
-  hasShelter?: boolean; // Filtrar por professores vinculados a abrigos (true/false)
-  teamId?: string; // Filtrar por ID da equipe específica
-  teamName?: string; // Filtrar por nome/número da equipe (busca parcial)
-  hasTeam?: boolean; // Filtrar por professores vinculados a equipes (true/false)
+  teacherSearchString?: string;
+  shelterSearchString?: string;
+  hasShelter?: boolean;
+  teamId?: string;
+  teamName?: string;
+  hasTeam?: boolean;
   page?: number;
   limit?: number;
   sort?: "updatedAt" | "createdAt" | "name"; // Padrão: updatedAt

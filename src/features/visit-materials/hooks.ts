@@ -28,7 +28,6 @@ export function useVisitMaterials() {
     }
   }, []);
 
-  // Busca inicial
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -36,7 +35,6 @@ export function useVisitMaterials() {
     }
   }, [fetchAll]);
 
-  // Debounce para busca e filtro
   useEffect(() => {
     if (isInitialMount.current) return;
     

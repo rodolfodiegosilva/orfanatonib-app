@@ -50,7 +50,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 dayjs.locale('pt-br');
 
-// Sistema inteligente de classificação de eventos
 const getEventStatus = (dateISO: string) => {
   const eventoDate = dayjs(dateISO);
   const hoje = dayjs();
@@ -326,7 +325,7 @@ const Eventos: React.FC = () => {
         dispatch(setEvents(response.data));
         setEventos(response.data);
       } catch (error) {
-        console.error('Erro ao carregar eventos:', error);
+        console.error('Error loading events:', error);
       } finally {
         setLoading(false);
       }
@@ -377,7 +376,7 @@ const Eventos: React.FC = () => {
       setDeleteTargetEvent(null);
       await reloadEventsAndLeaveEditMode();
     } catch (error) {
-      console.error('Erro ao deletar evento:', error);
+      console.error('Error deleting event:', error);
     }
   };
 
@@ -393,7 +392,7 @@ const Eventos: React.FC = () => {
       dispatch(setEvents(response.data));
       setEventos(response.data);
     } catch (err) {
-      console.error('Erro ao recarregar eventos:', err);
+      console.error('Error reloading events:', err);
     } finally {
       setLoading(false);
       setEditMode(false);
