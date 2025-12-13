@@ -139,15 +139,16 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
       teamsQuantity: payload.teamsQuantity, // Campo obrigatório
       address: payload.address,
       mediaItem: payload.mediaItem ? {
+        uploadType: "upload", // Conforme documentação: "upload" ou "link"
+        isLocalFile: true, // Arquivo local
+        fieldKey: "image", // Nome do campo no form-data
         title: payload.mediaItem.title || "Foto do Abrigo",
         description: payload.mediaItem.description || "Imagem do abrigo",
-        uploadType: payload.mediaItem.uploadType === "upload" ? "UPLOAD" : "LINK",
-        url: payload.mediaItem.url,
       } : undefined,
     };
     
-    // ⭐ Incluir teams se presente (conforme documentação atualizada)
-    if ((payload as any).teams) {
+    // ⭐ Incluir teams apenas se presente e não vazio (opcional conforme documentação)
+    if ((payload as any).teams && Array.isArray((payload as any).teams) && (payload as any).teams.length > 0) {
       shelterData.teams = (payload as any).teams;
     }
     
@@ -167,7 +168,26 @@ export async function apiCreateShelter(payload: CreateShelterForm | FormData) {
   } else {
     // Sem arquivo, usar JSON simples
     const { file, ...rest } = payload;
-    // ⭐ O rest já inclui teams se presente (conforme documentação atualizada)
+    
+    // Ajustar mediaItem para formato de link se presente
+    if (rest.mediaItem && rest.mediaItem.url) {
+      rest.mediaItem = {
+        uploadType: "link", // Conforme documentação: "upload" ou "link"
+        isLocalFile: false, // URL externa
+        url: rest.mediaItem.url,
+        title: rest.mediaItem.title || "Foto do Abrigo",
+        description: rest.mediaItem.description || "Imagem do abrigo",
+      };
+    } else if (rest.mediaItem && !rest.mediaItem.url) {
+      // Se mediaItem existe mas não tem URL, remover (não é válido)
+      delete rest.mediaItem;
+    }
+    
+    // ⭐ Incluir teams apenas se presente e não vazio (opcional conforme documentação)
+    if (rest.teams && Array.isArray(rest.teams) && rest.teams.length === 0) {
+      delete rest.teams;
+    }
+    
     console.log("🟢 [apiCreateShelter] Payload JSON (sem arquivo):", JSON.stringify(rest, null, 2));
     const { data } = await api.post<ShelterResponseDto>("/shelters", rest);
     return data;

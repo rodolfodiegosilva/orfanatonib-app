@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Box, Typography, Container, IconButton } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { 
   Home as HomeIcon, 
   LocationOn as LocationIcon,
@@ -26,6 +27,7 @@ const AUTO_PLAY_INTERVAL = 3000;
 const SLIDE_ANIMATION_DURATION = 0.7;
 
 const SheltersSection: React.FC = () => {
+  const navigate = useNavigate();
   const routes = useSelector((state: RootState) => state.routes.routes);
   const [shelterCards, setShelterCards] = useState<ShelterCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -202,26 +204,24 @@ const SheltersSection: React.FC = () => {
                 height: '100%',
               }}
             >
-              <a
-                href={`/${currentCard.path}`}
-                style={{
-                  textDecoration: 'none',
-                  display: 'block',
+              <Box
+                onClick={() => navigate(`/${currentCard.path}`)}
+                sx={{
+                  position: 'relative',
                   width: '100%',
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,240,0.9) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease, boxShadow 0.2s ease',
+                  '&:hover': {
+                    transform: 'scale(1.01)',
+                    boxShadow: '0 8px 32px rgba(255, 152, 0, 0.25)',
+                  },
                 }}
               >
-                <Box
-                  sx={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,240,0.9) 100%)',
-                    backdropFilter: 'blur(20px)',
-                  }}
-                >
                   <Box
                     sx={{
                       width: { xs: '100%', md: '45%' },
@@ -328,14 +328,16 @@ const SheltersSection: React.FC = () => {
                     </Typography>
                   </Box>
                 </Box>
-              </a>
             </motion.div>
           </AnimatePresence>
 
           {shelterCards.length > 1 && (
             <>
               <IconButton
-                onClick={goToPrevious}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevious();
+                }}
                 sx={{
                   position: 'absolute',
                   left: { xs: 4, sm: 8, md: 16 },
@@ -357,7 +359,10 @@ const SheltersSection: React.FC = () => {
               </IconButton>
 
               <IconButton
-                onClick={goToNext}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNext();
+                }}
                 sx={{
                   position: 'absolute',
                   right: { xs: 4, sm: 8, md: 16 },
@@ -405,7 +410,10 @@ const SheltersSection: React.FC = () => {
                   {shelterCards.map((_, index) => (
                     <Box
                       key={index}
-                      onClick={() => goToSlide(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToSlide(index);
+                      }}
                       sx={{
                         width: currentIndex === index ? { xs: 28, md: 32 } : { xs: 10, md: 12 },
                         height: { xs: 10, md: 12 },
@@ -444,7 +452,10 @@ const SheltersSection: React.FC = () => {
                 {shelterCards.slice(0, MAX_DOTS).map((_, index) => (
                   <Box
                     key={index}
-                    onClick={() => goToSlide(index)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToSlide(index);
+                    }}
                     sx={{
                       width: currentIndex === index ? { xs: 28, md: 32 } : { xs: 10, md: 12 },
                       height: { xs: 10, md: 12 },

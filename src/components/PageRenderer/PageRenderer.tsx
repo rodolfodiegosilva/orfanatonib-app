@@ -2,6 +2,7 @@ import IdeasPageView from 'pages/PageView/IdeasMaterialViewpage/IdeasPageView';
 import PageGalleryView from 'pages/PageView/ImagePageView/ImagePageView';
 import PageVideoView from 'pages/PageView/VideoViewPage/PageVideoView';
 import VisitMaterialsPageView from 'pages/PageView/VisitMaterialViewPage/VisitMaterialsPageView';
+import ShelterPageView from 'pages/PageView/ShelterPageView/ShelterPageView';
 import React from 'react';
 import { MediaTargetType } from 'store/slices/types';
 
@@ -20,6 +21,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ entityType, idToFetch }) =>
       return <VisitMaterialsPageView idToFetch={idToFetch} />;
     case MediaTargetType.IdeasPage:
       return <IdeasPageView idToFetch={idToFetch} />;
+    case MediaTargetType.ShelterPage:
+      return <ShelterPageView idToFetch={idToFetch} />;
     default:
       return <div>Tipo de página desconhecido: {entityType}</div>;
   }

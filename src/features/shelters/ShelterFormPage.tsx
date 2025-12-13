@@ -255,6 +255,13 @@ export default function ShelterFormPage() {
           teams: teamsInput, // ⭐ Incluir equipes no payload conforme documentação atualizada
         };
 
+        // Incluir teams apenas se houver equipes definidas (opcional)
+        if (teamsInput && teamsInput.length > 0) {
+          payload.teams = teamsInput;
+        } else {
+          delete payload.teams;
+        }
+
         if (file) {
           // Upload de arquivo (form-data)
           const formDataObj = new FormData();
@@ -263,11 +270,13 @@ export default function ShelterFormPage() {
             description: payload.description,
             teamsQuantity: payload.teamsQuantity,
             address: payload.address,
-            teams: payload.teams, // ⭐ Incluir equipes
+            teams: payload.teams, // ⭐ Incluir equipes apenas se houver
             mediaItem: {
+              uploadType: "upload", // Conforme documentação: "upload" ou "link"
+              isLocalFile: true, // Arquivo local
+              fieldKey: "image", // Nome do campo no form-data
               title: rest.mediaItem?.title || "Foto do Abrigo",
               description: rest.mediaItem?.description || "Imagem do abrigo",
-              uploadType: "UPLOAD",
             }
           };
           formDataObj.append('shelterData', JSON.stringify(shelterData));
@@ -276,14 +285,17 @@ export default function ShelterFormPage() {
         } else if (rest.mediaItem?.url) {
           // Link de URL (JSON)
           payload.mediaItem = {
+            uploadType: "link", // Conforme documentação: "upload" ou "link"
+            isLocalFile: false, // URL externa
+            url: rest.mediaItem.url,
             title: rest.mediaItem.title || "Foto do Abrigo",
             description: rest.mediaItem.description || "Imagem do abrigo",
-            url: rest.mediaItem.url,
-            uploadType: "link",
           };
           await createShelter(payload);
         } else {
           // Sem imagem (JSON)
+          // Remover mediaItem se não houver URL ou arquivo
+          delete payload.mediaItem;
           await createShelter(payload);
         }
         // O callback do useShelterMutations já navegará para /adm/shelters

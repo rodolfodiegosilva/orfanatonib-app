@@ -138,31 +138,67 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
     useEffect(() => {
       if (shelterId) {
         loadShelter();
+      } else {
+        // Inicializar equipes vazias quando não há shelterId (criação)
+        const initialTeams = [];
+        for (let i = 1; i <= teamsQuantity; i++) {
+          initialTeams.push({
+            numberTeam: i,
+            leaders: [],
+            teachers: [],
+          });
+        }
+        setTeams(initialTeams);
       }
       loadOptions();
     }, [shelterId, loadShelter, loadOptions]);
 
-    // Atualizar equipes quando teamsQuantity mudar (apenas no frontend, sem chamar API)
+    // Inicializar equipes quando teamsQuantity mudar (apenas no frontend, sem chamar API)
     useEffect(() => {
-      if (teams.length > 0) {
-        const teamsMap = new Map(teams.map(t => [t.numberTeam, t]));
+      // Se não há shelterId (criação), inicializar equipes vazias
+      if (!shelterId) {
         const allTeams = [];
-        
         for (let i = 1; i <= teamsQuantity; i++) {
-          if (teamsMap.has(i)) {
-            allTeams.push(teamsMap.get(i)!);
-          } else {
-            allTeams.push({
-              numberTeam: i,
-              leaders: [],
-              teachers: [],
-            });
-          }
+          allTeams.push({
+            numberTeam: i,
+            leaders: [],
+            teachers: [],
+          });
         }
-        
         setTeams(allTeams);
+        return;
       }
-    }, [teamsQuantity]);
+
+      // Se há shelterId (edição), só ajustar se já temos equipes carregadas e não está carregando
+      // Isso garante que não sobrescrevemos dados do servidor durante o carregamento
+      // Usamos uma verificação de ref para evitar loops infinitos
+      if (shelterId && !loading) {
+        setTeams(prevTeams => {
+          // Se não há equipes anteriores, não fazer nada (aguardar loadShelter)
+          if (prevTeams.length === 0) {
+            return prevTeams;
+          }
+          
+          // Se já temos equipes, ajustar quantidade
+          const teamsMap = new Map(prevTeams.map(t => [t.numberTeam, t]));
+          const allTeams = [];
+          
+          for (let i = 1; i <= teamsQuantity; i++) {
+            if (teamsMap.has(i)) {
+              allTeams.push(teamsMap.get(i)!);
+            } else {
+              allTeams.push({
+                numberTeam: i,
+                leaders: [],
+                teachers: [],
+              });
+            }
+          }
+          
+          return allTeams;
+        });
+      }
+    }, [teamsQuantity, shelterId, loading]);
 
     const handleAddLeader = (teamNumber: number) => {
       setSelectedTeamNumber(teamNumber);
@@ -410,12 +446,6 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
           </Alert>
         )}
 
-        {!shelterId && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Salve o abrigo primeiro para poder gerenciar as equipes.
-          </Alert>
-        )}
-
         <Grid container spacing={2}>
           {Array.from({ length: teamsQuantity }, (_, i) => {
             const teamNumber = i + 1;
@@ -547,7 +577,7 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                         size="small"
                         startIcon={<AddIcon />}
                         onClick={() => handleAddLeader(teamNumber)}
-                        disabled={!shelterId || loading}
+                        disabled={loading}
                         variant="outlined"
                         fullWidth={false}
                         sx={{ width: { xs: "100%", sm: "auto" } }}
@@ -605,7 +635,7 @@ const TeamManagementSection = forwardRef<TeamManagementRef, Props>(
                         size="small"
                         startIcon={<AddIcon />}
                         onClick={() => handleAddTeacher(teamNumber)}
-                        disabled={!shelterId || loading}
+                        disabled={loading}
                         variant="outlined"
                         fullWidth={false}
                         sx={{ width: { xs: "100%", sm: "auto" } }}
