@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -18,33 +18,33 @@ import {
   Chip,
   Stack,
   IconButton,
-  Tooltip,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/slices';
 import { motion, AnimatePresence } from 'framer-motion';
-import Slider from 'react-slick';
 import CommentIcon from '@mui/icons-material/Comment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PersonIcon from '@mui/icons-material/Person';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HomeIcon from '@mui/icons-material/Home';
 import SendIcon from '@mui/icons-material/Send';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import api from '@/config/axiosConfig';
 import { setComments } from 'store/slices/comment/commentsSlice';
 
 const CommentsSection: React.FC = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const commentsScrollRef = useRef<HTMLDivElement | null>(null);
   const rawComments = useSelector((state: RootState) => state.comments.comments);
   const comments = useMemo(() => rawComments?.filter((c) => c.published) || [], [rawComments]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const MAX_COMMENT_LENGTH = 500;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -103,56 +103,31 @@ const CommentsSection: React.FC = () => {
     setSuccessSnackbarOpen(false);
   };
 
-  const sliderSettings = useMemo(
-    () => ({
-      dots: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 3,
-      slidesToScroll: 1,
-      autoplay: true,
-      autoplaySpeed: 4000,
-      pauseOnHover: true,
-      responsive: [
-        { breakpoint: 960, settings: { slidesToShow: 2 } },
-        { breakpoint: 600, settings: { slidesToShow: 1 } },
-      ],
-      arrows: !isMobile,
-      appendDots: (dots: React.ReactNode) => (
-        <Box 
-          sx={{ 
-            mt: { xs: 1, md: 2 },
-            '& .slick-dots': {
-              bottom: 'auto',
-              position: 'relative',
-              '& li': {
-                width: { xs: '6px', md: '10px' },
-                height: { xs: '6px', md: '10px' },
-                margin: { xs: '0 3px', md: '0 5px' },
-                '& button': {
-                  width: { xs: '6px', md: '10px' },
-                  height: { xs: '6px', md: '10px' },
-                  padding: 0,
-                  '&::before': {
-                    fontSize: { xs: '6px', md: '10px' },
-                    color: 'rgba(0, 0, 0, 0.3)',
-                    opacity: 1,
-                  },
-                },
-                '&.slick-active button::before': {
-                  color: theme.palette.primary.main,
-                  opacity: 1,
-                },
-              },
-            },
-          }}
-        >
-          <ul style={{ margin: 0, padding: 0, display: 'flex', justifyContent: 'center' }}>{dots}</ul>
-        </Box>
-      ),
-    }),
-    [isMobile, theme]
-  );
+  const scrollComments = (direction: 'left' | 'right') => {
+    if (commentsScrollRef.current) {
+      const container = commentsScrollRef.current;
+      const cardWidth = isMobile ? 320 : 380;
+      const gap = 16;
+      const scrollAmount = cardWidth + gap;
+      const currentScroll = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      
+      let targetScroll: number;
+      if (direction === 'left') {
+        const targetPosition = currentScroll - scrollAmount;
+        targetScroll = Math.max(0, targetPosition);
+      } else {
+        const targetPosition = currentScroll + scrollAmount;
+        const maxScroll = container.scrollWidth - containerWidth;
+        targetScroll = Math.min(maxScroll, targetPosition);
+      }
+      
+      container.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   const labels: Record<string, string> = {
     name: 'Nome (obrigatório)',
@@ -267,22 +242,31 @@ const CommentsSection: React.FC = () => {
                 startIcon={<ExpandMoreIcon sx={{ transform: formOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} />}
                 onClick={() => setFormOpen(!formOpen)}
                 sx={{
-                  mb: { xs: 2, md: 3 },
+                  mb: { xs: 2.5, md: 3 },
                   borderRadius: 2,
                   textTransform: 'none',
-                  fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
-                  px: { xs: 2, sm: 2.5, md: 3 },
-                  py: { xs: 1, sm: 1.1, md: 1.5 },
+                  fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
+                  fontWeight: 600,
+                  px: { xs: 2.5, sm: 3, md: 3.5 },
+                  py: { xs: 1.1, sm: 1.25, md: 1.5 },
                   minWidth: { xs: 'auto', md: 'auto' },
                   width: { xs: '100%', md: 'auto' },
-                  boxShadow: 2,
+                  background: formOpen 
+                    ? 'linear-gradient(135deg, #d32f2f 0%, #c62828 100%)'
+                    : 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
                   '&:hover': {
-                    boxShadow: 4,
+                    background: formOpen
+                      ? 'linear-gradient(135deg, #c62828 0%, #b71c1c 100%)'
+                      : 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                    boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
+                    transform: 'translateY(-2px)',
                   },
+                  transition: 'all 0.3s ease',
                   '& .MuiButton-startIcon': {
-                    marginRight: { xs: 0.5, md: 1 },
+                    marginRight: { xs: 0.75, md: 1 },
                     '& svg': {
-                      fontSize: { xs: '1rem', md: '1.25rem' },
+                      fontSize: { xs: '1.1rem', md: '1.3rem' },
                     },
                   },
                 }}
@@ -302,22 +286,38 @@ const CommentsSection: React.FC = () => {
                   sx={{
                     borderRadius: 3,
                     background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
-                    border: `1px solid ${theme.palette.primary.main}20`,
+                    border: `2px solid ${theme.palette.primary.main}15`,
+                    boxShadow: '0 8px 24px rgba(25, 118, 210, 0.1)',
                   }}
                 >
-                  <CardContent sx={{ p: { xs: 2, md: 4 } }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      color="primary.main"
-                      sx={{ mb: { xs: 2, md: 3 }, textAlign: 'center', fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}
-                    >
-                      Compartilhe sua experiência
-                    </Typography>
+                  <CardContent sx={{ p: { xs: 2.5, sm: 3, md: 4 } }}>
+                    <Box sx={{ textAlign: 'center', mb: { xs: 3, md: 4 } }}>
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        sx={{
+                          fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.4rem' },
+                          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                          backgroundClip: 'text',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          mb: 1,
+                        }}
+                      >
+                        Compartilhe sua experiência
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}
+                      >
+                        Sua opinião é muito importante para nós
+                      </Typography>
+                    </Box>
 
                     <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 2, md: 3 } }}>
                       {['name', 'comment', 'shelter', 'neighborhood'].map((field) => (
-                        <Grid item xs={12} md={field === 'comment' ? 8 : 4} key={field}>
+                        <Grid item xs={12} sm={field === 'comment' ? 12 : 6} md={field === 'comment' ? 8 : 4} key={field}>
                           <Box sx={{ position: 'relative' }}>
                             <TextField
                               fullWidth
@@ -327,14 +327,21 @@ const CommentsSection: React.FC = () => {
                               variant="outlined"
                               size="medium"
                               multiline={field === 'comment'}
-                              rows={field === 'comment' ? 4 : 1}
+                              rows={field === 'comment' ? 5 : 1}
                               value={formData[field as keyof typeof formData]}
-                              onChange={(e) =>
-                                setFormData({ ...formData, [field]: e.target.value })
-                              }
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (field === 'comment' && value.length > MAX_COMMENT_LENGTH) return;
+                                setFormData({ ...formData, [field]: value });
+                                if (errors[field as keyof typeof errors] && value.trim()) {
+                                  setErrors({ ...errors, [field]: false });
+                                }
+                              }}
                               error={errors[field as keyof typeof errors]}
                               helperText={
-                                errors[field as keyof typeof errors]
+                                field === 'comment' 
+                                  ? `${formData.comment.length}/${MAX_COMMENT_LENGTH} caracteres${errors.comment ? ' - Comentário é obrigatório' : ''}`
+                                  : errors[field as keyof typeof errors]
                                   ? `${labels[field].split(' ')[0]} é obrigatório`
                                   : ''
                               }
@@ -348,16 +355,31 @@ const CommentsSection: React.FC = () => {
                               sx={{
                                 '& .MuiOutlinedInput-root': {
                                   borderRadius: 2,
-                                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'primary.main',
+                                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                  transition: 'all 0.3s ease',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                      borderColor: 'primary.main',
+                                      borderWidth: 2,
+                                    },
+                                  },
+                                  '&.Mui-focused': {
+                                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                                    boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.1)',
                                   },
                                 },
                                 '& .MuiInputLabel-root': {
                                   fontSize: { xs: '0.875rem', md: '1rem' },
+                                  fontWeight: 500,
                                 },
                                 '& .MuiOutlinedInput-input': {
                                   fontSize: { xs: '0.875rem', md: '1rem' },
-                                  padding: { xs: '12px 14px', md: '16px 14px' },
+                                  padding: { xs: '14px 16px', md: '16px 18px' },
+                                },
+                                '& .MuiFormHelperText-root': {
+                                  fontSize: { xs: '0.75rem', md: '0.8rem' },
+                                  mt: 0.5,
                                 },
                               }}
                             />
@@ -387,17 +409,23 @@ const CommentsSection: React.FC = () => {
                           sx={{
                             borderRadius: 2,
                             textTransform: 'none',
-                            fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
-                            px: { xs: 2, sm: 2.5, md: 4 },
-                            py: { xs: 0.9, sm: 1, md: 1.5 },
-                            minWidth: { xs: 'auto', md: 'auto' },
-                            boxShadow: 2,
+                            fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
+                            fontWeight: 600,
+                            px: { xs: 3, sm: 3.5, md: 5 },
+                            py: { xs: 1.1, sm: 1.25, md: 1.5 },
+                            minWidth: { xs: '200px', md: 'auto' },
+                            background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
                             '&:hover': {
-                              boxShadow: 4,
+                              background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+                              boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
+                              transform: 'translateY(-2px)',
                             },
                             '&:disabled': {
                               opacity: 0.7,
+                              transform: 'none',
                             },
+                            transition: 'all 0.3s ease',
                           }}
                         >
                           {isSubmitting ? 'Enviando...' : 'Enviar Comentário'}
@@ -418,170 +446,267 @@ const CommentsSection: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <Box sx={{
-                  position: 'relative',
-                  px: { xs: 0, md: 1 },
-                  '& .slick-prev:before, & .slick-next:before': {
-                    color: theme.palette.primary.main,
-                    fontSize: { xs: '20px', md: '28px' }
-                  },
-                  '& .slick-prev': {
-                    left: { xs: -10, md: -30 },
-                    zIndex: 2,
-                  },
-                  '& .slick-next': {
-                    right: { xs: -10, md: -30 },
-                    zIndex: 2,
-                  },
-                  '& .slick-arrow': {
-                    width: { xs: 28, md: 40 },
-                    height: { xs: 28, md: 40 },
-                    backgroundColor: { xs: 'rgba(255,255,255,0.95)', md: 'transparent' },
-                    borderRadius: { xs: '50%', md: 0 },
-                    boxShadow: { xs: '0 2px 8px rgba(0,0,0,0.15)', md: 'none' },
-                    '&:before': {
-                      fontSize: { xs: '18px', md: '28px' },
-                      color: theme.palette.primary.main,
-                    },
-                    '&:hover': {
-                      backgroundColor: { xs: 'rgba(255,255,255,1)', md: 'transparent' },
-                    },
-                  },
-                }}>
-                  <Slider {...sliderSettings}>
-                    {comments.map((comment, index) => (
-                      <Box
-                        key={comment.id}
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                  }}
+                >
+                  {comments.length > (isMobile ? 1 : 2) && (
+                    <>
+                      <IconButton
+                        onClick={() => scrollComments('left')}
                         sx={{
-                          p: { xs: 0.25, sm: 0.5, md: 2 },
-                          display: 'flex',
-                          justifyContent: 'center',
+                          position: 'absolute',
+                          left: { xs: -2, sm: 8 },
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          bgcolor: 'white',
+                          color: theme.palette.primary.main,
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                          zIndex: 3,
+                          width: { xs: 36, sm: 42, md: 48 },
+                          height: { xs: 36, sm: 42, md: 48 },
+                          border: `2px solid ${theme.palette.primary.main}20`,
+                          '&:hover': {
+                            bgcolor: theme.palette.primary.main,
+                            color: 'white',
+                            transform: 'translateY(-50%) scale(1.1)',
+                            boxShadow: `0 6px 20px ${theme.palette.primary.main}40`,
+                            borderColor: theme.palette.primary.main,
+                          },
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         }}
                       >
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                          whileHover={{ y: { xs: 0, md: -8 } }}
-                          style={{ width: '100%' }}
-                        >
-                          <Card
-                            elevation={4}
-                            sx={{
-                              width: '100%',
-                              maxWidth: { xs: '100%', md: 400 },
-                              minHeight: { xs: 'auto', md: 320 },
-                              borderRadius: { xs: 2, md: 3 },
-                              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
-                              border: `2px solid ${theme.palette.primary.main}15`,
-                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                              '&:hover': {
-                                elevation: { xs: 4, md: 12 },
-                                transform: { xs: 'none', md: 'translateY(-4px)' },
-                                borderColor: theme.palette.primary.main,
-                                boxShadow: { xs: 'none', md: `0 20px 40px ${theme.palette.primary.main}20` },
-                              },
-                            }}
-                          >
-                            <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1, md: 2 } }}>
-                                <Avatar
-                                  sx={{
-                                    bgcolor: 'primary.main',
-                                    mr: { xs: 1, md: 2 },
-                                    width: { xs: 32, sm: 36, md: 48 },
-                                    height: { xs: 32, sm: 36, md: 48 },
-                                    fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1.2rem' },
-                                  }}
-                                >
-                                  {comment.name.charAt(0).toUpperCase()}
-                                </Avatar>
-                                <Box>
-                                  <Typography
-                                    variant="h6"
-                                    fontWeight="bold"
-                                    color="primary.main"
-                                    sx={{
-                                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1.1rem' },
-                                      mb: { xs: 0.25, md: 0.5 },
-                                    }}
-                                  >
-                                    {comment.name}
-                                  </Typography>
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}
-                                  >
-                                    {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
-                                  </Typography>
-                                </Box>
-                              </Box>
+                        <ChevronLeftIcon sx={{ fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.75rem' } }} />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => scrollComments('right')}
+                        sx={{
+                          position: 'absolute',
+                          right: { xs: -2, sm: 8 },
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          bgcolor: 'white',
+                          color: theme.palette.primary.main,
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                          zIndex: 3,
+                          width: { xs: 36, sm: 42, md: 48 },
+                          height: { xs: 36, sm: 42, md: 48 },
+                          border: `2px solid ${theme.palette.primary.main}20`,
+                          '&:hover': {
+                            bgcolor: theme.palette.primary.main,
+                            color: 'white',
+                            transform: 'translateY(-50%) scale(1.1)',
+                            boxShadow: `0 6px 20px ${theme.palette.primary.main}40`,
+                            borderColor: theme.palette.primary.main,
+                          },
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                      >
+                        <ChevronRightIcon sx={{ fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.75rem' } }} />
+                      </IconButton>
+                    </>
+                  )}
 
-                              {/* Conteúdo do Comentário */}
-                              <Box sx={{ flexGrow: 1, mb: { xs: 1, md: 2 } }}>
-                                <Paper
-                                  elevation={1}
-                                  sx={{
-                                    p: { xs: 1.25, sm: 1.5, md: 2 },
-                                    borderRadius: 2,
-                                    background: 'linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)',
-                                    borderLeft: `3px solid ${theme.palette.primary.main}`,
-                                  }}
-                                >
-                                  <Typography
-                                    variant="body1"
-                                    sx={{
-                                      fontSize: { xs: '0.8rem', sm: '0.85rem', md: '1rem' },
-                                      lineHeight: { xs: 1.4, md: 1.6 },
-                                      color: 'text.primary',
-                                      fontStyle: 'italic',
-                                    }}
-                                  >
-                                    "{comment.comment}"
-                                  </Typography>
-                                </Paper>
-                              </Box>
+                  <Box
+                    ref={commentsScrollRef}
+                    sx={{
+                      display: 'flex',
+                      gap: 2,
+                      overflowX: 'auto',
+                      overflowY: 'hidden',
+                      scrollBehavior: 'smooth',
+                      px: { xs: 14, sm: 6, md: 7 },
+                      py: 2,
+                      scrollSnapType: 'x mandatory',
+                      '&::-webkit-scrollbar': {
+                        height: 8,
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        background: 'rgba(25, 118, 210, 0.1)',
+                        borderRadius: 4,
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: 'rgba(25, 118, 210, 0.3)',
+                        borderRadius: 4,
+                        '&:hover': {
+                          background: 'rgba(25, 118, 210, 0.5)',
+                        },
+                      },
+                    }}
+                  >
+                    {comments.map((comment, index) => (
+                      <Card
+                        key={comment.id}
+                        elevation={4}
+                        sx={{
+                          minWidth: { xs: 300, sm: 340, md: 380 },
+                          maxWidth: { xs: 300, sm: 340, md: 380 },
+                          minHeight: { xs: 'auto', md: 340 },
+                          borderRadius: { xs: 2.5, md: 3 },
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+                          border: `2px solid ${theme.palette.primary.main}20`,
+                          scrollSnapAlign: 'center',
+                          scrollSnapStop: 'always',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '4px',
+                            background: 'linear-gradient(90deg, #1976d2 0%, #1565c0 100%)',
+                            opacity: 0,
+                            transition: 'opacity 0.3s ease',
+                          },
+                          '&:hover': {
+                            transform: { xs: 'none', md: 'translateY(-6px)' },
+                            borderColor: theme.palette.primary.main,
+                            boxShadow: { xs: '0 4px 12px rgba(25, 118, 210, 0.2)', md: `0 20px 40px ${theme.palette.primary.main}25` },
+                            '&::before': {
+                              opacity: 1,
+                            },
+                          },
+                        }}
+                      >
+                        <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 1.5, md: 2 } }}>
+                            <Avatar
+                              sx={{
+                                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                                mr: { xs: 1.5, md: 2 },
+                                width: { xs: 44, sm: 48, md: 56 },
+                                height: { xs: 44, sm: 48, md: 56 },
+                                fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.4rem' },
+                                fontWeight: 'bold',
+                                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                              }}
+                            >
+                              {comment.name.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <Box sx={{ flex: 1 }}>
+                              <Typography
+                                variant="h6"
+                                fontWeight={700}
+                                sx={{
+                                  fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
+                                  mb: { xs: 0.25, md: 0.5 },
+                                  background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                                  backgroundClip: 'text',
+                                  WebkitBackgroundClip: 'text',
+                                  WebkitTextFillColor: 'transparent',
+                                }}
+                              >
+                                {comment.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ 
+                                  fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {new Date(comment.createdAt).toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                })}
+                              </Typography>
+                            </Box>
+                          </Box>
 
-                              {/* Footer com informações */}
-                              <Box sx={{ mt: 'auto' }}>
-                                <Stack direction="row" spacing={{ xs: 0.5, md: 1 }} flexWrap="wrap" useFlexGap>
-                                  <Chip
-                                    icon={<HomeIcon sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }} />}
-                                    label={comment.shelter}
-                                    size="small"
-                                    sx={{
-                                      bgcolor: 'primary.light',
-                                      color: 'white',
-                                      fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
-                                      height: { xs: 22, sm: 24, md: 28 },
-                                      '& .MuiChip-label': {
-                                        px: { xs: 0.75, md: 1 },
-                                      },
-                                    }}
-                                  />
-                                  <Chip
-                                    icon={<LocationOnIcon sx={{ fontSize: { xs: '0.7rem', md: '0.875rem' } }} />}
-                                    label={comment.neighborhood}
-                                    size="small"
-                                    sx={{
-                                      bgcolor: 'secondary.light',
-                                      color: 'white',
-                                      fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
-                                      height: { xs: 22, sm: 24, md: 28 },
-                                      '& .MuiChip-label': {
-                                        px: { xs: 0.75, md: 1 },
-                                      },
-                                    }}
-                                  />
-                                </Stack>
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      </Box>
+                          {/* Conteúdo do Comentário */}
+                          <Box sx={{ flexGrow: 1, mb: { xs: 2, md: 2.5 } }}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: { xs: 1.75, sm: 2, md: 2.5 },
+                                borderRadius: 2,
+                                background: 'linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%)',
+                                borderLeft: `4px solid ${theme.palette.primary.main}`,
+                                position: 'relative',
+                                '&::before': {
+                                  content: '"\\201C"',
+                                  position: 'absolute',
+                                  top: { xs: 8, md: 12 },
+                                  left: { xs: 12, md: 16 },
+                                  fontSize: { xs: '3rem', md: '4rem' },
+                                  color: theme.palette.primary.main,
+                                  opacity: 0.15,
+                                  fontFamily: 'Georgia, serif',
+                                  lineHeight: 1,
+                                  zIndex: 0,
+                                },
+                              }}
+                            >
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1.05rem' },
+                                  lineHeight: { xs: 1.6, md: 1.8 },
+                                  color: 'text.primary',
+                                  fontStyle: 'italic',
+                                  position: 'relative',
+                                  zIndex: 1,
+                                }}
+                              >
+                                {comment.comment}
+                              </Typography>
+                            </Paper>
+                          </Box>
+
+                          {/* Footer com informações */}
+                          <Box sx={{ mt: 'auto' }}>
+                            <Stack direction="row" spacing={{ xs: 0.75, md: 1 }} flexWrap="wrap" useFlexGap>
+                              <Chip
+                                icon={<HomeIcon sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }} />}
+                                label={comment.shelter}
+                                size="small"
+                                sx={{
+                                  background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                                  color: 'white',
+                                  fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
+                                  height: { xs: 26, sm: 28, md: 30 },
+                                  fontWeight: 600,
+                                  boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)',
+                                  '& .MuiChip-label': {
+                                    px: { xs: 1.25, md: 1.5 },
+                                  },
+                                  '& .MuiChip-icon': {
+                                    color: 'white',
+                                  },
+                                }}
+                              />
+                              <Chip
+                                icon={<LocationOnIcon sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }} />}
+                                label={comment.neighborhood}
+                                size="small"
+                                sx={{
+                                  background: 'linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%)',
+                                  color: 'white',
+                                  fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
+                                  height: { xs: 26, sm: 28, md: 30 },
+                                  fontWeight: 600,
+                                  boxShadow: '0 2px 8px rgba(123, 31, 162, 0.3)',
+                                  '& .MuiChip-label': {
+                                    px: { xs: 1.25, md: 1.5 },
+                                  },
+                                  '& .MuiChip-icon': {
+                                    color: 'white',
+                                  },
+                                }}
+                              />
+                            </Stack>
+                          </Box>
+                        </CardContent>
+                      </Card>
                     ))}
-                  </Slider>
+                  </Box>
                 </Box>
               </motion.div>
             ) : (

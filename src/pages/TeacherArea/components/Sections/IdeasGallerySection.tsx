@@ -1,21 +1,22 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 import {
   Box,
   Typography,
   Paper,
-  Grid,
   Card,
   CardContent,
   CardMedia,
   CircularProgress,
   TextField,
-  Button,
+  IconButton,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/slices';
 import { MediaTargetType } from 'store/slices/types';
@@ -25,20 +26,43 @@ const IdeasGallerySection: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { routes, loading } = useSelector((state: RootState) => state.routes);
+  const ideasScrollRef = useRef<HTMLDivElement | null>(null);
 
   const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState(false);
   const filteredIdeas = routes.filter((route) => route.entityType === MediaTargetType.IdeasPage)
     .filter((idea) =>
       idea.title.toLowerCase().includes(search.toLowerCase()) ||
       idea.subtitle.toLowerCase().includes(search.toLowerCase())
     );
 
-  const visibleCount = isMobile ? 2 : 4;
-  const ideasToDisplay = expanded ? filteredIdeas : filteredIdeas.slice(0, visibleCount);
-
   const handleRedirect = (path: string) => {
     navigate(`/${path}`);
+  };
+
+  const scrollIdeas = (direction: 'left' | 'right') => {
+    if (ideasScrollRef.current) {
+      const container = ideasScrollRef.current;
+      const cardWidth = isMobile ? 280 : 300;
+      const gap = 16;
+      const scrollAmount = cardWidth + gap;
+      const currentScroll = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      
+      let targetScroll: number;
+      if (direction === 'left') {
+        const targetPosition = currentScroll - scrollAmount;
+        targetScroll = Math.max(0, targetPosition);
+      } else {
+        const targetPosition = currentScroll + scrollAmount;
+        const maxScroll = container.scrollWidth - containerWidth;
+        targetScroll = Math.min(maxScroll, targetPosition);
+      }
+      
+      container.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
@@ -146,25 +170,80 @@ const IdeasGallerySection: React.FC = () => {
         </Box>
       ) : filteredIdeas.length > 0 ? (
         <Fragment>
-          <Grid container spacing={3}>
-            {ideasToDisplay.map((idea) => (
-              <Grid item xs={12} sm={6} md={3} key={idea.id}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100%',
+            }}
+          >
+            {filteredIdeas.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollIdeas('left')}
+                sx={{
+                  position: 'absolute',
+                  left: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#ab47bc',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
+                  '&:hover': {
+                    bgcolor: '#ab47bc',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
+                    boxShadow: '0 6px 16px rgba(171, 71, 188, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <ChevronLeftIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
+
+            <Box
+              ref={ideasScrollRef}
+              sx={{
+                display: 'flex',
+                gap: 2,
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                scrollBehavior: 'smooth',
+                px: { xs: 14, sm: 6, md: 7 },
+                py: 2,
+                scrollSnapType: 'x mandatory',
+                '&::-webkit-scrollbar': {
+                  height: 8,
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'rgba(171, 71, 188, 0.1)',
+                  borderRadius: 4,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(171, 71, 188, 0.3)',
+                  borderRadius: 4,
+                  '&:hover': {
+                    background: 'rgba(171, 71, 188, 0.5)',
+                  },
+                },
+              }}
                 >
+              {filteredIdeas.map((idea) => (
                   <Card
+                  key={idea.id}
                     elevation={2}
                     sx={{
-                      height: '100%',
+                    minWidth: { xs: 280, sm: 300 },
+                    maxWidth: { xs: 280, sm: 300 },
                       borderRadius: 3,
                       cursor: 'pointer',
                       background: 'rgba(255, 255, 255, 0.9)',
                       backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(171, 71, 188, 0.1)',
+                    scrollSnapAlign: 'center',
+                    scrollSnapStop: 'always',
                       overflow: 'hidden',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
@@ -236,40 +315,36 @@ const IdeasGallerySection: React.FC = () => {
                       </Typography>
                     </CardContent>
                   </Card>
-                </motion.div>
-              </Grid>
             ))}
-          </Grid>
+            </Box>
 
-          {filteredIdeas.length > visibleCount && (
-            <Box textAlign="center" mt={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="contained"
-                  size="medium"
-                  onClick={() => setExpanded((prev) => !prev)}
+            {filteredIdeas.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollIdeas('right')}
                   sx={{
-                    px: { xs: 2.5, sm: 3, md: 4 },
-                    py: { xs: 1, sm: 1.25, md: 1.5 },
-                    fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    background: 'linear-gradient(135deg, #ab47bc 0%, #7b1fa2 100%)',
-                    boxShadow: '0 4px 12px rgba(171, 71, 188, 0.3)',
+                  position: 'absolute',
+                  right: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#ab47bc',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
                     '&:hover': {
+                    bgcolor: '#ab47bc',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
                       boxShadow: '0 6px 16px rgba(171, 71, 188, 0.4)',
                     },
+                  transition: 'all 0.3s ease',
                   }}
                 >
-                  {expanded ? 'Ver menos' : 'Ver mais'}
-                </Button>
-              </motion.div>
+                <ChevronRightIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
             </Box>
-          )}
         </Fragment>
       ) : (
         <Box sx={{ textAlign: 'center', py: 4 }}>

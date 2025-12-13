@@ -1,17 +1,18 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 import {
   Box,
   Typography,
   Paper,
-  Grid,
   Card,
   CardContent,
-  Button,
+  IconButton,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import DescriptionIcon from '@mui/icons-material/Description';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import api from '@/config/axiosConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/slices';
@@ -24,12 +25,14 @@ import { RouteData } from 'store/slices/route/routeSlice';
 
 const DocumentsSection: React.FC = () => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const documentData = useSelector(
     (state: RootState) => state.document.documentData
   );
   const routes = useSelector((state: RootState) => state.routes.routes);
+  const documentsScrollRef = useRef<HTMLDivElement | null>(null);
   const [openModal, setOpenModal] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const documentRoutes = routes.filter(
@@ -52,8 +55,30 @@ const DocumentsSection: React.FC = () => {
     dispatch(clearDocumentData());
   };
 
-  const handleToggleExpand = () => {
-    setIsExpanded(!isExpanded);
+  const scrollDocuments = (direction: 'left' | 'right') => {
+    if (documentsScrollRef.current) {
+      const container = documentsScrollRef.current;
+      const cardWidth = isMobile ? 280 : 300;
+      const gap = 16;
+      const scrollAmount = cardWidth + gap;
+      const currentScroll = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      
+      let targetScroll: number;
+      if (direction === 'left') {
+        const targetPosition = currentScroll - scrollAmount;
+        targetScroll = Math.max(0, targetPosition);
+      } else {
+        const targetPosition = currentScroll + scrollAmount;
+        const maxScroll = container.scrollWidth - containerWidth;
+        targetScroll = Math.min(maxScroll, targetPosition);
+      }
+      
+      container.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const truncateDescription = (
@@ -65,10 +90,6 @@ const DocumentsSection: React.FC = () => {
       ? `${description.substring(0, maxLength)}...`
       : description;
   };
-
-  const displayedRoutes = isExpanded
-    ? documentRoutes
-    : documentRoutes.slice(0, 4);
 
   return (
     <motion.div
@@ -145,25 +166,80 @@ const DocumentsSection: React.FC = () => {
         </Typography>
       ) : documentRoutes.length > 0 ? (
         <Fragment>
-          <Grid container spacing={3}>
-            {displayedRoutes.map((route) => (
-              <Grid item xs={12} sm={6} md={3} key={route.id}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100%',
+            }}
+          >
+            {documentRoutes.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollDocuments('left')}
+                sx={{
+                  position: 'absolute',
+                  left: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#0288d1',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
+                  '&:hover': {
+                    bgcolor: '#0288d1',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
+                    boxShadow: '0 6px 16px rgba(2, 136, 209, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <ChevronLeftIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
+
+            <Box
+              ref={documentsScrollRef}
+              sx={{
+                display: 'flex',
+                gap: 2,
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                scrollBehavior: 'smooth',
+                px: { xs: 14, sm: 6, md: 7 },
+                py: 2,
+                scrollSnapType: 'x mandatory',
+                '&::-webkit-scrollbar': {
+                  height: 8,
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'rgba(2, 136, 209, 0.1)',
+                  borderRadius: 4,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(2, 136, 209, 0.3)',
+                  borderRadius: 4,
+                  '&:hover': {
+                    background: 'rgba(2, 136, 209, 0.5)',
+                  },
+                },
+              }}
                 >
+              {documentRoutes.map((route) => (
                   <Card
+                  key={route.id}
                     elevation={2}
                     sx={{
-                      height: '100%',
+                    minWidth: { xs: 280, sm: 300 },
+                    maxWidth: { xs: 280, sm: 300 },
                       borderRadius: 3,
                       cursor: 'pointer',
                       background: 'rgba(255, 255, 255, 0.9)',
                       backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(2, 136, 209, 0.1)',
+                    scrollSnapAlign: 'center',
+                    scrollSnapStop: 'always',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
                         transform: 'translateY(-4px)',
@@ -198,43 +274,36 @@ const DocumentsSection: React.FC = () => {
                       </Typography>
                     </CardContent>
                   </Card>
-                </motion.div>
-              </Grid>
             ))}
-          </Grid>
+            </Box>
 
-          {documentRoutes.length > 4 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="medium"
-                  endIcon={
-                    isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />
-                  }
-                  onClick={handleToggleExpand}
+            {documentRoutes.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollDocuments('right')}
                   sx={{
-                    px: { xs: 2.5, sm: 3, md: 4 },
-                    py: { xs: 1, sm: 1.25, md: 1.5 },
-                    fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    boxShadow: '0 4px 12px rgba(2, 136, 209, 0.3)',
+                  position: 'absolute',
+                  right: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#0288d1',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
                     '&:hover': {
+                    bgcolor: '#0288d1',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
                       boxShadow: '0 6px 16px rgba(2, 136, 209, 0.4)',
                     },
+                  transition: 'all 0.3s ease',
                   }}
                 >
-                  {isExpanded ? 'Ver menos' : 'Ver mais documentos'}
-                </Button>
-              </motion.div>
+                <ChevronRightIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
             </Box>
-          )}
         </Fragment>
       ) : (
         <Typography

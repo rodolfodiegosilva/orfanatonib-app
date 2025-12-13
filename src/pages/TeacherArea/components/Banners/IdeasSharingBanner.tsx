@@ -36,8 +36,8 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
           gap: shouldUseColumnLayout ? 3 : 0,
           width: '100%',
           mx: 'auto',
-          px: isCompact ? { xs: 3, sm: 4, md: 4 } : { xs: 3, sm: 5, md: 5 },
-          py: isCompact ? { xs: 3, sm: 3, md: 3 } : { xs: 4, sm: 6, md: 6 },
+          px: isCompact ? { xs: 2, sm: 4, md: 4 } : { xs: 2, sm: 5, md: 5 },
+          py: isCompact ? { xs: 2, sm: 3, md: 3 } : { xs: 2.5, sm: 6, md: 6 },
           mb: isCompact ? 0 : 0,
           mt: isCompact ? 0 : 0,
           position: 'relative',
@@ -81,7 +81,7 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             justifyContent: 'center',
             alignItems: shouldUseColumnLayout ? 'center' : 'flex-start',
             textAlign: shouldUseColumnLayout ? 'center' : 'left',
-            px: isCompact ? { xs: 2, md: 0 } : { xs: 2, sm: 3, md: 4 },
+            px: isCompact ? { xs: 1, md: 0 } : { xs: 1, sm: 3, md: 4 },
             position: 'relative',
             zIndex: 1,
           }}
@@ -91,9 +91,11 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             sx={{
               fontWeight: 'bold',
               color: 'white',
-              fontSize: isCompact ? { xs: '0.9rem', sm: '1rem', md: '1.6rem' } : { xs: '1.3rem', sm: '1.6rem', md: '2.2rem' },
+              fontSize: isCompact ? { xs: '1.1rem', sm: '1.2rem', md: '1.6rem' } : { xs: '1.4rem', sm: '1.7rem', md: '2.2rem' },
               textShadow: '0 2px 4px rgba(0,0,0,0.3)',
               mb: { xs: 1.5, md: 2 },
+              lineHeight: { xs: 1.4, md: 1.3 },
+              letterSpacing: { xs: '0.2px', md: '0.3px' },
             }}
           >
             Compartilhe a Inspiração que Deus Te Deu!
@@ -103,11 +105,12 @@ const IdeasSharingBanner: React.FC<IdeasSharingBannerProps> = ({ variant = 'full
             variant="h6"
             sx={{
               color: 'rgba(255,255,255,0.95)',
-              fontSize: isCompact ? { xs: '0.85rem', sm: '0.95rem', md: '1.15rem' } : { xs: '1rem', sm: '1.1rem', md: '1.35rem' },
+              fontSize: isCompact ? { xs: '0.9rem', sm: '1rem', md: '1.15rem' } : { xs: '1.05rem', sm: '1.15rem', md: '1.35rem' },
               maxWidth: isCompact ? '800px' : '800px',
-              lineHeight: 1.6,
-              fontWeight: 500,
+              lineHeight: { xs: 1.6, md: 1.6 },
+              fontWeight: { xs: 500, md: 500 },
               mb: 0,
+              letterSpacing: { xs: '0.1px', md: '0.2px' },
             }}
           >
             Criou uma brincadeira incrível ou descobriu uma forma especial de contar uma história bíblica?

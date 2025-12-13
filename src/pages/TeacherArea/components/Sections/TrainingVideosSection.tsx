@@ -1,14 +1,13 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useRef } from 'react';
 import {
   Box,
   Typography,
   Paper,
-  Grid,
   Card,
   CardContent,
   CardMedia,
   TextField,
-  Button,
+  IconButton,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -16,6 +15,8 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 import { selectVideoRoutes } from '@/store/selectors/routeSelectors';
 import { RouteData } from '@/store/slices/route/routeSlice';
@@ -24,9 +25,9 @@ const TrainingVideosSection: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const videosScrollRef = useRef<HTMLDivElement | null>(null);
 
   const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState(false);
 
   const videos: RouteData[] = useSelector(selectVideoRoutes);
 
@@ -40,12 +41,35 @@ const TrainingVideosSection: React.FC = () => {
     );
   }, [videos, search]);
 
-  const visibleCount = isMobile ? 2 : 4;
-  const videosToDisplay = expanded ? filteredVideos : filteredVideos.slice(0, visibleCount);
-
   const handleRedirect = (path: string) => {
     const absolutePath = `/${path.replace(/^\/+/, '')}`;
     navigate(absolutePath);
+  };
+
+  const scrollVideos = (direction: 'left' | 'right') => {
+    if (videosScrollRef.current) {
+      const container = videosScrollRef.current;
+      const cardWidth = isMobile ? 280 : 300;
+      const gap = 16;
+      const scrollAmount = cardWidth + gap;
+      const currentScroll = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      
+      let targetScroll: number;
+      if (direction === 'left') {
+        const targetPosition = currentScroll - scrollAmount;
+        targetScroll = Math.max(0, targetPosition);
+      } else {
+        const targetPosition = currentScroll + scrollAmount;
+        const maxScroll = container.scrollWidth - containerWidth;
+        targetScroll = Math.min(maxScroll, targetPosition);
+      }
+      
+      container.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
@@ -147,161 +171,212 @@ const TrainingVideosSection: React.FC = () => {
           }}
         />
 
-      {videosToDisplay.length > 0 ? (
+      {filteredVideos.length > 0 ? (
         <Fragment>
-          <Grid container spacing={3}>
-            {videosToDisplay.map((video) => (
-              <Grid item xs={12} sm={6} md={3} key={video.id}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card
-                    elevation={2}
-                    sx={{
-                      height: '100%',
-                      borderRadius: 3,
-                      cursor: 'pointer',
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(126, 87, 194, 0.1)',
-                      overflow: 'hidden',
-                      position: 'relative',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
-                        transform: 'translateY(-6px)',
-                        boxShadow: '0 12px 24px rgba(126, 87, 194, 0.25)',
-                        borderColor: '#7e57c2',
-                        '& .card-image': {
-                          transform: 'scale(1.1)',
-                        },
-                        '& .play-overlay': {
-                          opacity: 1,
-                        },
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100%',
+            }}
+          >
+            {filteredVideos.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollVideos('left')}
+                sx={{
+                  position: 'absolute',
+                  left: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#7e57c2',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
+                  '&:hover': {
+                    bgcolor: '#7e57c2',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
+                    boxShadow: '0 6px 16px rgba(126, 87, 194, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <ChevronLeftIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
+
+            <Box
+              ref={videosScrollRef}
+              sx={{
+                display: 'flex',
+                gap: 2,
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                scrollBehavior: 'smooth',
+                px: { xs: 14, sm: 6, md: 7 },
+                py: 2,
+                scrollSnapType: 'x mandatory',
+                '&::-webkit-scrollbar': {
+                  height: 8,
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'rgba(126, 87, 194, 0.1)',
+                  borderRadius: 4,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(126, 87, 194, 0.3)',
+                  borderRadius: 4,
+                  '&:hover': {
+                    background: 'rgba(126, 87, 194, 0.5)',
+                  },
+                },
+              }}
+            >
+              {filteredVideos.map((video) => (
+                <Card
+                  key={video.id}
+                  elevation={2}
+                  sx={{
+                    minWidth: { xs: 280, sm: 300 },
+                    maxWidth: { xs: 280, sm: 300 },
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(126, 87, 194, 0.1)',
+                    scrollSnapAlign: 'center',
+                    scrollSnapStop: 'always',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      transform: 'translateY(-6px)',
+                      boxShadow: '0 12px 24px rgba(126, 87, 194, 0.25)',
+                      borderColor: '#7e57c2',
+                      '& .card-image': {
+                        transform: 'scale(1.1)',
                       },
-                    }}
-                    onClick={() => handleRedirect(video.path)}
-                  >
-                    <Box sx={{ overflow: 'hidden', position: 'relative' }}>
-                      <CardMedia
-                        component="img"
-                        image={video.image || 'https://via.placeholder.com/300x140?text=Vídeo'}
-                        alt={video.title}
-                        className="card-image"
-                        sx={{
-                          height: { xs: 160, md: 180 },
-                          objectFit: 'cover',
-                          transition: 'transform 0.5s ease',
-                        }}
-                      />
+                      '& .play-overlay': {
+                        opacity: 1,
+                      },
+                    },
+                  }}
+                  onClick={() => handleRedirect(video.path)}
+                >
+                  <Box sx={{ overflow: 'hidden', position: 'relative' }}>
+                    <CardMedia
+                      component="img"
+                      image={video.image || 'https://via.placeholder.com/300x140?text=Vídeo'}
+                      alt={video.title}
+                      className="card-image"
+                      sx={{
+                        height: { xs: 160, md: 180 },
+                        objectFit: 'cover',
+                        transition: 'transform 0.5s ease',
+                      }}
+                    />
+                    <Box
+                      className="play-overlay"
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'linear-gradient(to bottom, transparent 0%, rgba(126, 87, 194, 0.3) 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease',
+                      }}
+                    >
                       <Box
-                        className="play-overlay"
                         sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: 'linear-gradient(to bottom, transparent 0%, rgba(126, 87, 194, 0.3) 100%)',
+                          width: 60,
+                          height: 60,
+                          borderRadius: '50%',
+                          background: 'rgba(255, 255, 255, 0.9)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          opacity: 0,
-                          transition: 'opacity 0.3s ease',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                         }}
                       >
                         <Box
                           sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: '50%',
-                            background: 'rgba(255, 255, 255, 0.9)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                            width: 0,
+                            height: 0,
+                            borderLeft: '20px solid #7e57c2',
+                            borderTop: '12px solid transparent',
+                            borderBottom: '12px solid transparent',
+                            ml: 0.5,
                           }}
-                        >
-                          <Box
-                            sx={{
-                              width: 0,
-                              height: 0,
-                              borderLeft: '20px solid #7e57c2',
-                              borderTop: '12px solid transparent',
-                              borderBottom: '12px solid transparent',
-                              ml: 0.5,
-                            }}
-                          />
-                        </Box>
+                        />
                       </Box>
                     </Box>
-                    <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 2.5 } }}>
-                      <Typography
-                        variant="h6"
-                        fontWeight={700}
-                        sx={{
-                          color: '#7e57c2',
-                          mb: { xs: 0.75, md: 1 },
-                          fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
-                          lineHeight: 1.3,
-                        }}
-                        gutterBottom
-                      >
-                        {video.title}
-                      </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{
-                          color: 'text.secondary',
-                          lineHeight: 1.5,
-                          fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.9rem' },
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {video.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-
-          {filteredVideos.length > visibleCount && (
-            <Box textAlign="center" mt={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="contained"
-                  size="medium"
-                  onClick={() => setExpanded((prev) => !prev)}
-                  sx={{
-                    px: { xs: 2.5, sm: 3, md: 4 },
-                    py: { xs: 1, sm: 1.25, md: 1.5 },
-                    fontSize: { xs: '0.85rem', sm: '0.9rem', md: '1rem' },
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    background: 'linear-gradient(135deg, #7e57c2 0%, #512da8 100%)',
-                    boxShadow: '0 4px 12px rgba(126, 87, 194, 0.3)',
-                    '&:hover': {
-                      boxShadow: '0 6px 16px rgba(126, 87, 194, 0.4)',
-                    },
-                  }}
-                >
-                  {expanded ? 'Ver menos' : 'Ver mais'}
-                </Button>
-              </motion.div>
+                  </Box>
+                  <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 2.5 } }}>
+                    <Typography
+                      variant="h6"
+                      fontWeight={700}
+                      sx={{
+                        color: '#7e57c2',
+                        mb: { xs: 0.75, md: 1 },
+                        fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
+                        lineHeight: 1.3,
+                      }}
+                      gutterBottom
+                    >
+                      {video.title}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      sx={{
+                        color: 'text.secondary',
+                        lineHeight: 1.5,
+                        fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.9rem' },
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {video.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
-          )}
+
+            {filteredVideos.length > (isMobile ? 1 : 2) && (
+              <IconButton
+                onClick={() => scrollVideos('right')}
+                sx={{
+                  position: 'absolute',
+                  right: { xs: -2, sm: 8 },
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  color: '#7e57c2',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  zIndex: 3,
+                  width: { xs: 32, sm: 40, md: 44 },
+                  height: { xs: 32, sm: 40, md: 44 },
+                  '&:hover': {
+                    bgcolor: '#7e57c2',
+                    color: 'white',
+                    transform: 'translateY(-50%) scale(1.1)',
+                    boxShadow: '0 6px 16px rgba(126, 87, 194, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <ChevronRightIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
+              </IconButton>
+            )}
+          </Box>
         </Fragment>
       ) : (
         <Box sx={{ textAlign: 'center', py: 4 }}>

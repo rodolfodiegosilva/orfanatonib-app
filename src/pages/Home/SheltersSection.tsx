@@ -29,6 +29,7 @@ const SLIDE_ANIMATION_DURATION = 0.7;
 const SheltersSection: React.FC = () => {
   const navigate = useNavigate();
   const routes = useSelector((state: RootState) => state.routes.routes);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [shelterCards, setShelterCards] = useState<ShelterCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -205,7 +206,11 @@ const SheltersSection: React.FC = () => {
               }}
             >
               <Box
-                onClick={() => navigate(`/${currentCard.path}`)}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    navigate(`/${currentCard.path}`);
+                  }
+                }}
                 sx={{
                   position: 'relative',
                   width: '100%',
@@ -214,12 +219,15 @@ const SheltersSection: React.FC = () => {
                   flexDirection: { xs: 'column', md: 'row' },
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,240,0.9) 100%)',
                   backdropFilter: 'blur(20px)',
-                  cursor: 'pointer',
+                  cursor: isAuthenticated ? 'pointer' : 'default',
                   transition: 'transform 0.2s ease, boxShadow 0.2s ease',
+                  opacity: isAuthenticated ? 1 : 0.8,
+                  ...(isAuthenticated && {
                   '&:hover': {
                     transform: 'scale(1.01)',
                     boxShadow: '0 8px 32px rgba(255, 152, 0, 0.25)',
                   },
+                  }),
                 }}
               >
                   <Box

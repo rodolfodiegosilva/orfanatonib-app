@@ -74,7 +74,7 @@ const InformativeBanner: React.FC = () => {
   }, [informativeRoutes]);
 
   const carouselSettings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 700,
     slidesToShow: 1,
@@ -86,38 +86,6 @@ const InformativeBanner: React.FC = () => {
     fade: true,
     cssEase: 'cubic-bezier(0.4, 0, 0.2, 1)',
     beforeChange: (_: number, next: number) => setActiveSlide(next),
-    appendDots: (dots: React.ReactNode) => (
-      <Box 
-        sx={{ 
-          mt: { xs: 1.5, md: 3 },
-          mb: { xs: 0.5, md: 0 },
-          '& .slick-dots': {
-            bottom: 'auto',
-            position: 'relative',
-            '& li': {
-              width: { xs: '8px', md: '12px' },
-              height: { xs: '8px', md: '12px' },
-              margin: { xs: '0 4px', md: '0 6px' },
-              '& button': {
-                width: { xs: '8px', md: '12px' },
-                height: { xs: '8px', md: '12px' },
-                padding: 0,
-                '&::before': {
-                  fontSize: { xs: '8px', md: '12px' },
-                  color: 'rgba(0, 0, 0, 0.3)',
-                  opacity: 1,
-                },
-              },
-              '&.slick-active button::before': {
-                color: 'rgba(0, 0, 0, 0.8)',
-              },
-            },
-          },
-        }}
-      >
-        <ul style={{ margin: 0, padding: 0, display: 'flex', justifyContent: 'center' }}>{dots}</ul>
-      </Box>
-    ),
   };
 
   const renderBanner = (route: RouteData, index: number) => {
@@ -272,16 +240,16 @@ const InformativeBanner: React.FC = () => {
                 <Typography
                   variant="overline"
                   sx={{
-                    fontSize: { xs: '0.9rem', sm: '1.1rem', md: '2.4rem' },
+                    fontSize: { xs: '1rem', sm: '1.2rem', md: '2.4rem' },
                     fontWeight: 900,
-                    letterSpacing: { xs: '1px', sm: '1.5px', md: '4px' },
+                    letterSpacing: { xs: '1.5px', sm: '2px', md: '4px' },
                     textTransform: 'uppercase',
                     display: 'block',
                     textShadow: { 
                       xs: '2px 2px 6px rgba(0, 0, 0, 0.7)',
                       md: '3px 3px 12px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255,255,255,0.3)'
                     },
-                    lineHeight: { xs: 1.3, md: 1.2 },
+                    lineHeight: { xs: 1.4, md: 1.2 },
                     textAlign: 'center',
                   }}
                 >
@@ -300,15 +268,15 @@ const InformativeBanner: React.FC = () => {
                 variant="h4"
                 gutterBottom
                 sx={{
-                  fontSize: { xs: '1.1rem', sm: '1.2rem', md: '2.1rem' },
+                  fontSize: { xs: '1.3rem', sm: '1.5rem', md: '2.1rem' },
                   fontWeight: 800,
                   textShadow: { 
                     xs: '2px 2px 6px rgba(0, 0, 0, 0.7)',
                     md: '3px 3px 10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255,255,255,0.2)'
                   },
                   mb: { xs: 2, md: 3 },
-                  lineHeight: { xs: 1.3, md: 1.4 },
-                  letterSpacing: { xs: '0.2px', md: '0.5px' },
+                  lineHeight: { xs: 1.4, md: 1.4 },
+                  letterSpacing: { xs: '0.3px', md: '0.5px' },
                   px: { xs: 0.5, md: 0 },
                 }}
               >
@@ -324,14 +292,14 @@ const InformativeBanner: React.FC = () => {
                   <Typography
                     variant="h6"
                     sx={{
-                      fontSize: { xs: '0.95rem', sm: '1rem', md: '1.4rem' },
-                      fontWeight: { xs: 500, md: 600 },
+                      fontSize: { xs: '1.05rem', sm: '1.15rem', md: '1.4rem' },
+                      fontWeight: { xs: 600, md: 600 },
                       textShadow: { 
                         xs: '1px 1px 4px rgba(0, 0, 0, 0.6)',
                         md: '2px 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255,255,255,0.15)'
                       },
-                      lineHeight: { xs: 1.4, md: 1.6 },
-                      letterSpacing: { xs: '0.1px', md: '0.3px' },
+                      lineHeight: { xs: 1.5, md: 1.6 },
+                      letterSpacing: { xs: '0.2px', md: '0.3px' },
                       maxWidth: { xs: '100%', md: '90%' },
                       mx: 'auto',
                       px: { xs: 0.5, md: 0 },
